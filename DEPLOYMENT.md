@@ -72,7 +72,7 @@ Your `deploy/` folder should now contain `server.js`, `node_modules`,
 ### 3. Create the Node.js app in cPanel
 
 1. Log into cPanel → **Software** → **Setup Node.js App** → **Create Application**.
-2. **Node.js version:** 20.x (Next.js 15 requires Node 18.18+; use 20 if offered).
+2. **Node.js version:** 20.x or 22.x (Next.js 16 requires Node 20.9+; Vercel's default is Node 24).
 3. **Application mode:** Production.
 4. **Application root:** e.g. `chesly-insights` (cPanel creates this under your
    home directory).

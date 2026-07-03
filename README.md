@@ -1,7 +1,7 @@
 # Chesly.Tech Insights
 
 An AI-first technology publication covering AI, startups, SEO/GEO, web design, and
-South African business — built with Next.js 15, TypeScript, and MDX, and optimized
+South African business — built with Next.js 16, TypeScript, and MDX, and optimized
 for both traditional search (Google, Bing) and AI answer engines (Google AI
 Overviews, ChatGPT Search, Perplexity, Gemini, Claude).
 
@@ -9,7 +9,7 @@ Owned and published by **Chesly Silaule** ([chesly.tech](https://chesly.tech)).
 
 ## Tech stack
 
-- **Framework:** Next.js 15 (App Router, React Server Components)
+- **Framework:** Next.js 16 (App Router, React Server Components)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS + `@tailwindcss/typography`
 - **Content:** MDX files in `content/posts`, parsed with `gray-matter`

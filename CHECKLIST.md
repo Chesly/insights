@@ -40,7 +40,7 @@ Work through this top to bottom before pointing the live domain at this site.
 - [ ] `npm run build` completes with no errors and no unexpected warnings
 - [ ] `npm start` (or the standalone `node server.js`) serves the homepage,
       a blog post, and returns a real 404 for an unknown path
-- [ ] Deployed environment matches Node 18.18+ (20.x recommended)
+- [ ] Deployed environment matches Node 20.9+ (22.x/24.x recommended)
 
 ## 5. SEO fundamentals
 
