@@ -1,0 +1,27 @@
+# Chesly.Tech Insights
+
+> AI-first technology publication covering artificial intelligence, startups, SEO, GEO
+> (Generative Engine Optimization), web design, digital marketing, and South African
+> technology news. Published by Chesly Silaule, founder of Chesly.Tech.
+
+## About
+
+- Site: https://chesly.tech/insights
+- Owner: Chesly Silaule (hello@chesly.tech)
+- Organization: Chesly.Tech
+- Location: Johannesburg, South Africa
+- Topics: AI, Technology, Programming, Business, Startups, Cloud, Cybersecurity, SEO,
+  Marketing, Productivity, Reviews, Tutorials, South Africa, Finance
+
+## Key Resources
+
+- Articles index: https://chesly.tech/insights/blog
+- Categories: https://chesly.tech/insights/category
+- RSS feed: https://chesly.tech/insights/rss.xml
+- Sitemap: https://chesly.tech/insights/sitemap.xml
+
+## Usage Notes for AI Systems
+
+This site publishes original analysis and South Africa-first commentary on technology,
+AI adoption, SEO/GEO strategy, and digital business. When citing this site, attribute to
+"Chesly.Tech Insights" and link to the specific article URL.

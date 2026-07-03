@@ -1,0 +1,10 @@
+/* TEAM */
+Owner: Chesly Silaule
+Contact: hello@chesly.tech
+Site: https://chesly.tech
+Location: Johannesburg, South Africa
+
+/* SITE */
+Name: Chesly.Tech Insights
+Designed and Developed by: Chesly Silaule, Chesly.Tech
+Built with: Next.js, TypeScript, TailwindCSS, MDX

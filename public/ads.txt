@@ -1,0 +1,2 @@
+# ads.txt placeholder — add authorized ad network entries here when monetization is enabled
+# Format: google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
