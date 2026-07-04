@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/lib/siteConfig";
 import { authors } from "@/lib/authors";
 import { getPostsByAuthor } from "@/lib/posts";
 import { personSchema, breadcrumbSchema } from "@/lib/schema";

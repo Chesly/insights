@@ -4,31 +4,24 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Analytics from "@/components/Analytics";
 import { GoogleTagManagerHead, GoogleTagManagerBody } from "@/components/GoogleTagManager";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/lib/siteConfig";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} | AI, Tech & SEO Insights from South Africa`,
-    template: `%s | ${siteConfig.name}`
+    default: siteConfig.seo.defaultTitle,
+    template: siteConfig.seo.titleTemplate
   },
-  description: siteConfig.description,
-  keywords: [
-    "AI South Africa",
-    "technology news South Africa",
-    "SEO South Africa",
-    "GEO generative engine optimization",
-    "startup news",
-    "digital marketing insights"
-  ],
+  description: siteConfig.seo.defaultDescription,
+  keywords: siteConfig.seo.defaultKeywords,
   authors: [{ name: siteConfig.owner.name, url: siteConfig.owner.url }],
   creator: siteConfig.owner.name,
   publisher: siteConfig.shortName,
   icons: {
-    icon: siteConfig.favicon,
-    shortcut: siteConfig.favicon,
-    apple: siteConfig.favicon
+    icon: siteConfig.branding.favicon,
+    shortcut: siteConfig.branding.favicon,
+    apple: siteConfig.branding.favicon
   },
   manifest: `${siteConfig.url}/manifest.webmanifest`,
   openGraph: {
@@ -42,7 +35,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: siteConfig.twitter,
+    site: siteConfig.seo.twitterHandle,
     title: siteConfig.name,
     description: siteConfig.description,
     images: [`${siteConfig.url}/opengraph-image`]
@@ -65,9 +58,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-ZA" className="scroll-smooth">
+    <html lang="en-ZA" className="scroll-smooth" data-scroll-behavior="smooth">
       <head>
-        <link rel="icon" href={siteConfig.favicon} />
+        <link rel="icon" href={siteConfig.branding.favicon} />
         <GoogleTagManagerHead />
         <script
           type="application/ld+json"

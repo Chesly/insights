@@ -1,4 +1,4 @@
-import { siteConfig } from "./config";
+import { siteConfig } from "./siteConfig";
 import type { Post, Author, HowToStep } from "./types";
 
 export function organizationSchema() {
@@ -8,14 +8,25 @@ export function organizationSchema() {
     "@id": `${siteConfig.url}/#organization`,
     name: siteConfig.shortName,
     url: siteConfig.owner.url,
-    logo: { "@type": "ImageObject", url: siteConfig.logo },
-    image: siteConfig.logo,
+    logo: { "@type": "ImageObject", url: siteConfig.branding.logo },
+    image: siteConfig.branding.logo,
     founder: {
       "@type": "Person",
       name: siteConfig.owner.name
     },
-    email: siteConfig.owner.email,
-    sameAs: [siteConfig.owner.url]
+    email: siteConfig.contact.email,
+    contactPoint: {
+      "@type": "ContactPoint",
+      email: siteConfig.contact.email,
+      telephone: siteConfig.contact.phone,
+      areaServed: "ZA",
+      contactType: "customer service"
+    },
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: siteConfig.contact.location
+    },
+    sameAs: siteConfig.social.map((s) => s.href)
   };
 }
 

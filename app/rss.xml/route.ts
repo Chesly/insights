@@ -1,5 +1,5 @@
 import { getAllPosts } from "@/lib/posts";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/lib/siteConfig";
 
 export async function GET() {
   const posts = getAllPosts();
@@ -30,7 +30,7 @@ export async function GET() {
     <description>${siteConfig.description}</description>
     <language>${siteConfig.language}</language>
     <image>
-      <url>${siteConfig.logo}</url>
+      <url>${siteConfig.branding.logo}</url>
       <title>${siteConfig.name}</title>
       <link>${siteConfig.url}</link>
     </image>

@@ -1,78 +1,86 @@
 import Link from "next/link";
 import Image from "next/image";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/lib/siteConfig";
+import SocialLinks from "./SocialLinks";
 
 export default function Footer() {
-  const year = new Date().getFullYear();
   return (
-    <footer className="mt-24 border-t border-gold/20 bg-navy text-white">
-      <div className="container-page grid gap-10 py-12 md:grid-cols-4">
-        <div className="md:col-span-2">
+    <footer className="border-t border-white/10 bg-navy text-white">
+      <div className="container-page grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-4">
+        {/* Column 1 — About */}
+        <div className="lg:col-span-1">
           <Image
-            src={siteConfig.logo}
+            src={siteConfig.branding.logoWhite}
             alt={`${siteConfig.shortName} logo`}
-            width={160}
-            height={40}
-            className="h-9 w-auto"
+            width={168}
+            height={42}
+            className="h-9 w-auto brightness-0 invert"
           />
-          <p className="mt-4 max-w-md text-sm text-white/70">{siteConfig.description}</p>
+          <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/60">
+            {siteConfig.footer.about}
+          </p>
+          <a
+            href={siteConfig.footer.ctaButton.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gold-light"
+          >
+            {siteConfig.footer.ctaButton.label}
+            <span aria-hidden="true">→</span>
+          </a>
         </div>
 
+        {/* Column 2 — Services */}
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gold">
-            Explore
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gold">
+            Our Services
           </h3>
-          <ul className="space-y-2 text-sm text-white/70" aria-label="Footer navigation">
-            {siteConfig.nav.map((item) => (
+          <ul className="space-y-3 text-sm text-white/60">
+            {siteConfig.footer.services.map((item) => (
+              <li key={item.label}>
+                <a href={item.href} className="transition-colors hover:text-white">
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Column 3 — Resources */}
+        <div>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gold">
+            Resources
+          </h3>
+          <ul className="space-y-3 text-sm text-white/60" aria-label="Footer navigation">
+            {siteConfig.footer.resources.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="hover:text-gold">
+                <Link href={item.href} className="transition-colors hover:text-white">
                   {item.label}
                 </Link>
               </li>
             ))}
             <li>
-              <Link href="/author" className="hover:text-gold">
-                Authors
-              </Link>
-            </li>
-            <li>
-              <Link href="/rss.xml" className="hover:text-gold">
+              <Link href="/rss.xml" className="transition-colors hover:text-white">
                 RSS Feed
               </Link>
             </li>
           </ul>
         </div>
 
+        {/* Column 4 — Social */}
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gold">Legal</h3>
-          <ul className="space-y-2 text-sm text-white/70">
-            <li>
-              <Link href="/privacy" className="hover:text-gold">
-                Privacy Policy
-              </Link>
-            </li>
-            <li>
-              <Link href="/terms" className="hover:text-gold">
-                Terms of Use
-              </Link>
-            </li>
-            <li>
-              <Link href="/disclaimer" className="hover:text-gold">
-                Disclaimer
-              </Link>
-            </li>
-          </ul>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gold">
+            Follow Chesly.Tech
+          </h3>
+          <SocialLinks variant="light" className="flex-wrap" />
         </div>
       </div>
 
       <div className="border-t border-white/10">
-        <div className="container-page flex flex-col items-center justify-between gap-2 py-6 text-xs text-white/60 md:flex-row">
+        <div className="container-page flex flex-col items-center justify-between gap-2 py-6 text-xs text-white/50 sm:flex-row">
+          <p>{siteConfig.copyright}</p>
           <p>
-            &copy; {year} {siteConfig.shortName}. All rights reserved.
-          </p>
-          <p>
-            Owner: {siteConfig.owner.name} ({siteConfig.owner.email}) &middot; Designed and
-            Developed by {siteConfig.owner.name} under{" "}
+            Designed and Developed by {siteConfig.owner.name} under{" "}
             <a href={siteConfig.owner.url} className="text-gold hover:underline">
               chesly.tech
             </a>

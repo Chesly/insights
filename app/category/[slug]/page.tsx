@@ -1,10 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/lib/siteConfig";
 import { getPostsByCategory } from "@/lib/posts";
 import { slugify } from "@/lib/types";
 import { collectionPageSchema, itemListSchema, breadcrumbSchema } from "@/lib/schema";
+import PageHero from "@/components/PageHero";
 
 export function generateStaticParams() {
   return siteConfig.categories.map((c) => ({ slug: slugify(c) }));
@@ -35,7 +36,7 @@ export default async function CategoryPage({
   const url = `${siteConfig.url}/category/${slug}`;
 
   return (
-    <div className="container-page py-12">
+    <div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -65,43 +66,48 @@ export default async function CategoryPage({
         }}
       />
 
-      <nav aria-label="Breadcrumb" className="mb-4 text-sm text-navy/50 dark:text-white/50">
-        <Link href="/">Home</Link> <span aria-hidden="true">/</span>{" "}
-        <Link href="/category">Categories</Link>
-      </nav>
+      <PageHero
+        title={name}
+        subtitle={`${posts.length} article${posts.length === 1 ? "" : "s"}`}
+        breadcrumbs={[
+          { label: "Home", href: "/" },
+          { label: "Categories", href: "/category" },
+          { label: name }
+        ]}
+      />
 
-      <h1 className="text-3xl font-bold text-navy dark:text-white">{name}</h1>
-      <p className="mt-2 text-navy/60 dark:text-white/60">{posts.length} articles</p>
-      <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {posts.map((post) => (
-          <Link
-            key={post.slug}
-            href={`/blog/${post.slug}`}
-            className="group overflow-hidden rounded-xl border border-gold/10 shadow-sm hover:shadow-md"
-          >
-            <div className="relative aspect-video">
-              <Image
-                src={post.image}
-                alt={post.title}
-                fill
-                loading="lazy"
-                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                className="object-cover"
-              />
-            </div>
-            <div className="p-5">
-              <h2 className="font-semibold text-navy group-hover:text-gold dark:text-white">
-                {post.title}
-              </h2>
-              <p className="mt-2 line-clamp-2 text-sm text-navy/60 dark:text-white/60">
-                {post.description}
-              </p>
-            </div>
-          </Link>
-        ))}
-        {posts.length === 0 && (
-          <p className="text-navy/50 dark:text-white/50">No articles in this category yet.</p>
-        )}
+      <div className="container-page py-12">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post) => (
+            <Link
+              key={post.slug}
+              href={`/blog/${post.slug}`}
+              className="group overflow-hidden rounded-xl border border-gold/10 shadow-sm hover:shadow-md"
+            >
+              <div className="relative aspect-video">
+                <Image
+                  src={post.image}
+                  alt={post.title}
+                  fill
+                  loading="lazy"
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="p-5">
+                <h2 className="font-semibold text-navy group-hover:text-gold dark:text-white">
+                  {post.title}
+                </h2>
+                <p className="mt-2 line-clamp-2 text-sm text-navy/60 dark:text-white/60">
+                  {post.description}
+                </p>
+              </div>
+            </Link>
+          ))}
+          {posts.length === 0 && (
+            <p className="text-navy/50 dark:text-white/50">No articles in this category yet.</p>
+          )}
+        </div>
       </div>
     </div>
   );

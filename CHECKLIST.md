@@ -17,7 +17,7 @@ Work through this top to bottom before pointing the live domain at this site.
 
 ## 2. Configuration
 
-- [ ] Confirm `siteConfig.url` in `lib/config.ts` matches the exact final
+- [ ] Confirm `siteConfig.url` in `lib/siteConfig.ts` matches the exact final
       public URL (domain + protocol + any path prefix) — everything SEO
       (canonical tags, sitemap, RSS, OG images, JSON-LD) derives from this
 - [ ] Confirm `siteConfig.logo` and `siteConfig.favicon` URLs are live and

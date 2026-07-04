@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@/lib/siteConfig";
 import { getAllPosts, getAllTags } from "@/lib/posts";
 import { getAllAuthors } from "@/lib/authors";
 import { slugify } from "@/lib/types";

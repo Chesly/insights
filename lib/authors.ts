@@ -1,4 +1,5 @@
 import type { Author } from "./types";
+import { siteConfig } from "./siteConfig";
 
 /**
  * Author registry. Add new authors here; reference by `authorSlug` in post
@@ -8,18 +9,17 @@ import type { Author } from "./types";
 export const authors: Author[] = [
   {
     slug: "chesly-silaule",
-    name: "Chesly Silaule",
+    name: siteConfig.owner.name,
     role: "Founder & AI Creative Strategist",
     bio:
       "Chesly Silaule is an AI Creative Strategist and Digital Brand Specialist based in Johannesburg, South Africa, with 15+ years of experience in branding, web design, and AI-assisted creative workflows. He is the founder of Chesly.Tech and Digitalized Art (Pty) Ltd.",
-    image: "https://chesly.tech/insights/images/chesly.tech_logo.png",
+    image: siteConfig.branding.logo,
     expertise: ["Artificial Intelligence", "SEO & GEO", "Web Design", "Digital Strategy", "Branding"],
     social: {
-      website: "https://chesly.tech",
-      linkedin: "https://linkedin.com",
-      twitter: "https://x.com"
+      website: siteConfig.owner.url,
+      linkedin: siteConfig.social.find((s) => s.icon === "linkedin")?.href
     },
-    email: "hello@chesly.tech"
+    email: siteConfig.contact.email
   }
 ];
 

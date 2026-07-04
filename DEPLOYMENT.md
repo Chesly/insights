@@ -29,7 +29,7 @@ Vercel is built by the Next.js team and needs zero configuration for this projec
    whichever domain/subdomain you're using) and follow Vercel's DNS instructions
    (usually an `A` record to `76.76.21.21` or a `CNAME` to `cname.vercel-dns.com`).
 
-**Note on the site's base path:** `lib/config.ts` sets `siteConfig.url` to
+**Note on the site's base path:** `lib/siteConfig.ts` sets `siteConfig.url` to
 `https://chesly.tech/insights`. If you deploy this as its own Vercel project on
 its own domain/subdomain (e.g. `insights.chesly.tech`), update `siteConfig.url`
 to match exactly — canonical URLs, sitemap, RSS, and OG images all derive from
@@ -123,7 +123,7 @@ preference:
    `basePath: "/insights"` to `next.config.mjs` so all internal links, the
    sitemap, and static assets are correctly prefixed, then rebuild.
 
-Whichever you choose, keep `siteConfig.url` in `lib/config.ts` matching the
+Whichever you choose, keep `siteConfig.url` in `lib/siteConfig.ts` matching the
 final public URL exactly — everything SEO-related (canonical tags, sitemap,
 RSS, OG images, JSON-LD) is derived from it.
 

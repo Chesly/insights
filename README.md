@@ -44,6 +44,16 @@ components/               Header, Footer, SearchBar, Analytics, GTM
 public/                   llms.txt, humans.txt, ads.txt, security.txt
 ```
 
+## Site configuration
+
+Every piece of global site data — branding (logo/colors), contact info, social
+links, navigation, footer content, newsletter copy, SEO defaults, and
+categories/tags — lives in **`lib/siteConfig.ts`**. Nothing else in the
+project hardcodes these values; components import and read from this file.
+
+To rebrand, change a phone number, add a social platform, edit the nav, or
+update footer text: **edit `lib/siteConfig.ts` only.**
+
 ## Writing an article
 
 Add a `.mdx` file to `content/posts/`. Minimum required frontmatter:
