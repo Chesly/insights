@@ -48,7 +48,7 @@ export default function Carousel({ slides }: { slides: CarouselSlide[] }) {
   return (
     <div
       className="group relative w-full overflow-hidden bg-navy"
-      style={{ height: "clamp(320px, 45vw, 400px)" }}
+      style={{ height: "clamp(280px, 34vw, 380px)" }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={handleTouchStart}

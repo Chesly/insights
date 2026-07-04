@@ -62,7 +62,7 @@ export default function SearchBar({ variant = "header" }: { variant?: "header" |
   const isHeader = variant === "header";
 
   return (
-    <div ref={containerRef} className={`relative ${isHeader ? "w-[300px]" : "w-full max-w-sm"}`}>
+    <div ref={containerRef} className={`relative ${isHeader ? "w-[260px]" : "w-full max-w-sm"}`}>
       <form role="search" onSubmit={handleSubmit}>
         <label htmlFor={`${listboxId}-input`} className="sr-only">
           Search articles
@@ -95,7 +95,7 @@ export default function SearchBar({ variant = "header" }: { variant?: "header" |
             autoComplete="off"
             className={
               isHeader
-                ? "w-[300px] border border-white/15 bg-white/5 py-2.5 pl-9 pr-3 text-sm text-white placeholder-white/40 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                ? "w-[260px] border border-white/15 bg-white/5 py-2 pl-9 pr-3 text-sm text-white placeholder-white/40 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
                 : "w-full border border-gold/30 py-3 pl-9 pr-3 text-navy focus:outline-none focus:ring-2 focus:ring-gold dark:bg-navy-dark/40 dark:text-white"
             }
           />

@@ -15,19 +15,19 @@ export default function ArticleRow({
     <section className="mb-14" aria-labelledby={`${heading}-heading`}>
       <h2
         id={`${heading}-heading`}
-        className="mb-6 text-xl font-bold uppercase tracking-wide text-white"
+        className="mb-6 text-xl font-bold uppercase tracking-wide text-navy dark:text-white"
       >
         {heading}
       </h2>
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {posts.slice(0, 5).map((post) => (
+      <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
+        {posts.slice(0, 4).map((post) => (
           <Link key={post.slug} href={`/blog/${post.slug}`} className="group block">
-            <div className="relative h-[350px] w-full overflow-hidden bg-white/5">
+            <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-[285/200]">
               <Image
                 src={post.image}
                 alt={post.title}
                 fill
-                sizes="(min-width: 1280px) 20vw, (min-width: 640px) 50vw, 100vw"
+                sizes="(min-width: 1024px) 25vw, 50vw"
                 loading="lazy"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
@@ -36,7 +36,7 @@ export default function ArticleRow({
               <span className="text-xs font-semibold uppercase tracking-wide text-gold">
                 {post.category}
               </span>
-              <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-white group-hover:text-gold">
+              <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-navy group-hover:text-gold dark:text-white">
                 {post.title}
               </h3>
             </div>

@@ -23,14 +23,17 @@ const config: Config = {
         },
         // v2 refinement palette — keep in sync with lib/siteConfig.ts branding.colors
         utility: {
-          bg: "#1a1c21",
-          text: "#4c525e"
+          bg: "#13161d",
+          text: "#FFFFFF"
         },
         section: "#2e333d",
         footer: {
           DEFAULT: "#1a1c21",
           copyright: "#030303"
-        }
+        },
+        // v3 polish pass — keep in sync with lib/siteConfig.ts branding.colors
+        active: "#553901",
+        categories: "#abb6ce"
       },
       fontFamily: {
         sans: ["-apple-system", "BlinkMacSystemFont", "Inter", "Segoe UI", "sans-serif"],

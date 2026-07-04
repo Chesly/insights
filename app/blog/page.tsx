@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { getAllPosts } from "@/lib/posts";
 import { siteConfig } from "@/lib/siteConfig";
+import { slugify } from "@/lib/types";
 import PageHero from "@/components/PageHero";
 
 export const metadata: Metadata = {
@@ -21,30 +22,44 @@ export default function BlogIndexPage() {
         subtitle={siteConfig.pages.blog.intro}
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Insights" }]}
       />
-      <div className="container-page py-12">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
+
+      {/* All Categories — shown before the article grid, full browser width strip
+          for consistency with the homepage categories treatment */}
+      <section className="w-full bg-categories py-6" aria-label="Browse all categories">
+        <div className="container-page flex flex-wrap gap-2">
+          {siteConfig.categories.map((cat) => (
             <Link
-              key={post.slug}
-              href={`/blog/${post.slug}`}
-              className="group overflow-hidden border border-gold/10 shadow-sm transition hover:shadow-md"
+              key={cat}
+              href={`/category/${slugify(cat)}`}
+              className="border border-navy/20 bg-white/40 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-navy transition-colors hover:border-navy hover:bg-white/70"
             >
-              <div className="relative aspect-video">
-                <Image src={post.image} alt={post.title} fill className="object-cover" />
+              {cat}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <div className="container-page py-12">
+        <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
+          {posts.map((post) => (
+            <Link key={post.slug} href={`/blog/${post.slug}`} className="group block">
+              <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-[285/200]">
+                <Image
+                  src={post.image}
+                  alt={post.title}
+                  fill
+                  sizes="(min-width: 640px) 25vw, 50vw"
+                  loading="lazy"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
               </div>
-              <div className="p-5">
+              <div className="pt-3">
                 <span className="text-xs font-semibold uppercase tracking-wide text-gold">
                   {post.category}
                 </span>
-                <h2 className="mt-2 font-semibold text-navy group-hover:text-gold dark:text-white">
+                <h2 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-navy group-hover:text-gold dark:text-white">
                   {post.title}
                 </h2>
-                <p className="mt-2 line-clamp-2 text-sm text-navy/60 dark:text-white/60">
-                  {post.description}
-                </p>
-                <span className="mt-3 block text-xs text-navy/40 dark:text-white/40">
-                  {post.readingTime}
-                </span>
               </div>
             </Link>
           ))}

@@ -32,7 +32,7 @@ export default function SocialLinks({
 }) {
   const colorClass =
     variant === "light"
-      ? "text-white/70 hover:text-gold hover:bg-white/10"
+      ? "text-white hover:text-gold hover:bg-white/10"
       : "text-navy/60 hover:text-gold hover:bg-gold/10 dark:text-white/60";
 
   if (showHandles) {

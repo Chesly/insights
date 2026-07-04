@@ -43,6 +43,7 @@ export const siteConfig = {
   // ── Website Information ────────────────────────────────────────────────
   name: "Chesly.Tech Insights",
   shortName: "Chesly.Tech",
+  heroKicker: "Chesly.Tech Insights",
   tagline: "AI, Technology & SEO Insights",
   topCategoryLine: "AI • Technology • SEO • Startups • Digital Marketing",
   description:
@@ -67,11 +68,14 @@ export const siteConfig = {
       secondary: "#1B2A4A", // navy (legacy accents, e.g. schema/tailwind fallback)
       accent: "#00D4FF",
       // v2 refinement palette
-      utilityBarBg: "#1a1c21",
-      utilityBarText: "#4c525e",
+      utilityBarBg: "#13161d",
+      utilityBarText: "#FFFFFF",
       sectionBg: "#2e333d",
       footerBg: "#1a1c21",
-      footerCopyrightBg: "#030303"
+      footerCopyrightBg: "#030303",
+      // v3 polish pass
+      activeMenu: "#553901",
+      categoriesStripBg: "#abb6ce"
     }
   },
 
@@ -107,13 +111,11 @@ export const siteConfig = {
   // Room is intentionally left for future pages — just add another entry.
   nav: [
     { label: "Home", href: "/" },
+    { label: "About Us", href: "/about" },
     { label: "Insights", href: "/blog" },
     { label: "Downloads", href: "/downloads" },
-    { label: "Spaza Support", href: "/spaza-support" },
-    { label: "About Us", href: "/about" },
-    { label: "Contact", href: "/contact" },
-    { label: "Chesly.Tech", href: "https://chesly.tech", external: true }
-  ] satisfies NavLink[],
+    { label: "Contact", href: "/contact" }
+  ] as NavLink[],
 
   // ── Footer ───────────────────────────────────────────────────────────────
   footer: {
@@ -184,7 +186,7 @@ export const siteConfig = {
   // ── Breadcrumb / Page Hero ───────────────────────────────────────────────
   pageHero: {
     backgroundImage: "https://ik.imagekit.io/mkvu8hdr5/insights/typing.jpg",
-    overlayOpacity: 0.6, // ~40% background image visibility = 60% dark overlay
+    overlayOpacity: 0.68, // ~32-40% background image visibility = darker overlay for contrast
     heightPx: 280
   },
 

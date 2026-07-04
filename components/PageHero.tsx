@@ -17,7 +17,7 @@ export default function PageHero({
 }) {
   return (
     <div
-      className="relative flex items-end overflow-hidden bg-utility"
+      className="relative flex items-end overflow-hidden bg-utility-bg"
       style={{ height: `${siteConfig.pageHero.heightPx}px` }}
     >
       {/* Background image at ~40% opacity */}
@@ -32,7 +32,7 @@ export default function PageHero({
       {/* Dark overlay for legibility */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-utility"
+        className="absolute inset-0 bg-utility-bg"
         style={{ opacity: siteConfig.pageHero.overlayOpacity }}
       />
 
