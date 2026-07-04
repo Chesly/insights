@@ -13,7 +13,7 @@ export const authors: Author[] = [
     role: "Founder & AI Creative Strategist",
     bio:
       "Chesly Silaule is an AI Creative Strategist and Digital Brand Specialist based in Johannesburg, South Africa, with 15+ years of experience in branding, web design, and AI-assisted creative workflows. He is the founder of Chesly.Tech and Digitalized Art (Pty) Ltd.",
-    image: siteConfig.branding.logo,
+    image: siteConfig.branding.logoHeader,
     expertise: ["Artificial Intelligence", "SEO & GEO", "Web Design", "Digital Strategy", "Branding"],
     social: {
       website: siteConfig.owner.url,

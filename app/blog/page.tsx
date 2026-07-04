@@ -17,9 +17,9 @@ export default function BlogIndexPage() {
   return (
     <div>
       <PageHero
-        title="Articles"
-        subtitle={`${posts.length} articles on AI, technology, SEO, GEO and South African business.`}
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Articles" }]}
+        title={siteConfig.pages.blog.title}
+        subtitle={siteConfig.pages.blog.intro}
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Insights" }]}
       />
       <div className="container-page py-12">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -27,7 +27,7 @@ export default function BlogIndexPage() {
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="group overflow-hidden rounded-xl border border-gold/10 shadow-sm transition hover:shadow-md"
+              className="group overflow-hidden border border-gold/10 shadow-sm transition hover:shadow-md"
             >
               <div className="relative aspect-video">
                 <Image src={post.image} alt={post.title} fill className="object-cover" />

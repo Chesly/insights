@@ -8,8 +8,8 @@ export function organizationSchema() {
     "@id": `${siteConfig.url}/#organization`,
     name: siteConfig.shortName,
     url: siteConfig.owner.url,
-    logo: { "@type": "ImageObject", url: siteConfig.branding.logo },
-    image: siteConfig.branding.logo,
+    logo: { "@type": "ImageObject", url: siteConfig.branding.logoHeader },
+    image: siteConfig.branding.logoHeader,
     founder: {
       "@type": "Person",
       name: siteConfig.owner.name

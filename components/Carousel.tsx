@@ -47,7 +47,7 @@ export default function Carousel({ slides }: { slides: CarouselSlide[] }) {
 
   return (
     <div
-      className="group relative w-full overflow-hidden rounded-2xl bg-navy"
+      className="group relative w-full overflow-hidden bg-navy"
       style={{ height: "clamp(320px, 45vw, 400px)" }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -74,7 +74,7 @@ export default function Carousel({ slides }: { slides: CarouselSlide[] }) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/60 to-navy/10" />
           <div className="absolute inset-x-0 bottom-0 p-6 sm:p-10">
-            <span className="mb-3 inline-block rounded-full bg-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+            <span className="mb-3 inline-block bg-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
               {slide.category}
             </span>
             <h2 className="max-w-2xl text-2xl font-bold text-white sm:text-3xl lg:text-4xl">
@@ -85,7 +85,7 @@ export default function Carousel({ slides }: { slides: CarouselSlide[] }) {
             </p>
             <Link
               href={`/blog/${slide.slug}`}
-              className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-navy transition-colors hover:bg-gold hover:text-white"
+              className="mt-5 inline-flex items-center gap-2 bg-white px-5 py-2.5 text-sm font-semibold text-navy transition-colors hover:bg-gold hover:text-white"
             >
               Read Article <span aria-hidden="true">→</span>
             </Link>
@@ -120,7 +120,7 @@ export default function Carousel({ slides }: { slides: CarouselSlide[] }) {
                 onClick={() => goTo(i)}
                 aria-label={`Go to story ${i + 1}: ${slide.title}`}
                 aria-current={i === index}
-                className={`h-2 rounded-full transition-all ${
+                className={`h-2 transition-all ${
                   i === index ? "w-6 bg-gold" : "w-2 bg-white/50 hover:bg-white/80"
                 }`}
               />

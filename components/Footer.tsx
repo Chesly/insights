@@ -5,25 +5,25 @@ import SocialLinks from "./SocialLinks";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-navy text-white">
-      <div className="container-page grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-4">
+    <footer className="bg-footer text-white">
+      <div className="container-page grid gap-8 py-5 md:grid-cols-2 lg:grid-cols-[380px_1fr_1fr_1fr]">
         {/* Column 1 — About */}
-        <div className="lg:col-span-1">
+        <div>
           <Image
-            src={siteConfig.branding.logoWhite}
+            src={siteConfig.branding.logoFooter}
             alt={`${siteConfig.shortName} logo`}
             width={168}
             height={42}
-            className="h-9 w-auto brightness-0 invert"
+            className="h-9 w-auto"
           />
-          <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/60">
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/60">
             {siteConfig.footer.about}
           </p>
           <a
             href={siteConfig.footer.ctaButton.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gold-light"
+            className="mt-5 inline-flex items-center gap-2 bg-gold px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gold-light"
           >
             {siteConfig.footer.ctaButton.label}
             <span aria-hidden="true">→</span>
@@ -32,10 +32,10 @@ export default function Footer() {
 
         {/* Column 2 — Services */}
         <div>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gold">
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gold">
             Our Services
           </h3>
-          <ul className="space-y-3 text-sm text-white/60">
+          <ul className="space-y-2 text-sm text-white/60">
             {siteConfig.footer.services.map((item) => (
               <li key={item.label}>
                 <a href={item.href} className="transition-colors hover:text-white">
@@ -48,10 +48,10 @@ export default function Footer() {
 
         {/* Column 3 — Resources */}
         <div>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gold">
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gold">
             Resources
           </h3>
-          <ul className="space-y-3 text-sm text-white/60" aria-label="Footer navigation">
+          <ul className="space-y-2 text-sm text-white/60" aria-label="Footer navigation">
             {siteConfig.footer.resources.map((item) => (
               <li key={item.href}>
                 <Link href={item.href} className="transition-colors hover:text-white">
@@ -67,17 +67,17 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Column 4 — Social */}
+        {/* Column 4 — Social, with handles */}
         <div>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gold">
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gold">
             Follow Chesly.Tech
           </h3>
-          <SocialLinks variant="light" className="flex-wrap" />
+          <SocialLinks variant="light" showHandles />
         </div>
       </div>
 
-      <div className="border-t border-white/10">
-        <div className="container-page flex flex-col items-center justify-between gap-2 py-6 text-xs text-white/50 sm:flex-row">
+      <div className="bg-footer-copyright">
+        <div className="container-page flex flex-col items-center justify-between gap-2 py-5 text-xs text-white/50 sm:flex-row">
           <p>{siteConfig.copyright}</p>
           <p>
             Designed and Developed by {siteConfig.owner.name} under{" "}

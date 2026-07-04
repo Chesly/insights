@@ -4,7 +4,7 @@ import PageHero from "@/components/PageHero";
 import SocialLinks from "@/components/SocialLinks";
 
 export const metadata: Metadata = {
-  title: "Contact",
+  title: siteConfig.pages.contact.title,
   description: `Get in touch with ${siteConfig.name}.`
 };
 
@@ -12,8 +12,8 @@ export default function ContactPage() {
   return (
     <div>
       <PageHero
-        title="Contact Us"
-        subtitle="Questions, tips, or partnership enquiries? We'd love to hear from you."
+        title={siteConfig.pages.contact.title}
+        subtitle={siteConfig.pages.contact.intro}
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Contact" }]}
       />
       <div className="container-page grid gap-12 py-16 lg:grid-cols-3">
@@ -23,7 +23,7 @@ export default function ContactPage() {
             <input
               type="text"
               required
-              className="w-full rounded-lg border border-gold/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gold"
+              className="w-full border border-gold/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gold"
             />
           </div>
           <div>
@@ -31,7 +31,7 @@ export default function ContactPage() {
             <input
               type="email"
               required
-              className="w-full rounded-lg border border-gold/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gold"
+              className="w-full border border-gold/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gold"
             />
           </div>
           <div>
@@ -39,19 +39,19 @@ export default function ContactPage() {
             <textarea
               rows={5}
               required
-              className="w-full rounded-lg border border-gold/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gold"
+              className="w-full border border-gold/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gold"
             />
           </div>
           <button
             type="submit"
-            className="rounded-full bg-gold px-6 py-3 font-semibold text-white hover:bg-gold-dark"
+            className="bg-gold px-6 py-3 font-semibold text-white hover:bg-gold-dark"
           >
             Send Message
           </button>
         </form>
 
         <aside className="space-y-6">
-          <div className="rounded-2xl border border-gold/20 p-6">
+          <div className="border border-gold/20 p-6">
             <h2 className="font-semibold text-navy dark:text-white">Get in touch</h2>
             <dl className="mt-4 space-y-3 text-sm text-navy/70 dark:text-white/70">
               <div>
@@ -77,7 +77,7 @@ export default function ContactPage() {
             </dl>
           </div>
 
-          <div className="rounded-2xl border border-gold/20 p-6">
+          <div className="border border-gold/20 p-6">
             <h2 className="font-semibold text-navy dark:text-white">Follow along</h2>
             <div className="mt-3">
               <SocialLinks />

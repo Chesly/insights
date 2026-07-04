@@ -12,6 +12,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: siteConfig.url, changeFrequency: "daily", priority: 1 },
     { url: `${siteConfig.url}/blog`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${siteConfig.url}/downloads`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${siteConfig.url}/spaza-support`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${siteConfig.url}/category`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${siteConfig.url}/author`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${siteConfig.url}/about`, changeFrequency: "monthly", priority: 0.5 },

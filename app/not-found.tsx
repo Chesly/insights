@@ -17,13 +17,13 @@ export default function NotFound() {
       <div className="mt-8 flex gap-3">
         <Link
           href="/"
-          className="rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-white hover:bg-gold-dark"
+          className="bg-gold px-5 py-2.5 text-sm font-semibold text-white hover:bg-gold-dark"
         >
           Go home
         </Link>
         <Link
           href="/blog"
-          className="rounded-full border border-gold/30 px-5 py-2.5 text-sm font-semibold text-navy hover:bg-gold/10 dark:text-white"
+          className="border border-gold/30 px-5 py-2.5 text-sm font-semibold text-navy hover:bg-gold/10 dark:text-white"
         >
           Browse articles
         </Link>

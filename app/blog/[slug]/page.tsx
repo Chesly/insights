@@ -114,7 +114,7 @@ export default async function BlogPostPage({
       </nav>
 
       <header className="mx-auto max-w-3xl text-center">
-        <span className="mb-4 inline-block rounded-full bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold">
+        <span className="mb-4 inline-block bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold">
           {post.category}
         </span>
         <h1 className="text-3xl font-bold text-navy dark:text-white sm:text-4xl">{post.title}</h1>
@@ -139,7 +139,7 @@ export default async function BlogPostPage({
         </div>
       </header>
 
-      <div className="relative mx-auto mt-10 aspect-video max-w-4xl overflow-hidden rounded-2xl">
+      <div className="relative mx-auto mt-10 aspect-video max-w-4xl overflow-hidden ">
         <Image
           src={post.image}
           alt={post.title}
@@ -152,7 +152,7 @@ export default async function BlogPostPage({
 
       {/* AI Summary — a concise, self-contained answer AI search engines can quote/cite directly */}
       {post.aiSummary && (
-        <div className="mx-auto mt-10 max-w-3xl rounded-xl border-l-4 border-gold bg-gold/5 p-6">
+        <div className="mx-auto mt-10 max-w-3xl border-l-4 border-gold bg-gold/5 p-6">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-gold">AI Summary</h2>
           <p className="mt-2 text-navy dark:text-white">{post.aiSummary}</p>
         </div>
@@ -164,7 +164,7 @@ export default async function BlogPostPage({
 
       {/* Key Takeaways */}
       {post.keyTakeaways && post.keyTakeaways.length > 0 && (
-        <section className="mx-auto mt-10 max-w-3xl rounded-xl border border-gold/20 p-6">
+        <section className="mx-auto mt-10 max-w-3xl border border-gold/20 p-6">
           <h2 className="text-lg font-bold text-navy dark:text-white">Key Takeaways</h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-navy/80 dark:text-white/80">
             {post.keyTakeaways.map((point, i) => (
@@ -178,7 +178,7 @@ export default async function BlogPostPage({
       {(post.pros?.length || post.cons?.length) ? (
         <section className="mx-auto mt-10 grid max-w-3xl gap-6 sm:grid-cols-2">
           {post.pros && post.pros.length > 0 && (
-            <div className="rounded-xl border border-green-600/20 bg-green-600/5 p-5">
+            <div className="border border-green-600/20 bg-green-600/5 p-5">
               <h3 className="font-semibold text-navy dark:text-white">Pros</h3>
               <ul className="mt-2 space-y-1 text-sm text-navy/80 dark:text-white/80">
                 {post.pros.map((p, i) => (
@@ -188,7 +188,7 @@ export default async function BlogPostPage({
             </div>
           )}
           {post.cons && post.cons.length > 0 && (
-            <div className="rounded-xl border border-red-600/20 bg-red-600/5 p-5">
+            <div className="border border-red-600/20 bg-red-600/5 p-5">
               <h3 className="font-semibold text-navy dark:text-white">Cons</h3>
               <ul className="mt-2 space-y-1 text-sm text-navy/80 dark:text-white/80">
                 {post.cons.map((c, i) => (
@@ -208,7 +208,7 @@ export default async function BlogPostPage({
               {post.comparisonTable.title}
             </h2>
           )}
-          <table className="w-full border-collapse overflow-hidden rounded-xl border border-gold/20 text-left text-sm">
+          <table className="w-full border-collapse overflow-hidden border border-gold/20 text-left text-sm">
             <thead className="bg-gold/10">
               <tr>
                 <th scope="col" className="p-3 font-semibold text-navy dark:text-white"></th>
@@ -252,7 +252,7 @@ export default async function BlogPostPage({
 
       {/* Expert Insight */}
       {post.expertInsight && (
-        <section className="mx-auto mt-10 max-w-3xl rounded-xl bg-navy p-6 text-white">
+        <section className="mx-auto mt-10 max-w-3xl bg-navy p-6 text-white">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-gold">
             Expert Insight
           </h2>
@@ -266,7 +266,7 @@ export default async function BlogPostPage({
           <h2 className="text-lg font-bold text-navy dark:text-white">
             Frequently Asked Questions
           </h2>
-          <div className="mt-3 divide-y divide-gold/10 rounded-xl border border-gold/20">
+          <div className="mt-3 divide-y divide-gold/10 border border-gold/20">
             {post.faq.map((item, i) => (
               <details key={i} className="group p-4">
                 <summary className="cursor-pointer list-none font-medium text-navy marker:content-none dark:text-white">
@@ -289,7 +289,7 @@ export default async function BlogPostPage({
             {post.relatedTopics.map((topic) => (
               <span
                 key={topic}
-                className="rounded-full border border-gold/20 px-3 py-1 text-xs text-navy/70 dark:text-white/70"
+                className="border border-gold/20 px-3 py-1 text-xs text-navy/70 dark:text-white/70"
               >
                 {topic}
               </span>
@@ -304,7 +304,7 @@ export default async function BlogPostPage({
             <Link
               key={tag}
               href={`/tag/${slugify(tag)}`}
-              className="rounded-full border border-gold/30 px-3 py-1 text-xs text-navy/70 hover:bg-gold/10 dark:text-white/70"
+              className="border border-gold/30 px-3 py-1 text-xs text-navy/70 hover:bg-gold/10 dark:text-white/70"
             >
               #{tag}
             </Link>
@@ -312,7 +312,7 @@ export default async function BlogPostPage({
         </div>
       )}
 
-      <div className="mx-auto mt-8 flex max-w-3xl items-center gap-4 rounded-xl border border-gold/20 p-6">
+      <div className="mx-auto mt-8 flex max-w-3xl items-center gap-4 border border-gold/20 p-6">
         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full">
           <Image src={author.image} alt={author.name} fill className="object-cover" />
         </div>
@@ -334,7 +334,7 @@ export default async function BlogPostPage({
               <Link
                 key={r.slug}
                 href={`/blog/${r.slug}`}
-                className="rounded-xl border border-gold/10 p-4 hover:shadow-md"
+                className="border border-gold/10 p-4 hover:shadow-md"
               >
                 <span className="text-xs font-semibold uppercase text-gold">{r.category}</span>
                 <h3 className="mt-1 text-sm font-semibold text-navy dark:text-white">{r.title}</h3>

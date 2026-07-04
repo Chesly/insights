@@ -20,6 +20,16 @@ const config: Config = {
           DEFAULT: "#1B2A4A",
           light: "#2E4270",
           dark: "#0F1A30"
+        },
+        // v2 refinement palette — keep in sync with lib/siteConfig.ts branding.colors
+        utility: {
+          bg: "#1a1c21",
+          text: "#4c525e"
+        },
+        section: "#2e333d",
+        footer: {
+          DEFAULT: "#1a1c21",
+          copyright: "#030303"
         }
       },
       fontFamily: {

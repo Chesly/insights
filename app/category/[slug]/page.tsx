@@ -82,7 +82,7 @@ export default async function CategoryPage({
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="group overflow-hidden rounded-xl border border-gold/10 shadow-sm hover:shadow-md"
+              className="group overflow-hidden border border-gold/10 shadow-sm hover:shadow-md"
             >
               <div className="relative aspect-video">
                 <Image

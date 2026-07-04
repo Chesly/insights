@@ -3,7 +3,7 @@ import { siteConfig } from "@/lib/siteConfig";
 import PageHero from "@/components/PageHero";
 
 export const metadata: Metadata = {
-  title: "About",
+  title: siteConfig.pages.about.title,
   description: `About ${siteConfig.name} — an AI-first publication covering technology, SEO and business, founded by ${siteConfig.owner.name}.`
 };
 
@@ -11,8 +11,9 @@ export default function AboutPage() {
   return (
     <div>
       <PageHero
-        title={`About ${siteConfig.shortName}`}
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "About" }]}
+        title={siteConfig.pages.about.title}
+        subtitle={siteConfig.pages.about.intro}
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "About Us" }]}
       />
       <div className="container-page prose prose-lg mx-auto max-w-3xl py-16 dark:prose-invert">
         <p>

@@ -19,7 +19,7 @@ export default function AuthorsIndexPage() {
           <Link
             key={author.slug}
             href={`/author/${author.slug}`}
-            className="flex items-center gap-4 rounded-xl border border-gold/20 p-5 hover:shadow-md"
+            className="flex items-center gap-4 border border-gold/20 p-5 hover:shadow-md"
           >
             <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full">
               <Image src={author.image} alt={author.name} fill className="object-cover" />

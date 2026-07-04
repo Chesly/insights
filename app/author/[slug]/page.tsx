@@ -69,7 +69,7 @@ export default async function AuthorPage({
         {author.expertise.map((skill) => (
           <span
             key={skill}
-            className="rounded-full bg-gold/10 px-3 py-1 text-xs font-medium text-gold"
+            className="bg-gold/10 px-3 py-1 text-xs font-medium text-gold"
           >
             {skill}
           </span>
@@ -102,7 +102,7 @@ export default async function AuthorPage({
           <Link
             key={post.slug}
             href={`/blog/${post.slug}`}
-            className="group overflow-hidden rounded-xl border border-gold/10 shadow-sm hover:shadow-md"
+            className="group overflow-hidden border border-gold/10 shadow-sm hover:shadow-md"
           >
             <div className="relative aspect-video">
               <Image src={post.image} alt={post.title} fill className="object-cover" />

@@ -15,7 +15,7 @@ export default function CategoryIndexPage() {
   return (
     <div>
       <PageHero
-        title="Categories"
+        title={siteConfig.pages.category.title}
         subtitle="Browse every topic we cover, from AI to South African business."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Categories" }]}
       />
@@ -27,7 +27,7 @@ export default function CategoryIndexPage() {
               <Link
                 key={cat}
                 href={`/category/${slugify(cat)}`}
-                className="rounded-xl border border-gold/20 p-5 transition-all hover:-translate-y-0.5 hover:border-gold hover:shadow-md"
+                className="border border-gold/20 p-5 transition-all hover:-translate-y-0.5 hover:border-gold hover:shadow-md"
               >
                 <h2 className="font-semibold text-navy dark:text-white">{cat}</h2>
                 <p className="mt-1 text-sm text-navy/50 dark:text-white/50">{count} articles</p>

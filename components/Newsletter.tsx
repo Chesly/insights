@@ -14,13 +14,13 @@ export default function Newsletter() {
   }
 
   return (
-    <section className="w-full bg-gradient-to-br from-navy-light to-navy px-4 py-16 text-white sm:px-6 lg:px-8">
+    <section className="w-full bg-gradient-to-br from-navy-light to-navy px-4 py-5 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl text-center">
         <h2 className="text-2xl font-bold sm:text-3xl">{newsletter.title}</h2>
         <p className="mx-auto mt-2 max-w-md text-white/70">{newsletter.description}</p>
 
         {submitted ? (
-          <p className="mt-8 rounded-xl bg-white/10 px-6 py-4 text-sm font-medium text-white">
+          <p className="mt-8 bg-white/10 px-6 py-4 text-sm font-medium text-white">
             {newsletter.successMessage}
           </p>
         ) : (
@@ -34,7 +34,7 @@ export default function Newsletter() {
                 type="text"
                 required
                 placeholder={newsletter.fields.name.placeholder}
-                className="w-full rounded-full border border-white/20 bg-white/5 px-5 py-3 text-sm text-white placeholder-white/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold"
+                className="w-full border border-white/20 bg-white/5 px-5 py-3 text-sm text-white placeholder-white/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold"
               />
             </div>
             <div className="text-left">
@@ -46,7 +46,7 @@ export default function Newsletter() {
                 type="email"
                 required
                 placeholder={newsletter.fields.email.placeholder}
-                className="w-full rounded-full border border-white/20 bg-white/5 px-5 py-3 text-sm text-white placeholder-white/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold"
+                className="w-full border border-white/20 bg-white/5 px-5 py-3 text-sm text-white placeholder-white/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold"
               />
             </div>
             <div className="text-left">
@@ -57,7 +57,7 @@ export default function Newsletter() {
                 id="nl-phone"
                 type="tel"
                 placeholder={newsletter.fields.phone.placeholder}
-                className="w-full rounded-full border border-white/20 bg-white/5 px-5 py-3 text-sm text-white placeholder-white/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold"
+                className="w-full border border-white/20 bg-white/5 px-5 py-3 text-sm text-white placeholder-white/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold"
               />
             </div>
             <div className="text-left">
@@ -68,12 +68,12 @@ export default function Newsletter() {
                 id="nl-business"
                 type="text"
                 placeholder={newsletter.fields.business.placeholder}
-                className="w-full rounded-full border border-white/20 bg-white/5 px-5 py-3 text-sm text-white placeholder-white/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold"
+                className="w-full border border-white/20 bg-white/5 px-5 py-3 text-sm text-white placeholder-white/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold"
               />
             </div>
             <button
               type="submit"
-              className="col-span-full mt-1 rounded-full bg-gold px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="col-span-full mt-1 bg-gold px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               {newsletter.submitLabel}
             </button>

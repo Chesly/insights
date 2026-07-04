@@ -1,9 +1,6 @@
 import { siteConfig } from "@/lib/siteConfig";
 
 const icons: Record<string, React.ReactNode> = {
-  website: (
-    <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm7.93 9h-3.05a15.6 15.6 0 00-1.14-5.19A8.03 8.03 0 0119.93 11zM12 4.06c.9 1.2 1.85 3.2 2.14 4.94H9.86c.29-1.74 1.24-3.74 2.14-4.94zM4.07 13h3.05c.15 1.86.55 3.62 1.14 5.19A8.03 8.03 0 014.07 13zm0-2a8.03 8.03 0 014.19-6.19A15.6 15.6 0 007.12 11H4.07zm5.79 2h4.28c-.29 1.74-1.24 3.74-2.14 4.94-.9-1.2-1.85-3.2-2.14-4.94zm6.98 5.19c.59-1.57.99-3.33 1.14-5.19h3.05a8.03 8.03 0 01-4.19 5.19z" />
-  ),
   facebook: (
     <path d="M13.5 21v-7.5H16l.4-3H13.5V8.4c0-.87.24-1.46 1.5-1.46H16.5V4.35C16.24 4.32 15.36 4.24 14.33 4.24c-2.15 0-3.63 1.31-3.63 3.72V10.5H8.25v3h2.45V21h2.8z" />
   ),
@@ -26,9 +23,11 @@ const icons: Record<string, React.ReactNode> = {
 
 export default function SocialLinks({
   variant = "default",
+  showHandles = false,
   className = ""
 }: {
   variant?: "default" | "light";
+  showHandles?: boolean;
   className?: string;
 }) {
   const colorClass =
@@ -36,24 +35,53 @@ export default function SocialLinks({
       ? "text-white/70 hover:text-gold hover:bg-white/10"
       : "text-navy/60 hover:text-gold hover:bg-gold/10 dark:text-white/60";
 
+  if (showHandles) {
+    return (
+      <ul className={`space-y-3 ${className}`}>
+        {siteConfig.social.map((s) => (
+          <li key={s.icon}>
+            <a
+              href={s.href}
+              target="_blank"
+              rel="me noopener noreferrer"
+              className={`flex items-center gap-3 text-sm transition-colors ${
+                variant === "light" ? "text-white/70 hover:text-gold" : "text-navy/70 hover:text-gold"
+              }`}
+            >
+              <span
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${colorClass}`}
+                aria-hidden="true"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+                  {icons[s.icon]}
+                </svg>
+              </span>
+              <span>
+                {s.label} <span className="text-white/40">{s.handle}</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      {siteConfig.social
-        .filter((s) => s.icon !== "website")
-        .map((s) => (
-          <a
-            key={s.icon}
-            href={s.href}
-            target="_blank"
-            rel="me noopener noreferrer"
-            aria-label={s.label}
-            className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${colorClass}`}
-          >
-            <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden="true">
-              {icons[s.icon]}
-            </svg>
-          </a>
-        ))}
+      {siteConfig.social.map((s) => (
+        <a
+          key={s.icon}
+          href={s.href}
+          target="_blank"
+          rel="me noopener noreferrer"
+          aria-label={s.label}
+          className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${colorClass}`}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden="true">
+            {icons[s.icon]}
+          </svg>
+        </a>
+      ))}
     </div>
   );
 }

@@ -30,7 +30,7 @@ export async function GET() {
     <description>${siteConfig.description}</description>
     <language>${siteConfig.language}</language>
     <image>
-      <url>${siteConfig.branding.logo}</url>
+      <url>${siteConfig.branding.logoHeader}</url>
       <title>${siteConfig.name}</title>
       <link>${siteConfig.url}</link>
     </image>
