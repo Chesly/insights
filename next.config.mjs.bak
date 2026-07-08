@@ -3,9 +3,9 @@
 const ContentSecurityPolicy = `
   default-src 'self';
   script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://www.clarity.ms;
-  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  style-src 'self' 'unsafe-inline';
   img-src 'self' data: https:;
-  font-src 'self' data: https://fonts.gstatic.com;
+  font-src 'self' data:;
   connect-src 'self' https://www.google-analytics.com https://www.clarity.ms https://analytics.google.com;
   frame-src https://www.googletagmanager.com;
   object-src 'none';
@@ -21,16 +21,9 @@ const nextConfig = {
   output: "standalone",
   images: {
     remotePatterns: [
-      // Chesly.tech hosted images (logos, author photos, article images)
       { protocol: "https", hostname: "chesly.tech" },
-      { protocol: "https", hostname: "**.chesly.tech" },
-      // ImageKit CDN — scoped to the Chesly.Tech project folder
-      {
-        protocol: "https",
-        hostname: "ik.imagekit.io",
-        pathname: "/mkvu8hdr5/**",
-      },
-    ],
+      { protocol: "https", hostname: "**.chesly.tech" }
+    ]
   },
   async headers() {
     return [
@@ -42,11 +35,11 @@ const nextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
           { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
-          { key: "Content-Security-Policy", value: ContentSecurityPolicy },
-        ],
-      },
+          { key: "Content-Security-Policy", value: ContentSecurityPolicy }
+        ]
+      }
     ];
-  },
+  }
 };
 
 export default nextConfig;
