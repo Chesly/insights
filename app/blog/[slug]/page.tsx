@@ -8,6 +8,7 @@ import { getAuthorBySlug } from "@/lib/authors";
 import { siteConfig } from "@/lib/siteConfig";
 import { slugify } from "@/lib/types";
 import { articleSchema, breadcrumbSchema, faqSchema, howToSchema } from "@/lib/schema";
+import SocialShare from "@/components/SocialShare";
 
 export function generateStaticParams() {
   return getAllPosts().map((post) => ({ slug: post.slug }));
@@ -311,6 +312,14 @@ export default async function BlogPostPage({
           ))}
         </div>
       )}
+
+      
+      {/* Social Share */}
+      <SocialShare
+        title={post.title}
+        url={`${siteConfig.url}/blog/${post.slug}`}
+        excerpt={post.description}
+      />
 
       <div className="mx-auto mt-8 flex max-w-3xl items-center gap-4 border border-gold/20 p-6">
         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full">

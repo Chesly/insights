@@ -24,11 +24,13 @@ const icons: Record<string, React.ReactNode> = {
 export default function SocialLinks({
   variant = "default",
   showHandles = false,
-  className = ""
+  className = "",
+  iconSize = "h-9 w-9"
 }: {
   variant?: "default" | "light";
   showHandles?: boolean;
   className?: string;
+  iconSize?: string;
 }) {
   const colorClass =
     variant === "light"
@@ -67,7 +69,7 @@ export default function SocialLinks({
   }
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`flex items-center ${className || "gap-2"}`}>
       {siteConfig.social.map((s) => (
         <a
           key={s.icon}
@@ -75,7 +77,7 @@ export default function SocialLinks({
           target="_blank"
           rel="me noopener noreferrer"
           aria-label={s.label}
-          className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${colorClass}`}
+          className={`flex ${iconSize} items-center justify-center rounded-full transition-colors ${colorClass}`}
         >
           <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden="true">
             {icons[s.icon]}
