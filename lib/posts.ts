@@ -14,8 +14,16 @@ function readPostFile(filename: string): Post {
   const raw = fs.readFileSync(path.join(POSTS_DIR, filename), "utf-8");
   const { data, content } = matter(raw);
   const fm = data as PostFrontmatter;
+  // Normalise categories — support both `category` (string) and `categories` (array)
+  const primaryCategory = fm.category || (fm.categories && fm.categories[0]) || "Uncategorised";
+  const allCategories = fm.categories?.length
+    ? fm.categories
+    : [primaryCategory];
+
   return {
     ...fm,
+    category: primaryCategory,
+    categories: allCategories,
     author: fm.author || defaultAuthor.name,
     authorSlug: fm.authorSlug || defaultAuthor.slug,
     tags: fm.tags || [],
@@ -47,7 +55,9 @@ export function getPostBySlug(slug: string): Post | null {
 }
 
 export function getPostsByCategory(category: string): Post[] {
-  return getAllPosts().filter((p) => slugify(p.category) === slugify(category));
+  return getAllPosts().filter((p) =>
+    getPostCategories(p).some(c => slugify(c) === slugify(category))
+  );
 }
 
 export function getPostsByTag(tag: string): Post[] {
@@ -58,6 +68,11 @@ export function getFeaturedPosts(): Post[] {
   return getAllPosts().filter((p) => p.featured);
 }
 
+/** Returns all categories for a post (multi-category aware) */
+export function getPostCategories(post: Post): string[] {
+  return post.categories?.length ? post.categories : [post.category];
+}
+
 export function getRelatedPosts(post: Post, limit = 3): Post[] {
   // Score by shared tags + same category, so the most relevant posts (not
   // just the first matches) surface first.
@@ -65,8 +80,10 @@ export function getRelatedPosts(post: Post, limit = 3): Post[] {
     .filter((p) => p.slug !== post.slug)
     .map((p) => {
       const sharedTags = p.tags.filter((t) => post.tags.includes(t)).length;
-      const sameCategory = p.category === post.category ? 1 : 0;
-      return { post: p, score: sharedTags * 2 + sameCategory };
+      const postCats = getPostCategories(post);
+      const pCats = getPostCategories(p);
+      const sharedCats = pCats.filter(c => postCats.includes(c)).length;
+      return { post: p, score: sharedTags * 2 + sharedCats };
     })
     .filter((s) => s.score > 0)
     .sort((a, b) => b.score - a.score);
@@ -75,8 +92,9 @@ export function getRelatedPosts(post: Post, limit = 3): Post[] {
 }
 
 export function getAllCategories(): string[] {
-  const cats = new Set(getAllPosts().map((p) => p.category));
-  return Array.from(cats);
+  const cats = new Set<string>();
+  getAllPosts().forEach(p => getPostCategories(p).forEach(c => cats.add(c)));
+  return Array.from(cats).sort();
 }
 
 export function getAllTags(): string[] {

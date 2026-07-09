@@ -32,7 +32,8 @@ export interface HowToStep {
 export interface PostFrontmatter {
   title: string;
   description: string;
-  category: string;
+  category: string;        // primary category (legacy + default display)
+  categories?: string[];   // optional multi-category array
   tags: string[];
   author: string;
   authorSlug?: string;

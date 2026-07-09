@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/posts";
+import { getAllPosts, getPostBySlug, getRelatedPosts, getPostCategories } from "@/lib/posts";
 import { getAuthorBySlug } from "@/lib/authors";
 import { siteConfig } from "@/lib/siteConfig";
 import { slugify } from "@/lib/types";
@@ -107,9 +107,14 @@ export default async function BlogPostPage({
           <li><Link href="/blog" className="hover:text-gold">Articles</Link></li>
           <li aria-hidden="true">/</li>
           <li>
-            <Link href={`/category/${slugify(post.category)}`} className="hover:text-gold">
-              {post.category}
-            </Link>
+            {getPostCategories(post).map((cat, i) => (
+              <span key={cat}>
+                <Link href={`/category/${slugify(cat)}`} className="hover:text-gold transition-colors">
+                  {cat}
+                </Link>
+                {i < getPostCategories(post).length - 1 && <span className="mx-1 text-white/20">·</span>}
+              </span>
+            ))}
           </li>
         </ol>
       </nav>
