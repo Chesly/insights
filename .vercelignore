@@ -1,7 +1,4 @@
 # Ignore CMS files if accidentally present
-**/supabase/middleware*
-**/supabase/server*
-**/supabase/client*
 src/middleware.ts
 middleware.ts
 chesly-cms/
