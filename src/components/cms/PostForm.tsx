@@ -43,7 +43,9 @@ export default function PostForm({ post, categories }: Props) {
   const [bodyJson, setBodyJson] = useState<Record<string,unknown>>(post?.body_json as Record<string,unknown> || {})
   const [featuredImage, setFeaturedImage] = useState(post?.featured_image || '')
   const [imageCaption, setImageCaption] = useState(post?.image_caption || '')
-  const [categoryId, setCategoryId] = useState(post?.category_id || '')
+  const [categoryIds, setCategoryIds] = useState<string[]>(
+    post?.categories?.length ? post.categories.map(c => c.id) : (post?.category_id ? [post.category_id] : [])
+  )
   const [tags, setTags] = useState<string[]>(post?.tags?.map(t => t.name) || [])
   const [status, setStatus] = useState<Post['status']>(post?.status || 'draft')
   const [featured, setFeatured] = useState(post?.featured || false)
@@ -72,7 +74,8 @@ export default function PostForm({ post, categories }: Props) {
   const buildPayload = useCallback((overrideStatus?: Post['status']) => ({
     title, slug, excerpt, body, body_json: bodyJson,
     featured_image: featuredImage, image_caption: imageCaption,
-    category_id: categoryId || null,
+    category_id: categoryIds[0] || null,
+    category_ids: categoryIds,
     tags,
     status: overrideStatus || status,
     featured, trending, popular,
@@ -82,7 +85,7 @@ export default function PostForm({ post, categories }: Props) {
     canonical_url: canonical,
     scheduled_at: scheduledAt || null,
     read_time: readTime,
-  }), [title,slug,excerpt,body,bodyJson,featuredImage,imageCaption,categoryId,tags,status,featured,trending,popular,seoTitle,metaDesc,ogImage,canonical,scheduledAt,readTime])
+  }), [title,slug,excerpt,body,bodyJson,featuredImage,imageCaption,categoryIds,tags,status,featured,trending,popular,seoTitle,metaDesc,ogImage,canonical,scheduledAt,readTime])
 
   const save = async (overrideStatus?: Post['status']) => {
     if (!title.trim()) { setError('Title is required'); return }
@@ -253,13 +256,21 @@ export default function PostForm({ post, categories }: Props) {
         {activeSection === 'settings' && (
           <div className="cms-card" style={{ padding:24 }}>
             <Field>
-              <Label>Category</Label>
-              <select className="cms-input cms-select" value={categoryId} onChange={e=>setCategoryId(e.target.value)}>
-                <option value="">— Select category —</option>
-                {categories.map(c=>(
-                  <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
-                ))}
-              </select>
+              <Label sub="First one checked is the primary category">Categories</Label>
+              <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+                {categories.map(c=>{
+                  const checked = categoryIds.includes(c.id)
+                  return (
+                    <label key={c.id} style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', borderRadius:8,
+                      border:`1px solid ${checked?'#8B6914':'#e2e8f0'}`, background:checked?'#8B691412':'#fff', cursor:'pointer', fontSize:13 }}>
+                      <input type="checkbox" checked={checked} onChange={()=>{
+                        setCategoryIds(prev => checked ? prev.filter(id=>id!==c.id) : [...prev, c.id])
+                      }} style={{ margin:0 }}/>
+                      {c.icon} {c.name}
+                    </label>
+                  )
+                })}
+              </div>
             </Field>
 
             <Field>
@@ -457,9 +468,9 @@ export default function PostForm({ post, categories }: Props) {
           </div>
           <div style={{ flex:1, overflowY:'auto', background:'#fff', padding:'3rem max(1.5rem, calc(50% - 380px))' }}>
             {featuredImage && <img src={featuredImage} alt="" style={{ width:'100%', maxHeight:400, objectFit:'cover', borderRadius:12, marginBottom:'2rem' }}/>}
-            {categories.find(c=>c.id===categoryId) && (
+            {categories.find(c=>categoryIds.includes(c.id)) && (
               <div style={{ fontSize:12, fontWeight:700, color:'#8B6914', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'0.75rem' }}>
-                {categories.find(c=>c.id===categoryId)?.name}
+                {categories.filter(c=>categoryIds.includes(c.id)).map(c=>c.name).join(' · ')}
               </div>
             )}
             <h1 style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontWeight:800, fontSize:'clamp(1.75rem,4vw,2.5rem)', color:'#1B2A4A', lineHeight:1.2, marginBottom:'1rem' }}>{title || 'Post Title'}</h1>

@@ -3,16 +3,14 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getAllPosts, getPostBySlug, getRelatedPosts, getPostCategories } from "@/lib/posts";
+import { getPostBySlug, getRelatedPosts, getPostCategories } from "@/lib/posts";
 import { getAuthorBySlug } from "@/lib/authors";
 import { siteConfig } from "@/lib/siteConfig";
 import { slugify } from "@/lib/types";
 import { articleSchema, breadcrumbSchema, faqSchema, howToSchema } from "@/lib/schema";
 import SocialShare from "@/components/SocialShare";
 
-export function generateStaticParams() {
-  return getAllPosts().map((post) => ({ slug: post.slug }));
-}
+export const revalidate = 3600;
 
 export async function generateMetadata({
   params
@@ -20,7 +18,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
   if (!post) return {};
 
   const title = post.seoTitle || post.title;
@@ -60,10 +58,10 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
   if (!post) notFound();
 
-  const related = getRelatedPosts(post);
+  const related = await getRelatedPosts(post);
   const author = getAuthorBySlug(post.authorSlug || "chesly-silaule");
   const authorUrl = `${siteConfig.url}/author/${author.slug}`;
 

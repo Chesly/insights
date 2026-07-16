@@ -35,7 +35,7 @@ export default async function AuthorPage({
   const author = authors.find((a) => a.slug === slug);
   if (!author) notFound();
 
-  const posts = getPostsByAuthor(author.slug);
+  const posts = await getPostsByAuthor(author.slug);
   const crumbs = breadcrumbSchema([
     { name: "Home", url: siteConfig.url },
     { name: "Authors", url: `${siteConfig.url}/author` },

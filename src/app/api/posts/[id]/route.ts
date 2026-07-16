@@ -28,7 +28,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const body = await req.json()
   const tagNames: string[] = body.tags || []
-  const { tags: _tags, ...postData } = body
+  const categoryIds: string[] = body.category_ids || []
+  const { tags: _tags, category_ids: _categoryIds, ...postData } = body
 
   // Auto set published_at
   if (postData.status === 'published' && !postData.published_at) {
@@ -60,6 +61,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       .select('id')
       .single()
     if (tag) await supabase.from('post_tags').upsert({ post_id: id, tag_id: tag.id })
+  }
+
+  // Sync categories (multi-category support)
+  await supabase.from('post_categories').delete().eq('post_id', id)
+  for (const catId of categoryIds) {
+    await supabase.from('post_categories').upsert({ post_id: id, category_id: catId })
   }
 
   return NextResponse.json({ data: post })

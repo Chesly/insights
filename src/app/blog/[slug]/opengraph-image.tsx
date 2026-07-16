@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getAllPosts, getPostBySlug } from "@/lib/posts";
+import { getPostBySlug } from "@/lib/posts";
 import { siteConfig } from "@/lib/siteConfig";
 
 export const runtime = "nodejs";
@@ -7,13 +7,9 @@ export const alt = "Article cover image";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export function generateStaticParams() {
-  return getAllPosts().map((post) => ({ slug: post.slug }));
-}
-
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
   const title = post?.title || siteConfig.name;
   const category = post?.category || "";
 

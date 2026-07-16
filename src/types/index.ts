@@ -63,6 +63,7 @@ export interface Post {
   author?: Profile
   category_id?: string
   category?: Category
+  categories?: Category[]
   tags?: Tag[]
   status: PostStatus
   featured: boolean

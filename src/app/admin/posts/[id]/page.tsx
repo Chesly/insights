@@ -7,20 +7,22 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
   const { id } = await params
   const supabase = await createClient()
 
-  const [{ data: post }, { data: categories }] = await Promise.all([
+  const [{ data: post }, { data: categories }, { data: postCats }] = await Promise.all([
     supabase.from('posts').select(`
       *, category:categories(*), author:profiles(id,full_name,avatar_url),
       tags:post_tags(tag:tags(id,name,slug))
     `).eq('id', id).single(),
     supabase.from('categories').select('*').order('name'),
+    supabase.from('post_categories').select('category:categories(*)').eq('post_id', id),
   ])
 
   if (!post) notFound()
 
-  // Flatten tags for the form
+  // Flatten tags and categories for the form
   const flatPost = {
     ...post,
     tags: post.tags?.map((t: { tag: { id: string; name: string; slug: string } }) => t.tag) || [],
+    categories: postCats?.map((pc: { category: unknown }) => pc.category).filter(Boolean) || (post.category ? [post.category] : []),
   }
 
   return (

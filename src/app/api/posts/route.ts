@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
 
   // Handle tags separately
   const tagNames: string[] = body.tags || []
+  const categoryIds: string[] = body.category_ids || []
 
   const { data: post, error } = await supabase
     .from('posts')
@@ -87,6 +88,13 @@ export async function POST(req: NextRequest) {
       if (tag) {
         await supabase.from('post_tags').upsert({ post_id: post.id, tag_id: tag.id })
       }
+    }
+  }
+
+  // Handle categories (multi-category support)
+  if (categoryIds.length > 0 && post) {
+    for (const catId of categoryIds) {
+      await supabase.from('post_categories').upsert({ post_id: post.id, category_id: catId })
     }
   }
 

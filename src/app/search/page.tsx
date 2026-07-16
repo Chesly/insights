@@ -17,7 +17,7 @@ export default async function SearchPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
-  const results = q ? searchPosts(q, 30) : [];
+  const results = q ? await searchPosts(q, 30) : [];
 
   return (
     <div className="container-page py-12">

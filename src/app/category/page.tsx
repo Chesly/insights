@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   description: `Browse ${siteConfig.shortName} articles by category: AI, technology, SEO, business, and more.`
 };
 
-export default function CategoryIndexPage() {
-  const posts = getAllPosts();
+export default async function CategoryIndexPage() {
+  const posts = await getAllPosts();
   return (
     <div>
       <PageHero

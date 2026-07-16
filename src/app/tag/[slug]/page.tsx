@@ -7,15 +7,14 @@ import { getAllTags, getPostsByTag } from "@/lib/posts";
 import { collectionPageSchema, itemListSchema, breadcrumbSchema } from "@/lib/schema";
 import PageHero from "@/components/PageHero";
 
-export function generateStaticParams() {
-  return getAllTags().map((t) => ({ slug: slugify(t) }));
-}
+export const revalidate = 3600;
 
 // Recover the original display casing/spacing for a tag from its slug
 // (e.g. "ai-search" -> "AI search"), since URLs are always slugified but
 // the label should read naturally.
-function getTagLabel(slug: string): string {
-  const match = getAllTags().find((t) => slugify(t) === slug);
+async function getTagLabel(slug: string): Promise<string> {
+  const tags = await getAllTags();
+  const match = tags.find((t) => slugify(t) === slug);
   return match || slug.replace(/-/g, " ");
 }
 
@@ -25,7 +24,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const label = getTagLabel(slug);
+  const label = await getTagLabel(slug);
   return {
     title: `#${label}`,
     description: `Articles tagged ${label} on ${siteConfig.shortName}.`,
@@ -39,8 +38,8 @@ export default async function TagPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const label = getTagLabel(slug);
-  const posts = getPostsByTag(slug);
+  const label = await getTagLabel(slug);
+  const posts = await getPostsByTag(slug);
   const url = `${siteConfig.url}/tag/${slug}`;
 
   return (

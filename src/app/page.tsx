@@ -12,9 +12,16 @@ import Carousel from "@/components/Carousel";
 import ArticleRow from "@/components/ArticleRow";
 import Newsletter from "@/components/Newsletter";
 
-export default function HomePage() {
-  const posts = getAllPosts();
-  const carouselSource = getFeaturedPosts().length > 0 ? getFeaturedPosts() : posts;
+export const revalidate = 3600;
+
+export default async function HomePage() {
+  const [posts, featuredPosts, trendingTitles, editorsPicks] = await Promise.all([
+    getAllPosts(),
+    getFeaturedPosts(),
+    getTrendingPosts(4),
+    getEditorsPicks(4)
+  ]);
+  const carouselSource = featuredPosts.length > 0 ? featuredPosts : posts;
   const carouselSlides = carouselSource.slice(0, 5).map((p) => ({
     slug: p.slug,
     title: p.title,
@@ -28,9 +35,8 @@ export default function HomePage() {
 
   // Dynamic rows — driven entirely by post metadata, never a hardcoded list.
   const latest = remaining.slice(0, 4);
-  const popular = getEditorsPicks(4).length > 0 ? getEditorsPicks(4) : remaining.slice(0, 4);
-  const trending = getTrendingPosts(4);
-  const trendingTitles = getTrendingPosts(4);
+  const popular = editorsPicks.length > 0 ? editorsPicks : remaining.slice(0, 4);
+  const trending = trendingTitles;
 
   const listSchema = itemListSchema(
     latest.map((p) => ({ name: p.title, url: `${siteConfig.url}/blog/${p.slug}` }))

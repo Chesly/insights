@@ -32,7 +32,7 @@ export default async function CategoryPage({
 }) {
   const { slug } = await params;
   const name = siteConfig.categories.find((c) => slugify(c) === slug) || slug;
-  const posts = getPostsByCategory(name);
+  const posts = await getPostsByCategory(name);
   const url = `${siteConfig.url}/category/${slug}`;
 
   return (

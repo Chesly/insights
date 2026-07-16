@@ -1,88 +1,118 @@
-import fs from "fs";
-import path from "path";
 import { cache } from "react";
-import matter from "gray-matter";
 import readingTime from "reading-time";
-import type { Post, PostFrontmatter } from "./types";
+import { createPublicClient } from "./supabase/public";
+import type { Post } from "./types";
 import { slugify } from "./types";
 import { defaultAuthor } from "./authors";
 
-const POSTS_DIR = path.join(process.cwd(), "content", "posts");
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, " ");
+}
 
-function readPostFile(filename: string): Post {
-  const slug = filename.replace(/\.mdx?$/, "");
-  const raw = fs.readFileSync(path.join(POSTS_DIR, filename), "utf-8");
-  const { data, content } = matter(raw);
-  const fm = data as PostFrontmatter;
-  // Normalise categories — support both `category` (string) and `categories` (array)
-  const primaryCategory = fm.category || (fm.categories && fm.categories[0]) || "Uncategorised";
-  const allCategories = fm.categories?.length
-    ? fm.categories
-    : [primaryCategory];
+function formatDate(d: string | null): string {
+  if (!d) return new Date().toISOString().slice(0, 10);
+  return new Date(d).toISOString().slice(0, 10);
+}
+
+// Maps a row from the `posts_with_categories` view into the same `Post`
+// shape the rest of the site already expects, so page components don't
+// need to change beyond adding `await`.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function rowToPost(row: any): Post {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const categories: string[] = (row.categories_json || []).map((c: any) => c.name);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const tags: string[] = (row.tags_json || []).map((t: any) => t.name);
+  const primaryCategory = row.primary_category_name || categories[0] || "Uncategorised";
+  const content = row.body || "";
 
   return {
-    ...fm,
+    title: row.title,
+    description: row.excerpt || "",
     category: primaryCategory,
-    categories: allCategories,
-    author: fm.author || defaultAuthor.name,
-    authorSlug: fm.authorSlug || defaultAuthor.slug,
-    tags: fm.tags || [],
-    keywords: fm.keywords || [],
-    slug,
+    categories: categories.length ? categories : [primaryCategory],
+    tags,
+    author: row.author_name || defaultAuthor.name,
+    authorSlug: row.author_slug || defaultAuthor.slug,
+    image: row.featured_image || "",
+    publishedDate: formatDate(row.published_at || row.created_at),
+    modifiedDate: formatDate(row.updated_at || row.published_at || row.created_at),
+    seoTitle: row.seo_title || undefined,
+    seoDescription: row.meta_description || undefined,
+    keywords: row.keywords || [],
+    featured: !!row.featured,
+    editorsPick: !!row.popular,
+    trending: !!row.trending,
+    draft: row.status !== "published",
+
+    aiSummary: row.ai_summary || undefined,
+    keyTakeaways: row.key_takeaways || undefined,
+    faq: row.faq || undefined,
+    definitions: row.definitions || undefined,
+    expertInsight: row.expert_insight || undefined,
+    comparisonTable: row.comparison_table || undefined,
+    pros: row.pros || undefined,
+    cons: row.cons || undefined,
+    relatedTopics: row.related_topics || undefined,
+    suggestedQuestions: row.suggested_questions || undefined,
+    semanticKeywords: row.semantic_keywords || undefined,
+    howToSteps: row.how_to_steps || undefined,
+
+    slug: row.slug,
     content,
-    readingTime: readingTime(content).text
+    readingTime: readingTime(stripHtml(content)).text,
   };
 }
 
-// Cached per-request (React `cache`) so multiple components reading posts
-// during the same render (header search index, related posts, sitemap,
-// RSS) don't each re-hit the filesystem.
-export const getAllPosts = cache((includeDrafts = false): Post[] => {
-  if (!fs.existsSync(POSTS_DIR)) return [];
-  const files = fs.readdirSync(POSTS_DIR).filter((f) => f.endsWith(".mdx") || f.endsWith(".md"));
-  const posts = files.map(readPostFile);
-  return posts
-    .filter((p) => includeDrafts || !p.draft)
-    .sort((a, b) => new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime());
+export const getAllPosts = cache(async (includeDrafts = false): Promise<Post[]> => {
+  const supabase = createPublicClient();
+  let query = supabase.from("posts_with_categories").select("*").order("published_at", { ascending: false });
+  if (!includeDrafts) query = query.eq("status", "published");
+  const { data, error } = await query;
+  if (error || !data) return [];
+  return data.map(rowToPost);
 });
 
-export function getPostBySlug(slug: string): Post | null {
-  const mdxPath = path.join(POSTS_DIR, `${slug}.mdx`);
-  const mdPath = path.join(POSTS_DIR, `${slug}.md`);
-  if (fs.existsSync(mdxPath)) return readPostFile(`${slug}.mdx`);
-  if (fs.existsSync(mdPath)) return readPostFile(`${slug}.md`);
-  return null;
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  const supabase = createPublicClient();
+  const { data, error } = await supabase
+    .from("posts_with_categories")
+    .select("*")
+    .eq("slug", slug)
+    .limit(1)
+    .maybeSingle();
+  if (error || !data) return null;
+  return rowToPost(data);
 }
 
-export function getPostsByCategory(category: string): Post[] {
-  return getAllPosts().filter((p) =>
-    getPostCategories(p).some(c => slugify(c) === slugify(category))
-  );
+export async function getPostsByCategory(category: string): Promise<Post[]> {
+  const posts = await getAllPosts();
+  return posts.filter((p) => getPostCategories(p).some((c) => slugify(c) === slugify(category)));
 }
 
-export function getPostsByTag(tag: string): Post[] {
-  return getAllPosts().filter((p) => p.tags.some((t) => slugify(t) === slugify(tag)));
+export async function getPostsByTag(tag: string): Promise<Post[]> {
+  const posts = await getAllPosts();
+  return posts.filter((p) => p.tags.some((t) => slugify(t) === slugify(tag)));
 }
 
-export function getFeaturedPosts(): Post[] {
-  return getAllPosts().filter((p) => p.featured);
+export async function getFeaturedPosts(): Promise<Post[]> {
+  const posts = await getAllPosts();
+  return posts.filter((p) => p.featured);
 }
 
-/** Returns all categories for a post (multi-category aware) */
 export function getPostCategories(post: Post): string[] {
   return post.categories?.length ? post.categories : [post.category];
 }
 
-export function getRelatedPosts(post: Post, limit = 3): Post[] {
-  // Score by shared tags + same category, so the most relevant posts (not
-  // just the first matches) surface first.
-  const scored = getAllPosts()
+export async function getRelatedPosts(post: Post, limit = 3): Promise<Post[]> {
+  const all = await getAllPosts();
+  const scored = all
     .filter((p) => p.slug !== post.slug)
     .map((p) => {
       const sharedTags = p.tags.filter((t) => post.tags.includes(t)).length;
       const postCats = getPostCategories(post);
       const pCats = getPostCategories(p);
-      const sharedCats = pCats.filter(c => postCats.includes(c)).length;
+      const sharedCats = pCats.filter((c) => postCats.includes(c)).length;
       return { post: p, score: sharedTags * 2 + sharedCats };
     })
     .filter((s) => s.score > 0)
@@ -91,49 +121,55 @@ export function getRelatedPosts(post: Post, limit = 3): Post[] {
   return scored.slice(0, limit).map((s) => s.post);
 }
 
-export function getAllCategories(): string[] {
+export async function getAllCategories(): Promise<string[]> {
+  const posts = await getAllPosts();
   const cats = new Set<string>();
-  getAllPosts().forEach(p => getPostCategories(p).forEach(c => cats.add(c)));
+  posts.forEach((p) => getPostCategories(p).forEach((c) => cats.add(c)));
   return Array.from(cats).sort();
 }
 
-export function getAllTags(): string[] {
+export async function getAllTags(): Promise<string[]> {
+  const posts = await getAllPosts();
   const tags = new Set<string>();
-  getAllPosts().forEach((p) => p.tags.forEach((t) => tags.add(t)));
+  posts.forEach((p) => p.tags.forEach((t) => tags.add(t)));
   return Array.from(tags);
 }
 
-export function getPopularTags(limit = 12): { tag: string; count: number }[] {
+export async function getPopularTags(limit = 12): Promise<{ tag: string; count: number }[]> {
+  const posts = await getAllPosts();
   const counts = new Map<string, number>();
-  getAllPosts().forEach((p) => p.tags.forEach((t) => counts.set(t, (counts.get(t) || 0) + 1)));
+  posts.forEach((p) => p.tags.forEach((t) => counts.set(t, (counts.get(t) || 0) + 1)));
   return Array.from(counts.entries())
     .map(([tag, count]) => ({ tag, count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, limit);
 }
 
-export function getPopularCategories(limit = 8): { category: string; count: number }[] {
+export async function getPopularCategories(limit = 8): Promise<{ category: string; count: number }[]> {
+  const posts = await getAllPosts();
   const counts = new Map<string, number>();
-  getAllPosts().forEach((p) => counts.set(p.category, (counts.get(p.category) || 0) + 1));
+  posts.forEach((p) => counts.set(p.category, (counts.get(p.category) || 0) + 1));
   return Array.from(counts.entries())
     .map(([category, count]) => ({ category, count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, limit);
 }
 
-export function getTrendingPosts(limit = 5): Post[] {
-  const marked = getAllPosts().filter((p) => p.trending);
+export async function getTrendingPosts(limit = 5): Promise<Post[]> {
+  const posts = await getAllPosts();
+  const marked = posts.filter((p) => p.trending);
   if (marked.length > 0) return marked.slice(0, limit);
-  // Fallback: most recent posts, so the section is never empty.
-  return getAllPosts().slice(0, limit);
+  return posts.slice(0, limit);
 }
 
-export function getEditorsPicks(limit = 4): Post[] {
-  const marked = getAllPosts().filter((p) => p.editorsPick);
+export async function getEditorsPicks(limit = 4): Promise<Post[]> {
+  const posts = await getAllPosts();
+  const marked = posts.filter((p) => p.editorsPick);
   if (marked.length > 0) return marked.slice(0, limit);
-  return getAllPosts().filter((p) => p.featured).slice(0, limit);
+  return posts.filter((p) => p.featured).slice(0, limit);
 }
 
-export function getPostsByAuthor(authorSlug: string): Post[] {
-  return getAllPosts().filter((p) => p.authorSlug === authorSlug);
+export async function getPostsByAuthor(authorSlug: string): Promise<Post[]> {
+  const posts = await getAllPosts();
+  return posts.filter((p) => p.authorSlug === authorSlug);
 }

@@ -4,9 +4,8 @@ import { getAllPosts, getAllTags } from "@/lib/posts";
 import { getAllAuthors } from "@/lib/authors";
 import { slugify } from "@/lib/types";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const posts = getAllPosts();
-  const tags = getAllTags();
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [posts, tags] = await Promise.all([getAllPosts(), getAllTags()]);
   const authors = getAllAuthors();
 
   const staticRoutes: MetadataRoute.Sitemap = [

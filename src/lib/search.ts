@@ -17,12 +17,12 @@ export interface SearchResult {
  * publication of this size. Swap for a hosted index (Algolia, Meilisearch)
  * if the article count grows into the thousands.
  */
-export function searchPosts(query: string, limit = 20): SearchResult[] {
+export async function searchPosts(query: string, limit = 20): Promise<SearchResult[]> {
   const q = query.trim().toLowerCase();
   if (!q) return [];
 
   const terms = q.split(/\s+/).filter(Boolean);
-  const posts = getAllPosts();
+  const posts = await getAllPosts();
 
   const scored = posts
     .map((post) => ({ post, score: scorePost(post, terms) }))

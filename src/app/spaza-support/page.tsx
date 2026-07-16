@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   alternates: { canonical: `${siteConfig.url}/spaza-support` }
 };
 
-export default function SpazaSupportPage() {
-  const relatedPosts = getPostsByTag("township economy");
+export default async function SpazaSupportPage() {
+  const relatedPosts = await getPostsByTag("township economy");
 
   return (
     <div>
