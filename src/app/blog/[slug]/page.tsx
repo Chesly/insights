@@ -161,11 +161,10 @@ export default async function BlogPostPage({
         </div>
       )}
 
-      <div
+     <div
         className="prose prose-lg mx-auto mt-10 max-w-3xl prose-headings:text-navy dark:prose-invert dark:prose-headings:text-white"
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
-      </div>
 
       {/* Key Takeaways */}
       {post.keyTakeaways && post.keyTakeaways.length > 0 && (
