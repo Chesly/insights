@@ -22,6 +22,7 @@ const EMPTY: FormState = { name:'', slug:'', description:'', icon:'📁', color:
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([])
+  const [totalPosts, setTotalPosts] = useState<number|null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -32,9 +33,16 @@ export default function CategoriesPage() {
 
   const load = useCallback(async () => {
     setLoading(true)
-    const res = await fetch('/api/categories')
-    const json = await res.json()
-    setCategories(json.data || [])
+    const [catRes, postsRes] = await Promise.all([
+      fetch('/api/categories'),
+      fetch('/api/posts?limit=1'),
+    ])
+    const catJson = await catRes.json()
+    setCategories(catJson.data || [])
+    try {
+      const postsJson = await postsRes.json()
+      setTotalPosts(typeof postsJson.count === 'number' ? postsJson.count : null)
+    } catch { setTotalPosts(null) }
     setLoading(false)
   }, [])
 
@@ -83,7 +91,7 @@ export default function CategoriesPage() {
     finally { setSaving(false) }
   }
 
-  const totalPosts = categories.reduce((s, c) => s + (c.post_count || 0), 0)
+  const displayTotalPosts = totalPosts ?? categories.reduce((s, c) => s + (c.post_count || 0), 0)
 
   return (
     <>
@@ -94,7 +102,7 @@ export default function CategoriesPage() {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginBottom:24 }}>
           {[
             { label:'Total Categories', value:categories.length, icon:'📁' },
-            { label:'Total Posts', value:totalPosts, icon:'📝' },
+            { label:'Total Posts', value:displayTotalPosts, icon:'📝' },
             { label:'Uncategorised', value:'—', icon:'❓' },
           ].map(s=>(
             <div key={s.label} className="stat-card" style={{ display:'flex', alignItems:'center', gap:14 }}>
