@@ -90,3 +90,7 @@ h1,h2,h3,h4,h5 { font-family: 'Plus Jakarta Sans', sans-serif; }
   .cms-sidebar.open { transform: translateX(0); }
   .cms-main { margin-left: 0; }
 }
+.stat-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
