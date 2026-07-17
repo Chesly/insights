@@ -55,8 +55,7 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
-            <button type="submit" disabled={loading} className="btn btn-primary" style={{ width:'100%', justifyContent:'center', padding:'10px', fontSize:14, marginTop:'0.25rem' }}>
-              {loading ? 'Signing in…' : 'Sign In →'}
+            <button type="submit" disabled={loading} className="btn btn-primary" style={{ width:'100%', justifyContent:'center', padding:'10px', fontSize:14, marginTop:'0.25rem', cursor: loading ? 'not-allowed' : 'pointer' }}>
             </button>
           </form>
           <div style={{ marginTop:'1.5rem', paddingTop:'1.25rem', borderTop:'1px solid #f1f5f9', textAlign:'center' }}>
