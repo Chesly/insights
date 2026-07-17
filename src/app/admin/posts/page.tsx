@@ -18,7 +18,7 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
 
   let query = supabase
     .from('posts')
-    .select('id,title,slug,status,featured,trending,popular,created_at,published_at,read_time,view_count,category:categories(name,color),author:profiles(full_name)', { count:'exact' })
+    .select('id,title,slug,status,featured,trending,popular,created_at,published_at,read_time,view_count,category:categories!category_id(name,color),author:profiles!author_id(full_name)', { count:'exact' })
     .order('created_at', { ascending:false })
     .range(from, to)
 

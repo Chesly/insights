@@ -46,7 +46,7 @@ async function getStats(supabase: Awaited<ReturnType<typeof createClient>>) {
 async function getRecentPosts(supabase: Awaited<ReturnType<typeof createClient>>) {
   const { data } = await supabase
     .from('posts')
-    .select('id,title,slug,status,created_at,category:categories(name,color)')
+    .select('id,title,slug,status,created_at,category:categories!category_id(name,color)')
     .order('created_at', { ascending: false })
     .limit(5)
   return data || []
@@ -95,9 +95,7 @@ export default async function DashboardPage() {
             const Icon = card.icon
             return (
               <Link key={card.label} href={card.href} style={{ textDecoration:'none' }}>
-                <div className="stat-card" style={{ transition:'all 0.15s' }}
-                  onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform='translateY(-2px)';(e.currentTarget as HTMLElement).style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'}}
-                  onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform='none';(e.currentTarget as HTMLElement).style.boxShadow='none'}}>
+                <div className="stat-card stat-card-hover" style={{ transition:'all 0.15s' }}>
                   <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:14 }}>
                     <div style={{ width:38, height:38, borderRadius:10, background:`${card.color}18`, display:'flex', alignItems:'center', justifyContent:'center' }}>
                       <Icon size={18} color={card.color}/>

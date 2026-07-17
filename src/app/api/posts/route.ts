@@ -19,8 +19,8 @@ export async function GET(req: NextRequest) {
       status, featured, trending, popular, read_time, view_count,
       published_at, scheduled_at, created_at, updated_at,
       seo_title, meta_description, og_image, canonical_url,
-      category:categories(id, name, slug, color, icon),
-      author:profiles(id, full_name, avatar_url),
+      category:categories!category_id(id, name, slug, color, icon),
+      author:profiles!author_id(id, full_name, avatar_url),
       tags:post_tags(tag:tags(id, name, slug))
     `, { count: 'exact' })
     .order('created_at', { ascending: false })

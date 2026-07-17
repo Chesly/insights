@@ -16,8 +16,8 @@ export async function GET(req: NextRequest) {
     .select(`
       id, title, slug, excerpt, featured_image, read_time, view_count,
       featured, trending, popular, published_at,
-      category:categories(name, slug, color, icon),
-      author:profiles(full_name, avatar_url),
+      category:categories!category_id(name, slug, color, icon),
+      author:profiles!author_id(full_name, avatar_url),
       tags:post_tags(tag:tags(name, slug))
     `, { count: 'exact' })
     .eq('status', 'published')

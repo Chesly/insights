@@ -11,8 +11,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ slu
       id, title, slug, excerpt, body, featured_image, image_caption,
       read_time, view_count, featured, trending, popular,
       published_at, seo_title, meta_description, og_image, canonical_url,
-      category:categories(name, slug, color, icon),
-      author:profiles(full_name, avatar_url, bio),
+      category:categories!category_id(name, slug, color, icon),
+      author:profiles!author_id(full_name, avatar_url, bio),
       tags:post_tags(tag:tags(name, slug))
     `)
     .eq('slug', slug)

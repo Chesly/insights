@@ -9,8 +9,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     .from('posts')
     .select(`
       *,
-      category:categories(id, name, slug, color, icon),
-      author:profiles(id, full_name, avatar_url, email),
+      category:categories!category_id(id, name, slug, color, icon),
+      author:profiles!author_id(id, full_name, avatar_url, email),
       tags:post_tags(tag:tags(id, name, slug))
     `)
     .eq('id', id)
