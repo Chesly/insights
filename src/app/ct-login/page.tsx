@@ -27,7 +27,7 @@ export default function LoginPage() {
       <div style={{ width:'100%', maxWidth:420, position:'relative' }}>
         <div style={{ textAlign:'center', marginBottom:'2.5rem' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="https://chesly.tech/images/insights_header_logo.png" alt="Chesly.Tech logo" style={{ height:44, margin:'0 auto 1.25rem', display:'block' }}/>
+          <img src="https://ik.imagekit.io/mkvu8hdr5/insights/Chesly-Tech-Gol-Logo.png" alt="Chesly.Tech logo" style={{ height:44, margin:'0 auto 1.25rem', display:'block' }}/>
           <h1 style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontWeight:700, fontSize:19, color:'#f1f5f9', marginBottom:'0.35rem' }}>Content Management System</h1>
           <p style={{ color:'#64748b', fontSize:13 }}>Secure Administrator Access</p>
         </div>
@@ -42,20 +42,20 @@ export default function LoginPage() {
               <label style={{ display:'block', fontSize:13, fontWeight:600, color:'#374151', marginBottom:'0.4rem' }}>Email Address</label>
               <div style={{ position:'relative' }}>
                 <Mail size={15} style={{ position:'absolute', left:12, top:'50%', transform:'translateY(-50%)', color:'#9ca3af' }}/>
-                <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="hello@chesly.tech" required className="cms-input" style={{ paddingLeft:38 }}/>
+                <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="hello@chesly.tech" required className="cms-input" style={{ paddingLeft:38, width:'100%', padding:'9px 12px 9px 38px', border:'1px solid #334155', borderRadius:8, fontSize:14, fontFamily:"Inter, sans-serif", color:'#1e293b', background:'#fff', outline:'none' }}/>
               </div>
             </div>
             <div>
               <label style={{ display:'block', fontSize:13, fontWeight:600, color:'#374151', marginBottom:'0.4rem' }}>Password</label>
               <div style={{ position:'relative' }}>
                 <Lock size={15} style={{ position:'absolute', left:12, top:'50%', transform:'translateY(-50%)', color:'#9ca3af' }}/>
-                <input type={showPw?'text':'password'} value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••" required className="cms-input" style={{ paddingLeft:38, paddingRight:40 }}/>
+                <input type={showPw?'text':'password'} value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••" required className="cms-input" style={{ paddingLeft:38, paddingRight:40, width:'100%', padding:'9px 40px 9px 38px', border:'1px solid #334155', borderRadius:8, fontSize:14, fontFamily:"Inter, sans-serif", color:'#1e293b', background:'#fff', outline:'none' }}/>
                 <button type="button" onClick={()=>setShowPw(!showPw)} style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'#9ca3af', padding:4 }}>
                   {showPw ? <EyeOff size={15}/> : <Eye size={15}/>}
                 </button>
               </div>
             </div>
-            <button type="submit" disabled={loading} className="btn btn-primary" style={{ width:'100%', justifyContent:'center', padding:'10px', fontSize:14, marginTop:'0.25rem' }}>
+            <button type="submit" disabled={loading} className="btn btn-primary" style={{ width:'100%', justifyContent:'center', padding:'10px', fontSize:14, marginTop:'0.25rem', cursor: loading ? 'not-allowed' : 'pointer', background:'linear-gradient(135deg,#C09832,#8B6914)', color:'#fff', border:'none', borderRadius:8, fontWeight:600 }}>
               {loading ? 'Signing in…' : 'Sign In →'}
             </button>
           </form>
