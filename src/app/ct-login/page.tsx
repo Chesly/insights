@@ -26,9 +26,10 @@ export default function LoginPage() {
     <div style={{ minHeight:'100vh', background:'linear-gradient(135deg,#0f172a 0%,#1B2A4A 50%,#0f172a 100%)', display:'flex', alignItems:'center', justifyContent:'center', padding:'1.5rem' }}>
       <div style={{ width:'100%', maxWidth:420, position:'relative' }}>
         <div style={{ textAlign:'center', marginBottom:'2.5rem' }}>
-          <div style={{ width:52, height:52, borderRadius:14, background:'linear-gradient(135deg,#C09832,#8B6914)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 1rem', fontFamily:"'Plus Jakarta Sans',sans-serif", fontWeight:800, fontSize:20, color:'#fff', boxShadow:'0 8px 24px rgba(139,105,20,0.35)' }}>CT</div>
-          <h1 style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontWeight:800, fontSize:26, color:'#f1f5f9', marginBottom:'0.35rem' }}>Chesly CMS</h1>
-          <p style={{ color:'#64748b', fontSize:14 }}>Sign in to your admin panel</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="https://chesly.tech/images/insights_header_logo.png" alt="Chesly.Tech logo" style={{ height:44, margin:'0 auto 1.25rem', display:'block' }}/>
+          <h1 style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontWeight:700, fontSize:19, color:'#f1f5f9', marginBottom:'0.35rem' }}>Content Management System</h1>
+          <p style={{ color:'#64748b', fontSize:13 }}>Secure Administrator Access</p>
         </div>
         <div style={{ background:'#fff', borderRadius:16, padding:'2rem', boxShadow:'0 24px 48px rgba(0,0,0,0.3)' }}>
           <form onSubmit={handleLogin} style={{ display:'flex', flexDirection:'column', gap:'1.125rem' }}>

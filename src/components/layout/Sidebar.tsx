@@ -38,7 +38,7 @@ export default function Sidebar() {
 
   const signOut = async () => {
     await supabase.auth.signOut()
-    router.push('/login')
+    router.push('/ct-login')
   }
 
   const isActive = (href: string) =>
