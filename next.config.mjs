@@ -6,7 +6,7 @@ const ContentSecurityPolicy = `
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   img-src 'self' data: https:;
   font-src 'self' data: https://fonts.gstatic.com;
-  connect-src 'self' https://www.google-analytics.com https://www.clarity.ms https://analytics.google.com;
+  connect-src 'self' https://www.google-analytics.com https://www.clarity.ms https://analytics.google.com https://*.supabase.co;
   frame-src https://www.googletagmanager.com;
   object-src 'none';
   base-uri 'self';
