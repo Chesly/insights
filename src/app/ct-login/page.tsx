@@ -27,7 +27,7 @@ export default function LoginPage() {
       <div style={{ width:'100%', maxWidth:420, position:'relative' }}>
         <div style={{ textAlign:'center', marginBottom:'2.5rem' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="https://ik.imagekit.io/mkvu8hdr5/insights/Chesly-Tech-Gol-Logo.png" alt="Chesly.Tech logo" alt="Chesly.Tech logo" style={{ height:44, margin:'0 auto 1.25rem', display:'block' }}/>
+          <img src="https://ik.imagekit.io/mkvu8hdr5/insights/Chesly-Tech-Gol-Logo.png" alt="Chesly.Tech logo" style={{ height:44, margin:'0 auto 1.25rem', display:'block' }}/>
           <h1 style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontWeight:700, fontSize:19, color:'#f1f5f9', marginBottom:'0.35rem' }}>Content Management System</h1>
           <p style={{ color:'#64748b', fontSize:13 }}>Secure Administrator Access</p>
         </div>
