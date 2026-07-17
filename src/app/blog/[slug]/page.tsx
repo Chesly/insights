@@ -98,8 +98,8 @@ export default async function BlogPostPage({
         />
       )}
 
-      <nav aria-label="Breadcrumb" className="mb-6 text-sm text-navy/50 dark:text-white/50">
-        <ol className="flex flex-wrap items-center gap-1">
+      <nav aria-label="Breadcrumb" className="mb-6 text-sm text-navy/50 dark:text-white/50 flex justify-center text-center">
+        <ol className="flex flex-wrap items-center justify-center gap-1">
           <li><Link href="/" className="hover:text-gold">Home</Link></li>
           <li aria-hidden="true">/</li>
           <li><Link href="/blog" className="hover:text-gold">Articles</Link></li>
