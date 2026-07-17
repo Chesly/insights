@@ -57,10 +57,10 @@ export const siteConfig = {
   // ── Branding ────────────────────────────────────────────────────────────
   branding: {
     /** Header logo — shown on the dark sticky header */
-    logoHeader: "https://chesly.tech/images/insights_header_logo.png",
+    logoHeader: "https://ik.imagekit.io/mkvu8hdr5/insights/Chesly-Tech-Gol-Logo.png",
     /** Footer logo — shown on the dark footer */
     logoFooter: "https://chesly.tech/images/insights_footer_logo.png",
-    favicon: "https://chesly.tech/images/insights_favco.png",
+    favicon: "https://ik.imagekit.io/mkvu8hdr5/insights/CT-Favco.png",
     colors: {
       primary: "#8B6914", // gold
       primaryLight: "#B8935A",
