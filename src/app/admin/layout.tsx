@@ -14,7 +14,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           fontSize: 12,
           fontWeight: 400,
           lineHeight: 1.5,
-          color: '#94A3B8',
+          color: '#141821',
           textAlign: 'center',
           padding: '14px 0',
         }}>
