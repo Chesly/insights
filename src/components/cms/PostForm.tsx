@@ -258,14 +258,14 @@ export default function PostForm({ post, categories }: Props) {
 
             <Field>
               <Label sub="Leave blank to use the default URL">Canonical URL</Label>
-              <input className="cms-input" value={canonical} onChange={e=>setCanonical(e.target.value)} placeholder="https://chesly.tech/insights/…"/>
+              <input className="cms-input" value={canonical} onChange={e=>setCanonical(e.target.value)} placeholder="https://insights.chesly.tech/…"/>
             </Field>
 
             {/* SEO preview */}
             <div style={{ background:'#f8fafc', border:'1px solid #e2e8f0', borderRadius:10, padding:16 }}>
               <div style={{ fontSize:12, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.05em', marginBottom:10 }}>Google Preview</div>
               <div style={{ fontSize:18, color:'#1a0dab', fontWeight:500, marginBottom:2, lineHeight:1.3 }}>{seoTitle || title || 'Post Title'}</div>
-              <div style={{ fontSize:13, color:'#006621', marginBottom:4 }}>chesly.tech/insights/{slug || 'post-slug'}</div>
+              <div style={{ fontSize:13, color:'#006621', marginBottom:4 }}>insights.chesly.tech/{section === 'coffee' ? 'coffee' : 'blog'}/{slug || 'post-slug'}</div>
               <div style={{ fontSize:13, color:'#4d5156', lineHeight:1.5 }}>{metaDesc || excerpt || 'Meta description will appear here…'}</div>
             </div>
           </div>
@@ -457,7 +457,7 @@ export default function PostForm({ post, categories }: Props) {
               </div>
             ))}
             {post.status === 'published' && (
-              <a href={`https://chesly.tech/insights/${post.slug}`} target="_blank" rel="noopener noreferrer"
+              <a href={`https://insights.chesly.tech/${section === 'coffee' ? 'coffee' : 'blog'}/${post.slug}`} target="_blank" rel="noopener noreferrer"
                 className="btn btn-ghost btn-sm" style={{ width:'100%', justifyContent:'center', marginTop:10 }}>
                 <ExternalLink size={13}/>View Live Post
               </a>

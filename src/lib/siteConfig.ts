@@ -50,7 +50,7 @@ export const siteConfig = {
     "AI startups, technology, SEO and digital marketing insights with a South African perspective.",
   companyName: "Chesly.Tech",
   copyright: `© ${new Date().getFullYear()} Chesly.Tech. All Rights Reserved.`,
-  url: "https://chesly.tech/insights",
+  url: "https://insights.chesly.tech",
   locale: "en_ZA",
   language: "en-ZA",
 
