@@ -55,7 +55,12 @@ async function getRecentPosts(supabase: Awaited<ReturnType<typeof createClient>>
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const [stats, recentPosts] = await Promise.all([getStats(supabase), getRecentPosts(supabase)])
+  const [stats, recentPosts, profileRes] = await Promise.all([
+    getStats(supabase),
+    getRecentPosts(supabase),
+    supabase.from('profiles').select('first_name').eq('id', user?.id).single(),
+  ])
+  const firstName = profileRes.data?.first_name || user?.email?.split('@')[0] || 'Admin'
 
   const statCards = [
     { label:'Total Posts', value: stats.total_posts, icon: FileText, color:'#1B2A4A', href:'/admin/posts', sub:`${stats.published} published` },
@@ -80,7 +85,7 @@ export default async function DashboardPage() {
           <div>
             <p style={{ color:'#94a3b8', fontSize:13, marginBottom:4 }}>Welcome back 👋</p>
             <h2 style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontWeight:700, fontSize:20, color:'#f1f5f9' }}>
-              {user?.email?.split('@')[0] || 'Admin'}
+              Hi {firstName}
             </h2>
           </div>
           <div style={{ display:'flex', gap:10 }}>

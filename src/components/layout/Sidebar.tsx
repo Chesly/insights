@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import {
   LayoutDashboard, FileText, FolderOpen, Image, Download,
   Mail, MessageSquare, Search, Settings, Users, LogOut,
-  ChevronRight, Globe, Tag
+  ChevronRight, Globe, Tag, UserCircle
 } from 'lucide-react'
 
 const NAV = [
@@ -77,8 +77,12 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* Sign out */}
+      {/* Profile + Sign out */}
       <div style={{ padding: '12px 10px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <Link href="/admin/profile" className={`nav-item ${isActive('/admin/profile') ? 'active' : ''}`}>
+          <UserCircle size={15} />
+          <span>My Profile</span>
+        </Link>
         <button onClick={signOut} className="nav-item" style={{ color: '#ef4444' }}>
           <LogOut size={15} />
           <span>Sign Out</span>
