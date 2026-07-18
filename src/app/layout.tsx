@@ -9,6 +9,12 @@ import CustomFooterCode from "@/components/CustomFooterCode";
 import { siteConfig } from "@/lib/siteConfig";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
 
+// Without this, Next.js treats the whole layout as static and freezes it
+// at build time — meaning settings-driven content (the consent banner,
+// custom head/footer code) would only ever reflect whatever was saved
+// at the moment of the last deploy, not what's actually in the CMS now.
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
