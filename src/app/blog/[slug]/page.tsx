@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { MDXRemote } from "next-mdx-remote/rsc";
 import { getPostBySlug, getRelatedPosts, getPostCategories } from "@/lib/posts";
 import { getAuthorBySlug } from "@/lib/authors";
 import { siteConfig } from "@/lib/siteConfig";
@@ -162,9 +161,10 @@ export default async function BlogPostPage({
         </div>
       )}
 
-      <div className="prose prose-lg mx-auto mt-10 max-w-3xl prose-headings:text-navy dark:prose-invert dark:prose-headings:text-white">
-        <MDXRemote source={post.content} />
-      </div>
+     <div
+        className="prose prose-lg mx-auto mt-10 max-w-3xl prose-headings:text-navy dark:prose-invert dark:prose-headings:text-white"
+        dangerouslySetInnerHTML={{ __html: post.content }}
+      />
 
       {/* Key Takeaways */}
       {post.keyTakeaways && post.keyTakeaways.length > 0 && (

@@ -48,12 +48,8 @@ export default function Sidebar() {
     <aside className="cms-sidebar">
       {/* Logo */}
       <div style={{ padding: '20px 16px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <Link href="/admin/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{ width: 34, height: 34, borderRadius: 9, background: 'linear-gradient(135deg,#C09832,#8B6914)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 800, fontSize: 13, color: '#fff', flexShrink: 0 }}>CT</div>
-          <div>
-            <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, fontSize: 14, color: '#f1f5f9', lineHeight: 1 }}>Chesly CMS</div>
-            <div style={{ fontSize: 10, color: '#475569', marginTop: 2 }}>Content Platform</div>
-          </div>
+        <Link href="/admin/dashboard" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <img src="https://ik.imagekit.io/mkvu8hdr5/insights/Chesly-Tech-Gol-Logo.png" alt="Chesly.Tech" style={{ height: 30 }}/>
         </Link>
       </div>
 
