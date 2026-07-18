@@ -9,6 +9,7 @@ interface Props {
 
 export default function SocialShare({ title, url, excerpt }: Props) {
   const [copied, setCopied] = useState(false)
+  const [igCopied, setIgCopied] = useState(false)
 
   const enc = {
     url: encodeURIComponent(url),
@@ -28,6 +29,12 @@ export default function SocialShare({ title, url, excerpt }: Props) {
     try { await navigator.clipboard.writeText(url) } catch {}
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const copyForInstagram = async () => {
+    try { await navigator.clipboard.writeText(url) } catch {}
+    setIgCopied(true)
+    setTimeout(() => setIgCopied(false), 3000)
   }
 
   return (
@@ -53,6 +60,19 @@ export default function SocialShare({ title, url, excerpt }: Props) {
           {shareLinks.map(link => (
             <ShareBtn key={link.label} link={link}/>
           ))}
+          <button
+            onClick={copyForInstagram}
+            title="Instagram doesn't support direct link sharing — copies the link so you can paste it into your bio, Story, or DM"
+            style={{
+              width: 42, height: 42, borderRadius: 10,
+              background: igCopied ? 'rgba(5,150,105,0.15)' : 'rgba(255,255,255,0.07)',
+              border: `1px solid ${igCopied ? '#059669' : 'rgba(255,255,255,0.1)'}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 16, fontWeight: 800, color: igCopied ? '#6ee7b7' : '#94a3b8',
+              cursor: 'pointer', transition: 'all 0.2s',
+            }}>
+            {igCopied ? '✓' : '📷'}
+          </button>
           <button
             onClick={copyLink}
             title="Copy link"
