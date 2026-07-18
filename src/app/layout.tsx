@@ -3,6 +3,9 @@ import "./globals.css";
 import SiteChrome from "@/components/SiteChrome";
 import Analytics from "@/components/Analytics";
 import { GoogleTagManagerHead, GoogleTagManagerBody } from "@/components/GoogleTagManager";
+import HeadTags from "@/components/HeadTags";
+import CustomHeadCode from "@/components/CustomHeadCode";
+import CustomFooterCode from "@/components/CustomFooterCode";
 import { siteConfig } from "@/lib/siteConfig";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
 
@@ -61,6 +64,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="icon" href={siteConfig.branding.favicon} />
         <GoogleTagManagerHead />
+        <HeadTags />
+        <CustomHeadCode />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema()) }}
@@ -80,6 +85,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <SiteChrome>{children}</SiteChrome>
         <Analytics />
+        <CustomFooterCode />
       </body>
     </html>
   );

@@ -18,6 +18,16 @@ const SECTIONS = [
     fields: [
       { key: 'google_tag_manager', label: 'Google Tag Manager Container ID', type: 'text', placeholder: 'GTM-XXXXXXX',
         help: 'The one ID that runs everything — once set, add Meta Pixel, LinkedIn, TikTok, or anything else inside your GTM dashboard. No further code changes needed.' },
+      { key: 'microsoft_clarity', label: 'Microsoft Clarity Project ID', type: 'text', placeholder: 'abcdefghij',
+        help: 'Free heatmaps, scroll tracking, and session recordings from Microsoft.' },
+    ]
+  },
+  {
+    id: 'verification', label: 'Site Verification',
+    fields: [
+      { key: 'google_search_console', label: 'Google Search Console', type: 'text', placeholder: 'Verification code (content value only)' },
+      { key: 'bing_verification', label: 'Bing Webmaster Tools', type: 'text', placeholder: 'Verification code' },
+      { key: 'pinterest_verification', label: 'Pinterest', type: 'text', placeholder: 'Verification code' },
     ]
   },
   {
@@ -39,6 +49,23 @@ const SECTIONS = [
       { key: 'newsletter_name', label: 'Newsletter Name', type: 'text', placeholder: 'The Chesly.Tech Growth Letter' },
       { key: 'newsletter_from_name', label: 'From Name', type: 'text', placeholder: 'Chesly Silaule' },
       { key: 'newsletter_from_email', label: 'From Email', type: 'email', placeholder: 'hello@chesly.tech' },
+    ]
+  },
+  {
+    id: 'advanced', label: 'Advanced / SEO Files',
+    fields: [
+      { key: 'custom_robots_txt', label: 'robots.txt', type: 'textarea',
+        placeholder: 'Leave blank to use the built-in default (already AI-crawler friendly)',
+        help: 'Full override — view the live default anytime at /robots.txt.' },
+      { key: 'llms_txt_content', label: 'llms.txt', type: 'textarea',
+        placeholder: 'Leave blank to auto-generate from your latest articles',
+        help: 'Helps AI systems understand your site. View live at /llms.txt.' },
+      { key: 'custom_head_code', label: 'Custom <head> Code', type: 'textarea',
+        placeholder: '<meta ... /> or <script>...</script>',
+        help: 'Loads on every page. For anything not covered above — verification tags, one-off scripts, future tools.' },
+      { key: 'custom_footer_code', label: 'Custom Footer Code', type: 'textarea',
+        placeholder: '<script>...</script>',
+        help: 'Loads just before the closing </body> tag on every page.' },
     ]
   },
 ]
@@ -101,13 +128,24 @@ export default function SettingsPage() {
                   {section.fields.map(field => (
                     <div key={field.key}>
                       <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 4 }}>{field.label}</label>
-                      <input
-                        className="cms-input"
-                        type={field.type}
-                        value={values[field.key] || ''}
-                        onChange={e => setValues(v => ({ ...v, [field.key]: e.target.value }))}
-                        placeholder={field.placeholder}
-                      />
+                      {field.type === 'textarea' ? (
+                        <textarea
+                          className="cms-input"
+                          rows={6}
+                          value={values[field.key] || ''}
+                          onChange={e => setValues(v => ({ ...v, [field.key]: e.target.value }))}
+                          placeholder={field.placeholder}
+                          style={{ fontFamily: 'monospace', fontSize: 12.5, resize: 'vertical' }}
+                        />
+                      ) : (
+                        <input
+                          className="cms-input"
+                          type={field.type}
+                          value={values[field.key] || ''}
+                          onChange={e => setValues(v => ({ ...v, [field.key]: e.target.value }))}
+                          placeholder={field.placeholder}
+                        />
+                      )}
                       {'help' in field && field.help && (
                         <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 4 }}>{field.help}</p>
                       )}
