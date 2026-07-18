@@ -9,11 +9,13 @@ export interface Crumb {
 export default function PageHero({
   title,
   subtitle,
-  breadcrumbs
+  breadcrumbs,
+  backgroundImage
 }: {
   title: string;
   subtitle?: string;
   breadcrumbs: Crumb[];
+  backgroundImage?: string;
 }) {
   return (
     <div
@@ -25,7 +27,7 @@ export default function PageHero({
         aria-hidden="true"
         className="absolute inset-0 bg-cover bg-center"
         style={{
-          backgroundImage: `url(${siteConfig.pageHero.backgroundImage})`,
+          backgroundImage: `url(${backgroundImage || siteConfig.pageHero.backgroundImage})`,
           opacity: 1 - siteConfig.pageHero.overlayOpacity
         }}
       />

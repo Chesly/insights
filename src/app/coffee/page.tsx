@@ -31,6 +31,7 @@ export default async function CoffeeIndexPage() {
         title="Let's Have ☕"
         subtitle="We don't tell you what to think — we help you think more deeply. Grab a seat and let's talk through the ideas shaping South Africa, business, technology, and society."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Let's Have Coffee" }]}
+        backgroundImage="https://ik.imagekit.io/mkvu8hdr5/insights/lets-have-coffee.jpg"
       />
 
       {posts.length === 0 && (
