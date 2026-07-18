@@ -1,7 +1,8 @@
 "use client"
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Save, CheckCircle, AlertCircle } from 'lucide-react'
+import { Save, CheckCircle, AlertCircle, User } from 'lucide-react'
+import ImagePicker from './ImagePicker'
 
 interface Profile {
   id: string
@@ -9,12 +10,15 @@ interface Profile {
   last_name?: string | null
   phone?: string | null
   bio?: string | null
+  avatar_url?: string | null
 }
 
 export default function ProfileForm({ profile, email }: { profile: Profile | null; email: string }) {
   const [firstName, setFirstName] = useState(profile?.first_name || '')
   const [lastName, setLastName] = useState(profile?.last_name || '')
   const [phone, setPhone] = useState(profile?.phone || '')
+  const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || '')
+  const [pickerOpen, setPickerOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
@@ -29,6 +33,7 @@ export default function ProfileForm({ profile, email }: { profile: Profile | nul
         last_name: lastName,
         full_name: `${firstName} ${lastName}`.trim(),
         phone,
+        avatar_url: avatarUrl,
       })
       .eq('id', profile?.id)
     setSaving(false)
@@ -44,6 +49,21 @@ export default function ProfileForm({ profile, email }: { profile: Profile | nul
           <AlertCircle size={16} />{error}
         </div>
       )}
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
+        <button onClick={() => setPickerOpen(true)} style={{ width: 76, height: 76, borderRadius: '50%', overflow: 'hidden', border: '2px solid #e2e8f0', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0, flexShrink: 0 }}>
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <User size={30} color="#94a3b8" />
+          )}
+        </button>
+        <div>
+          <button onClick={() => setPickerOpen(true)} className="btn btn-secondary btn-sm">Choose Photo</button>
+          <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 6 }}>Square image recommended</p>
+        </div>
+      </div>
 
       <div style={{ display: 'flex', gap: 14, marginBottom: 14 }}>
         <div style={{ flex: 1 }}>
@@ -70,6 +90,13 @@ export default function ProfileForm({ profile, email }: { profile: Profile | nul
       <button onClick={handleSave} disabled={saving} className="btn btn-primary" style={{ minWidth: 160, justifyContent: 'center' }}>
         {saved ? <><CheckCircle size={14} />Saved!</> : saving ? 'Saving…' : <><Save size={14} />Save Profile</>}
       </button>
+
+      <ImagePicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSelect={(url) => { setAvatarUrl(url); setPickerOpen(false) }}
+        currentUrl={avatarUrl}
+      />
     </div>
   )
 }
