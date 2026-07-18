@@ -3,7 +3,7 @@ import Topbar from '@/components/layout/Topbar'
 import Link from 'next/link'
 import {
   FileText, FolderOpen, Image, Download, Mail,
-  TrendingUp, Clock, CheckCircle, Calendar, ArrowRight, Plus
+  TrendingUp, Clock, CheckCircle, Calendar, ArrowRight, Plus, Flame
 } from 'lucide-react'
 
 interface DashboardPost {
@@ -24,13 +24,39 @@ interface DashboardPost {
 
 async function getStats(supabase: Awaited<ReturnType<typeof createClient>>) {
   const [posts, cats, media, subs, downloads] = await Promise.all([
-    supabase.from('posts').select('status'),
+    supabase.from('posts').select('status,published_at'),
     supabase.from('categories').select('id'),
     supabase.from('media').select('id'),
     supabase.from('newsletter_subscribers').select('id').eq('status','active'),
     supabase.from('downloads').select('id'),
   ])
   const p = posts.data || []
+
+  const now = new Date()
+  const postsThisMonth = p.filter(x => {
+    if (!x.published_at) return false
+    const d = new Date(x.published_at)
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()
+  }).length
+
+  // Weekly publishing streak: consecutive Mon–Sun weeks (counting back from
+  // the current week) with at least one published post.
+  const weekKey = (d: Date) => {
+    const monday = new Date(d)
+    const day = (monday.getDay() + 6) % 7 // 0 = Monday
+    monday.setDate(monday.getDate() - day)
+    return monday.toISOString().slice(0, 10)
+  }
+  const publishedWeeks = new Set(
+    p.filter(x => x.published_at).map(x => weekKey(new Date(x.published_at!)))
+  )
+  let streak = 0
+  const cursor = new Date(now)
+  while (publishedWeeks.has(weekKey(cursor))) {
+    streak++
+    cursor.setDate(cursor.getDate() - 7)
+  }
+
   return {
     total_posts: p.length,
     published: p.filter(x=>x.status==='published').length,
@@ -40,6 +66,8 @@ async function getStats(supabase: Awaited<ReturnType<typeof createClient>>) {
     media: (media.data||[]).length,
     subscribers: (subs.data||[]).length,
     downloads: (downloads.data||[]).length,
+    posts_this_month: postsThisMonth,
+    publishing_streak: streak,
   }
 }
 
@@ -64,6 +92,8 @@ export default async function DashboardPage() {
 
   const statCards = [
     { label:'Total Posts', value: stats.total_posts, icon: FileText, color:'#1B2A4A', href:'/admin/posts', sub:`${stats.published} published` },
+    { label:'Posts This Month', value: stats.posts_this_month, icon: TrendingUp, color:'#16a34a', href:'/admin/posts', sub:'Published so far' },
+    { label:'Publishing Streak', value: `${stats.publishing_streak} wk${stats.publishing_streak===1?'':'s'}`, icon: Flame, color:'#ea580c', href:'/admin/posts', sub:'Consecutive weeks' },
     { label:'Drafts', value: stats.drafts, icon: Clock, color:'#6b7280', href:'/admin/posts?status=draft', sub:`${stats.scheduled} scheduled` },
     { label:'Categories', value: stats.categories, icon: FolderOpen, color:'#8B6914', href:'/admin/categories', sub:'Active topics' },
     { label:'Media Files', value: stats.media, icon: Image, color:'#7c3aed', href:'/admin/media', sub:'ImageKit library' },

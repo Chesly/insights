@@ -81,7 +81,13 @@ export interface Author {
     website?: string;
     twitter?: string;
     linkedin?: string;
+    facebook?: string;
     instagram?: string;
+    youtube?: string;
+    github?: string;
   };
   email?: string;
+  company?: string;
+  location?: string;
+  isGuest?: boolean; // true when the byline has no linked CMS profile
 }

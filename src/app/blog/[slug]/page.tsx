@@ -62,7 +62,7 @@ export default async function BlogPostPage({
   if ((post.section || "insights") === "coffee") notFound();
 
   const related = await getRelatedPosts(post);
-  const author = getAuthorBySlug(post.authorSlug || "chesly-silaule");
+  const author = await getAuthorBySlug(post.authorSlug || "chesly-silaule", post.author);
   const authorUrl = `${siteConfig.url}/author/${author.slug}`;
 
   const crumbs = breadcrumbSchema([

@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   description: `Meet the writers and contributors behind ${siteConfig.name}.`
 };
 
-export default function AuthorsIndexPage() {
-  const authors = getAllAuthors();
+export default async function AuthorsIndexPage() {
+  const authors = await getAllAuthors();
   return (
     <div className="container-page py-12">
       <h1 className="text-3xl font-bold text-navy dark:text-white">Authors</h1>

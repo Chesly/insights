@@ -179,6 +179,6 @@ export async function getEditorsPicks(limit = 4): Promise<Post[]> {
 }
 
 export async function getPostsByAuthor(authorSlug: string): Promise<Post[]> {
-  const posts = await getAllPosts();
+  const posts = await getAllPosts(false, ["insights", "coffee"]);
   return posts.filter((p) => p.authorSlug === authorSlug);
 }
