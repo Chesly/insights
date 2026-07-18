@@ -1,12 +1,14 @@
 import Script from "next/script";
+import { getSiteSetting } from "@/lib/settings";
 
 /**
- * Google Tag Manager. Set NEXT_PUBLIC_GTM_ID (e.g. GTM-XXXXXXX) to enable.
+ * Google Tag Manager. Configured from the CMS (Settings → Tracking &
+ * Analytics) — no redeploy needed when the Container ID changes.
  * <GoogleTagManagerHead /> goes in <head>, <GoogleTagManagerBody /> goes
  * immediately after the opening <body> tag, per Google's install instructions.
  */
-export function GoogleTagManagerHead() {
-  const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
+export async function GoogleTagManagerHead() {
+  const gtmId = await getSiteSetting("google_tag_manager");
   if (!gtmId) return null;
 
   return (
@@ -22,8 +24,8 @@ export function GoogleTagManagerHead() {
   );
 }
 
-export function GoogleTagManagerBody() {
-  const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
+export async function GoogleTagManagerBody() {
+  const gtmId = await getSiteSetting("google_tag_manager");
   if (!gtmId) return null;
 
   return (
