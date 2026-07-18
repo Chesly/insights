@@ -2,15 +2,15 @@ import { getAllPosts } from "@/lib/posts";
 import { siteConfig } from "@/lib/siteConfig";
 
 export async function GET() {
-  const posts = await getAllPosts();
+  const posts = await getAllPosts(false, ["insights", "coffee"]);
 
   const items = posts
     .map(
       (p) => `
     <item>
       <title><![CDATA[${p.title}]]></title>
-      <link>${siteConfig.url}/blog/${p.slug}</link>
-      <guid isPermaLink="true">${siteConfig.url}/blog/${p.slug}</guid>
+      <link>${siteConfig.url}/${p.section === "coffee" ? "coffee" : "blog"}/${p.slug}</link>
+      <guid isPermaLink="true">${siteConfig.url}/${p.section === "coffee" ? "coffee" : "blog"}/${p.slug}</guid>
       <pubDate>${new Date(p.publishedDate).toUTCString()}</pubDate>
       <dc:creator><![CDATA[${p.author || siteConfig.owner.name}]]></dc:creator>
       <description><![CDATA[${p.description}]]></description>

@@ -44,6 +44,7 @@ function rowToPost(row: any): Post {
     editorsPick: !!row.popular,
     trending: !!row.trending,
     draft: row.status !== "published",
+    section: row.section === "coffee" ? "coffee" : "insights",
 
     aiSummary: row.ai_summary || undefined,
     keyTakeaways: row.key_takeaways || undefined,
@@ -64,10 +65,14 @@ function rowToPost(row: any): Post {
   };
 }
 
-export const getAllPosts = cache(async (includeDrafts = false): Promise<Post[]> => {
+export const getAllPosts = cache(async (
+  includeDrafts = false,
+  sections: ("insights" | "coffee")[] = ["insights"]
+): Promise<Post[]> => {
   const supabase = createPublicClient();
   let query = supabase.from("posts_with_categories").select("*").order("published_at", { ascending: false });
   if (!includeDrafts) query = query.eq("status", "published");
+  query = query.in("section", sections);
   const { data, error } = await query;
   if (error || !data) return [];
   return data.map(rowToPost);
@@ -83,6 +88,10 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     .maybeSingle();
   if (error || !data) return null;
   return rowToPost(data);
+}
+
+export async function getPostsBySection(section: "insights" | "coffee"): Promise<Post[]> {
+  return getAllPosts(false, [section]);
 }
 
 export async function getPostsByCategory(category: string): Promise<Post[]> {

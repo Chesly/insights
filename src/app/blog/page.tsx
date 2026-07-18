@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getAllPosts } from "@/lib/posts";
+import { getPostsBySection } from "@/lib/posts";
 import { siteConfig } from "@/lib/siteConfig";
 import { slugify } from "@/lib/types";
 import PageHero from "@/components/PageHero";
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function BlogIndexPage() {
-  const posts = await getAllPosts();
+  const posts = await getPostsBySection("insights");
 
   // Separate featured from the rest for the hero row
   const featured = posts.filter((p) => p.featured).slice(0, 3);

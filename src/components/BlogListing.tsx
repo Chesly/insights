@@ -10,9 +10,10 @@ interface Props {
   initialCount: number;
   perLoad: number;
   hasFeatured: boolean;
+  basePath?: string;
 }
 
-export default function BlogListing({ posts, initialCount, perLoad, hasFeatured }: Props) {
+export default function BlogListing({ posts, initialCount, perLoad, hasFeatured, basePath = "/blog" }: Props) {
   const [visible, setVisible] = useState(initialCount);
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("All");
@@ -91,7 +92,7 @@ export default function BlogListing({ posts, initialCount, perLoad, hasFeatured 
       {/* Grid — 4 cols desktop, 2 tablet, 1 mobile */}
       <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
         {shown.map((post, i) => (
-          <ArticleCard key={post.slug} post={post} priority={i < 4} />
+          <ArticleCard key={post.slug} post={post} priority={i < 4} basePath={basePath} />
         ))}
       </div>
 
@@ -163,12 +164,12 @@ export default function BlogListing({ posts, initialCount, perLoad, hasFeatured 
 }
 
 // Article card component
-function ArticleCard({ post, priority }: { post: Post; priority: boolean }) {
+function ArticleCard({ post, priority, basePath }: { post: Post; priority: boolean; basePath: string }) {
   const cats = post.categories?.length ? post.categories : [post.category];
 
   return (
     <Link
-      href={`/blog/${post.slug}`}
+      href={`${basePath}/${post.slug}`}
       className="group flex flex-col focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold"
       aria-label={post.title}
     >

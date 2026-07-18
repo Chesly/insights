@@ -47,6 +47,7 @@ export interface PostFrontmatter {
   editorsPick?: boolean;
   trending?: boolean;
   draft?: boolean;
+  section?: "insights" | "coffee";
 
   /** AI Search Optimization fields (all optional, backward compatible) */
   aiSummary?: string;

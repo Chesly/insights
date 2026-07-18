@@ -113,6 +113,7 @@ export const siteConfig = {
     { label: "Home", href: "/" },
     { label: "About Us", href: "/about" },
     { label: "Insights", href: "/blog" },
+    { label: "Let's Have ☕", href: "/coffee" },
     { label: "Downloads", href: "/downloads" },
     { label: "Contact", href: "/contact" }
   ] as NavLink[],

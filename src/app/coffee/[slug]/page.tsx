@@ -22,7 +22,7 @@ export async function generateMetadata({
 
   const title = post.seoTitle || post.title;
   const description = post.seoDescription || post.description;
-  const url = `${siteConfig.url}/blog/${post.slug}`;
+  const url = `${siteConfig.url}/coffee/${post.slug}`;
 
   return {
     title,
@@ -59,7 +59,7 @@ export default async function BlogPostPage({
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) notFound();
-  if ((post.section || "insights") === "coffee") notFound();
+  if ((post.section || "insights") !== "coffee") notFound();
 
   const related = await getRelatedPosts(post);
   const author = getAuthorBySlug(post.authorSlug || "chesly-silaule");
@@ -67,9 +67,9 @@ export default async function BlogPostPage({
 
   const crumbs = breadcrumbSchema([
     { name: "Home", url: siteConfig.url },
-    { name: "Articles", url: `${siteConfig.url}/blog` },
+    { name: "Let's Have Coffee", url: `${siteConfig.url}/coffee` },
     { name: post.category, url: `${siteConfig.url}/category/${slugify(post.category)}` },
-    { name: post.title, url: `${siteConfig.url}/blog/${post.slug}` }
+    { name: post.title, url: `${siteConfig.url}/coffee/${post.slug}` }
   ]);
 
   return (
@@ -102,7 +102,7 @@ export default async function BlogPostPage({
         <ol className="flex flex-wrap items-center justify-center gap-1">
           <li><Link href="/" className="hover:text-gold">Home</Link></li>
           <li aria-hidden="true">/</li>
-          <li><Link href="/blog" className="hover:text-gold">Articles</Link></li>
+          <li><Link href="/coffee" className="hover:text-gold">Let&apos;s Have Coffee</Link></li>
           <li aria-hidden="true">/</li>
           <li>
             {getPostCategories(post).map((cat, i) => (
@@ -321,7 +321,7 @@ export default async function BlogPostPage({
       {/* Social Share */}
       <SocialShare
         title={post.title}
-        url={`${siteConfig.url}/blog/${post.slug}`}
+        url={`${siteConfig.url}/coffee/${post.slug}`}
         excerpt={post.description}
       />
 
@@ -346,7 +346,7 @@ export default async function BlogPostPage({
             {related.map((r) => (
               <Link
                 key={r.slug}
-                href={`/blog/${r.slug}`}
+                href={`/coffee/${r.slug}`}
                 className="border border-gold/10 p-4 hover:shadow-md"
               >
                 <span className="text-xs font-semibold uppercase text-gold">{r.category}</span>

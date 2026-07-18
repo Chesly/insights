@@ -46,6 +46,7 @@ export default function PostForm({ post, categories }: Props) {
   const [categoryIds, setCategoryIds] = useState<string[]>(
     post?.categories?.length ? post.categories.map(c => c.id) : (post?.category_id ? [post.category_id] : [])
   )
+  const [section, setSection] = useState<'insights' | 'coffee'>(post?.section || 'insights')
   const [tags, setTags] = useState<string[]>(post?.tags?.map(t => t.name) || [])
   const [status, setStatus] = useState<Post['status']>(post?.status || 'draft')
   const [featured, setFeatured] = useState(post?.featured || false)
@@ -76,6 +77,7 @@ export default function PostForm({ post, categories }: Props) {
     featured_image: featuredImage, image_caption: imageCaption,
     category_id: categoryIds[0] || null,
     category_ids: categoryIds,
+    section,
     tags,
     status: overrideStatus || status,
     featured, trending, popular,
@@ -85,7 +87,7 @@ export default function PostForm({ post, categories }: Props) {
     canonical_url: canonical,
     scheduled_at: scheduledAt || null,
     read_time: readTime,
-  }), [title,slug,excerpt,body,bodyJson,featuredImage,imageCaption,categoryIds,tags,status,featured,trending,popular,seoTitle,metaDesc,ogImage,canonical,scheduledAt,readTime])
+  }), [title,slug,excerpt,body,bodyJson,featuredImage,imageCaption,categoryIds,section,tags,status,featured,trending,popular,seoTitle,metaDesc,ogImage,canonical,scheduledAt,readTime])
 
   const save = async (overrideStatus?: Post['status']) => {
     if (!title.trim()) { setError('Title is required'); return }
@@ -170,6 +172,23 @@ export default function PostForm({ post, categories }: Props) {
               <input className="cms-input" value={title} onChange={e=>setTitle(e.target.value)}
                 placeholder="Enter a compelling post title…"
                 style={{ fontSize:20, fontWeight:700, padding:'12px 14px', fontFamily:"'Plus Jakarta Sans',sans-serif" }}/>
+            </Field>
+
+            <Field>
+              <Label sub="Which part of the site this article belongs to">Section</Label>
+              <div style={{ display:'flex', gap:8 }}>
+                {([
+                  { value:'insights' as const, label:'Insights', emoji:'📰' },
+                  { value:'coffee' as const, label:"Let's Have Coffee", emoji:'☕' },
+                ]).map(opt=>(
+                  <button key={opt.value} type="button" onClick={()=>setSection(opt.value)}
+                    style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:8, padding:'10px 14px', borderRadius:8,
+                      border:`1px solid ${section===opt.value?'#8B6914':'#e2e8f0'}`, background:section===opt.value?'#8B691412':'#fff',
+                      color:section===opt.value?'#8B6914':'#374151', fontWeight:600, fontSize:13.5, cursor:'pointer' }}>
+                    <span>{opt.emoji}</span>{opt.label}
+                  </button>
+                ))}
+              </div>
             </Field>
 
             <Field>

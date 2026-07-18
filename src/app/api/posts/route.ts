@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
       image_caption: body.image_caption,
       author_id: user.id,
       category_id: body.category_id || null,
+      section: body.section || 'insights',
       status: body.status || 'draft',
       featured: body.featured || false,
       trending: body.trending || false,

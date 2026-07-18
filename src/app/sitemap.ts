@@ -5,7 +5,7 @@ import { getAllAuthors } from "@/lib/authors";
 import { slugify } from "@/lib/types";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [posts, tags] = await Promise.all([getAllPosts(), getAllTags()]);
+  const [posts, tags] = await Promise.all([getAllPosts(false, ["insights", "coffee"]), getAllTags()]);
   const authors = getAllAuthors();
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -41,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const postRoutes: MetadataRoute.Sitemap = posts.map((p) => ({
-    url: `${siteConfig.url}/blog/${p.slug}`,
+    url: `${siteConfig.url}/${p.section === "coffee" ? "coffee" : "blog"}/${p.slug}`,
     lastModified: p.modifiedDate || p.publishedDate,
     changeFrequency: "monthly",
     priority: 0.8

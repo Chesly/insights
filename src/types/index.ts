@@ -66,6 +66,7 @@ export interface Post {
   categories?: Category[]
   tags?: Tag[]
   status: PostStatus
+  section?: 'insights' | 'coffee'
   featured: boolean
   trending: boolean
   popular: boolean
