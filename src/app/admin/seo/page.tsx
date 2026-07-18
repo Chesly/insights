@@ -35,15 +35,21 @@ function ScoreBar({ score }: { score: number }) {
 
 export default function SEOPage() {
   const [data, setData] = useState<{ stats: AuditStats; posts: PostAudit[] }|null>(null)
+  const [settings, setSettings] = useState<Record<string,string>>({})
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all'|'issues'|'warnings'|'good'>('all')
   const [search, setSearch] = useState('')
 
   const load = useCallback(async () => {
     setLoading(true)
-    const res = await fetch('/api/seo')
-    const json = await res.json()
-    setData(json)
+    const [seoRes, settingsRes] = await Promise.all([
+      fetch('/api/seo'),
+      fetch('/api/settings'),
+    ])
+    const seoJson = await seoRes.json()
+    const settingsJson = await settingsRes.json()
+    setData(seoJson)
+    setSettings(settingsJson.data || {})
     setLoading(false)
   }, [])
 
@@ -97,6 +103,29 @@ export default function SEOPage() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Integration status — real, live checks, not decorative */}
+        <div className="cms-card" style={{ padding: '16px 20px', marginBottom: 20 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 12 }}>Integration Status</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
+            {[
+              { label: 'Google Tag Manager', ok: !!settings.google_tag_manager },
+              { label: 'Microsoft Clarity', ok: !!settings.microsoft_clarity },
+              { label: 'Search Console Verified', ok: !!settings.google_search_console },
+              { label: 'Bing Verified', ok: !!settings.bing_verification },
+            ].map(item => (
+              <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', background: item.ok ? '#f0fdf4' : '#fff7ed', borderRadius: 8, border: `1px solid ${item.ok ? '#bbf7d0' : '#fed7aa'}` }}>
+                {item.ok ? <CheckCircle size={14} color="#059669"/> : <AlertTriangle size={14} color="#f59e0b"/>}
+                <span style={{ fontSize: 12, fontWeight: 600, color: item.ok ? '#065f46' : '#92400e' }}>{item.label}</span>
+              </div>
+            ))}
+          </div>
+          {!settings.google_search_console && (
+            <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 10 }}>
+              Not verified yet? Get a verification code from Google Search Console and add it under Settings → Site Verification.
+            </p>
+          )}
         </div>
 
         {/* Schema / robots quick status */}

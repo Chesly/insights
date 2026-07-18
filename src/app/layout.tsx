@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import SiteChrome from "@/components/SiteChrome";
 import Analytics from "@/components/Analytics";
-import { GoogleTagManagerHead, GoogleTagManagerBody } from "@/components/GoogleTagManager";
+import TrackingScripts from "@/components/TrackingScripts";
 import HeadTags from "@/components/HeadTags";
 import CustomHeadCode from "@/components/CustomHeadCode";
 import CustomFooterCode from "@/components/CustomFooterCode";
@@ -46,16 +46,7 @@ export const metadata: Metadata = {
     canonical: siteConfig.url,
     types: { "application/rss+xml": `${siteConfig.url}/rss.xml` }
   },
-  robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
-  // Search Console / Bing Webmaster HTML-tag verification — set the env vars
-  // in .env.local / your host's dashboard. Omitted entirely when unset, so
-  // no empty verification tags ship to production by accident.
-  verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
-    other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
-      ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
-      : undefined
-  }
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true } }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -63,7 +54,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en-ZA" className="scroll-smooth" data-scroll-behavior="smooth">
       <head>
         <link rel="icon" href={siteConfig.branding.favicon} />
-        <GoogleTagManagerHead />
         <HeadTags />
         <CustomHeadCode />
         <script
@@ -76,7 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <GoogleTagManagerBody />
+        <TrackingScripts />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-gold focus:px-4 focus:py-2 focus:text-white"
