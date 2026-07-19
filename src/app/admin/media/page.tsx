@@ -7,6 +7,7 @@ import {
   Image as ImageIcon, X, AlertCircle, ExternalLink, RefreshCw, FolderOpen
 } from 'lucide-react'
 import type { MediaItem } from '@/types'
+import FileUploadButton from '@/components/cms/FileUploadButton'
 
 type ViewMode = 'grid' | 'list'
 
@@ -139,10 +140,9 @@ export default function MediaPage() {
         </div>
 
         {/* Upload area */}
-        <div ref={dropRef} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}
-          className="cms-card" style={{ padding:20, marginBottom:20, border:'2px dashed #e2e8f0', transition:'border-color 0.15s' }}>
+        <div className="cms-card" style={{ padding:20, marginBottom:20 }}>
           <div style={{ fontSize:13, fontWeight:700, color:'#374151', marginBottom:12, display:'flex', alignItems:'center', gap:8 }}>
-            <Upload size={15} color="#8B6914"/>Register ImageKit Image
+            <Upload size={15} color="#8B6914"/>Upload Files
           </div>
 
           {error && (
@@ -151,35 +151,38 @@ export default function MediaPage() {
             </div>
           )}
 
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 200px 120px', gap:10, alignItems:'flex-end' }}>
-            <div>
-              <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#64748b', marginBottom:4 }}>ImageKit URL *</label>
-              <input className="cms-input" value={ikUrl} onChange={e=>setIkUrl(e.target.value)}
-                placeholder="https://ik.imagekit.io/mkvu8hdr5/folder/image.jpg"
-                style={{ fontFamily:'monospace', fontSize:12 }}/>
-            </div>
-            <div>
-              <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#64748b', marginBottom:4 }}>Display Name</label>
-              <input className="cms-input" value={ikName} onChange={e=>setIkName(e.target.value)} placeholder="hero-image.jpg" style={{ fontSize:13 }}/>
-            </div>
-            <button onClick={registerUrl} disabled={uploading || !ikUrl.trim()} className="btn btn-primary" style={{ width:'100%', justifyContent:'center' }}>
-              {uploading ? <RefreshCw size={13} style={{ animation:'spin 1s linear infinite' }}/> : <Upload size={13}/>}
-              {uploading ? 'Adding…' : 'Add'}
-            </button>
-          </div>
+          <FileUploadButton
+            accept="image/*,.pdf,.zip,.doc,.docx"
+            folder="/uploads"
+            label="Choose File to Upload"
+            onUploaded={() => load(search)}
+          />
 
-          {/* Preview */}
-          {ikUrl && (
-            <div style={{ marginTop:12, display:'flex', alignItems:'center', gap:10, padding:'10px', background:'#f8fafc', borderRadius:8 }}>
-              <img src={`${ikUrl}?tr=w-60,h-60,fo-auto`} alt="" style={{ width:50, height:50, objectFit:'cover', borderRadius:6 }} onError={e=>(e.currentTarget.style.display='none')}/>
-              <div style={{ fontSize:12, color:'#64748b', wordBreak:'break-all' }}>{ikUrl}</div>
+          <details style={{ marginTop:16 }}>
+            <summary style={{ fontSize:12, color:'#94a3b8', cursor:'pointer' }}>Already hosted elsewhere? Register an existing URL instead</summary>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 200px 120px', gap:10, alignItems:'flex-end', marginTop:12 }}>
+              <div>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#64748b', marginBottom:4 }}>File URL *</label>
+                <input className="cms-input" value={ikUrl} onChange={e=>setIkUrl(e.target.value)}
+                  placeholder="https://ik.imagekit.io/mkvu8hdr5/folder/image.jpg"
+                  style={{ fontFamily:'monospace', fontSize:12 }}/>
+              </div>
+              <div>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#64748b', marginBottom:4 }}>Display Name</label>
+                <input className="cms-input" value={ikName} onChange={e=>setIkName(e.target.value)} placeholder="hero-image.jpg" style={{ fontSize:13 }}/>
+              </div>
+              <button onClick={registerUrl} disabled={uploading || !ikUrl.trim()} className="btn btn-primary" style={{ width:'100%', justifyContent:'center' }}>
+                {uploading ? <RefreshCw size={13} style={{ animation:'spin 1s linear infinite' }}/> : <Upload size={13}/>}
+                {uploading ? 'Adding…' : 'Add'}
+              </button>
             </div>
-          )}
-
-          <p style={{ fontSize:12, color:'#94a3b8', marginTop:10 }}>
-            Upload images via <a href="https://imagekit.io/dashboard" target="_blank" rel="noopener noreferrer" style={{ color:'#8B6914' }}>ImageKit Dashboard</a>, copy the URL, paste it here to register in the media library.
-            You can also drag &amp; drop an image URL onto this area.
-          </p>
+            {ikUrl && (
+              <div style={{ marginTop:12, display:'flex', alignItems:'center', gap:10, padding:'10px', background:'#f8fafc', borderRadius:8 }}>
+                <img src={`${ikUrl}?tr=w-60,h-60,fo-auto`} alt="" style={{ width:50, height:50, objectFit:'cover', borderRadius:6 }} onError={e=>(e.currentTarget.style.display='none')}/>
+                <div style={{ fontSize:12, color:'#64748b', wordBreak:'break-all' }}>{ikUrl}</div>
+              </div>
+            )}
+          </details>
         </div>
 
         {/* Toolbar */}

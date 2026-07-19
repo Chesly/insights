@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { X, Search, Upload, Check, Image as ImageIcon } from 'lucide-react'
 import type { MediaItem } from '@/types'
+import FileUploadButton from './FileUploadButton'
 
 interface Props {
   open: boolean
@@ -52,6 +53,12 @@ export default function ImagePicker({ open, onClose, onSelect, currentUrl }: Pro
             <Search size={14} style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'#94a3b8' }}/>
             <input className="cms-input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search media…" style={{ paddingLeft:32, fontSize:13 }}/>
           </div>
+          <FileUploadButton
+            accept="image/*"
+            folder="/images"
+            label="Upload Image"
+            onUploaded={(row) => { setSelected(row.url); loadMedia() }}
+          />
           <div style={{ display:'flex', gap:8, flex:1 }}>
             <input className="cms-input" value={ikUrl} onChange={e=>setIkUrl(e.target.value)} placeholder="Or paste ImageKit URL…" style={{ fontSize:13 }}/>
             <button className="btn btn-secondary btn-sm" onClick={()=>{ if(ikUrl){ setSelected(ikUrl) } }} type="button">Use URL</button>

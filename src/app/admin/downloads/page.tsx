@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Topbar from '@/components/layout/Topbar'
 import Toggle from '@/components/ui/Toggle'
 import TagInput from '@/components/cms/TagInput'
+import FileUploadButton from '@/components/cms/FileUploadButton'
 import { Plus, Edit2, Trash2, Save, X, AlertCircle, Download as DownloadIcon, ExternalLink } from 'lucide-react'
 import type { Download, Category } from '@/types'
 
@@ -166,12 +167,28 @@ export default function DownloadsPage() {
                 <textarea className="cms-input cms-textarea" value={form.description} onChange={set('description')} placeholder="Brief description of what this download contains…" rows={2}/>
               </div>
               <div>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>File URL * <span style={{ fontWeight:400, color:'#94a3b8' }}>(ImageKit or direct link)</span></label>
-                <input className="cms-input" value={form.file_url} onChange={set('file_url')} placeholder="https://ik.imagekit.io/mkvu8hdr5/downloads/file.pdf" style={{ fontFamily:'monospace', fontSize:12 }}/>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>File URL * <span style={{ fontWeight:400, color:'#94a3b8' }}>(upload or paste a link)</span></label>
+                <div style={{ display:'flex', gap:8 }}>
+                  <input className="cms-input" value={form.file_url} onChange={set('file_url')} placeholder="https://ik.imagekit.io/mkvu8hdr5/downloads/file.pdf" style={{ fontFamily:'monospace', fontSize:12, flex:1 }}/>
+                  <FileUploadButton
+                    accept=".pdf,.zip,.doc,.docx"
+                    folder="/downloads"
+                    label="Upload"
+                    onUploaded={(row) => setForm(f => ({ ...f, file_url: row.url, file_type: (row.original_name.split('.').pop() || 'other').toLowerCase() as FormState['file_type'] }))}
+                  />
+                </div>
               </div>
               <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Thumbnail URL <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional)</span></label>
-                <input className="cms-input" value={form.thumbnail_url} onChange={set('thumbnail_url')} placeholder="https://ik.imagekit.io/mkvu8hdr5/…" style={{ fontFamily:'monospace', fontSize:12 }}/>
+                <div style={{ display:'flex', gap:8 }}>
+                  <input className="cms-input" value={form.thumbnail_url} onChange={set('thumbnail_url')} placeholder="https://ik.imagekit.io/mkvu8hdr5/…" style={{ fontFamily:'monospace', fontSize:12, flex:1 }}/>
+                  <FileUploadButton
+                    accept="image/*"
+                    folder="/downloads"
+                    label="Upload"
+                    onUploaded={(row) => setForm(f => ({ ...f, thumbnail_url: row.url }))}
+                  />
+                </div>
               </div>
               <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Category</label>
