@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/siteConfig";
 import PageHero from "@/components/PageHero";
+import DownloadButton from "@/components/DownloadButton";
+import { getAllDownloads } from "@/lib/downloads";
 
 export const metadata: Metadata = {
   title: siteConfig.pages.downloads.title,
@@ -8,7 +10,13 @@ export const metadata: Metadata = {
   alternates: { canonical: `${siteConfig.url}/downloads` }
 };
 
-export default function DownloadsPage() {
+export const revalidate = 3600;
+
+const FILE_TYPE_ICONS: Record<string, string> = { pdf: "📄", zip: "🗜️", doc: "📝", other: "📦" };
+
+export default async function DownloadsPage() {
+  const downloads = await getAllDownloads();
+
   return (
     <div>
       <PageHero
@@ -17,25 +25,36 @@ export default function DownloadsPage() {
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Downloads" }]}
       />
       <div className="container-page py-12">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {siteConfig.downloads.map((item) => (
-            <div
-              key={item.title}
-              className="flex flex-col justify-between border border-gold/15 p-6"
-            >
-              <div>
-                <span className="inline-block bg-gold/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-gold">
-                  {item.format}
-                </span>
-                <h2 className="mt-3 font-semibold text-navy dark:text-white">{item.title}</h2>
-                <p className="mt-2 text-sm text-navy/60 dark:text-white/60">{item.description}</p>
+        {downloads.length === 0 ? (
+          <p className="text-center text-navy/50 dark:text-white/50">
+            No downloads published yet — check back soon.
+          </p>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {downloads.map((item) => (
+              <div
+                key={item.id}
+                className="flex flex-col justify-between border border-gold/15 p-6"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-block bg-gold/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-gold">
+                      {FILE_TYPE_ICONS[item.fileType]} {item.fileType}
+                    </span>
+                    {item.isPremium && (
+                      <span className="inline-block bg-navy px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-white dark:bg-white dark:text-navy">
+                        Premium
+                      </span>
+                    )}
+                  </div>
+                  <h2 className="mt-3 font-semibold text-navy dark:text-white">{item.name}</h2>
+                  <p className="mt-2 text-sm text-navy/60 dark:text-white/60">{item.description}</p>
+                </div>
+                <DownloadButton id={item.id} fileUrl={item.fileUrl} label="Download" />
               </div>
-              <span className="mt-6 inline-block border border-navy/20 px-4 py-2 text-center text-xs font-semibold uppercase tracking-wide text-navy/50 dark:border-white/20 dark:text-white/50">
-                {item.status}
-              </span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
