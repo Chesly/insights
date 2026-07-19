@@ -65,9 +65,11 @@ export interface PostFrontmatter {
 }
 
 export interface Post extends PostFrontmatter {
+  id: string;
   slug: string;
   content: string;
   readingTime: string;
+  allowComments?: boolean;
 }
 
 export interface Author {

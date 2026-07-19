@@ -48,7 +48,25 @@ export default async function DownloadsPage() {
                     )}
                   </div>
                   <h2 className="mt-3 font-semibold text-navy dark:text-white">{item.name}</h2>
-                  <p className="mt-2 text-sm text-navy/60 dark:text-white/60">{item.description}</p>
+                  {item.subtitle && (
+                    <p className="mt-0.5 text-xs font-medium text-gold">{item.subtitle}</p>
+                  )}
+                  {item.thumbnailUrl && (
+                    <div className="mt-3 aspect-video overflow-hidden bg-gold/5">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={item.thumbnailUrl} alt={item.name} className="h-full w-full object-cover" />
+                    </div>
+                  )}
+                  <p className="mt-3 text-sm text-navy/60 dark:text-white/60">{item.description}</p>
+                  {item.solves.length > 0 && (
+                    <ul className="mt-3 space-y-1">
+                      {item.solves.slice(0, 4).map((s) => (
+                        <li key={s} className="flex items-start gap-1.5 text-xs text-navy/70 dark:text-white/70">
+                          <span className="text-gold">✓</span> {s}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
                 <DownloadButton id={item.id} fileUrl={item.fileUrl} label="Download" />
               </div>

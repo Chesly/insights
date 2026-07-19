@@ -27,6 +27,7 @@ function rowToPost(row: any): Post {
   const content = row.body || "";
 
   return {
+    id: row.id,
     title: row.title,
     description: row.excerpt || "",
     category: primaryCategory,
@@ -44,6 +45,7 @@ function rowToPost(row: any): Post {
     editorsPick: !!row.popular,
     trending: !!row.trending,
     draft: row.status !== "published",
+    allowComments: row.allow_comments !== false,
     section: row.section === "coffee" ? "coffee" : "insights",
 
     aiSummary: row.ai_summary || undefined,

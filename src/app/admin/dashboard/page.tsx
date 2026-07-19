@@ -3,7 +3,7 @@ import Topbar from '@/components/layout/Topbar'
 import Link from 'next/link'
 import {
   FileText, FolderOpen, Image, Download, Mail,
-  TrendingUp, Clock, CheckCircle, Calendar, ArrowRight, Plus, Flame
+  TrendingUp, Clock, CheckCircle, Calendar, ArrowRight, Plus, Flame, MessageSquare
 } from 'lucide-react'
 
 interface DashboardPost {
@@ -23,12 +23,13 @@ interface DashboardPost {
 
 
 async function getStats(supabase: Awaited<ReturnType<typeof createClient>>) {
-  const [posts, cats, media, subs, downloads] = await Promise.all([
+  const [posts, cats, media, subs, downloads, pendingComments] = await Promise.all([
     supabase.from('posts').select('status,published_at'),
     supabase.from('categories').select('id'),
     supabase.from('media').select('id'),
     supabase.from('newsletter_subscribers').select('id').eq('status','active'),
     supabase.from('downloads').select('id'),
+    supabase.from('comments').select('id').eq('status', 'pending'),
   ])
   const p = posts.data || []
 
@@ -68,6 +69,7 @@ async function getStats(supabase: Awaited<ReturnType<typeof createClient>>) {
     downloads: (downloads.data||[]).length,
     posts_this_month: postsThisMonth,
     publishing_streak: streak,
+    pending_comments: (pendingComments.data || []).length,
   }
 }
 
@@ -99,6 +101,7 @@ export default async function DashboardPage() {
     { label:'Media Files', value: stats.media, icon: Image, color:'#7c3aed', href:'/admin/media', sub:'ImageKit library' },
     { label:'Downloads', value: stats.downloads, icon: Download, color:'#0891b2', href:'/admin/downloads', sub:'Available files' },
     { label:'Subscribers', value: stats.subscribers, icon: Mail, color:'#059669', href:'/admin/newsletter', sub:'Active subscribers' },
+    { label:'Comments Awaiting', value: stats.pending_comments, icon: MessageSquare, color:'#dc2626', href:'/admin/comments', sub:'Need moderation' },
   ]
 
   const statusColor: Record<string, string> = {

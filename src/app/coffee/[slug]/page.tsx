@@ -8,6 +8,8 @@ import { siteConfig } from "@/lib/siteConfig";
 import { slugify } from "@/lib/types";
 import { articleSchema, breadcrumbSchema, faqSchema, howToSchema } from "@/lib/schema";
 import SocialShare from "@/components/SocialShare";
+import CommentSection from "@/components/CommentSection";
+import { getApprovedComments } from "@/lib/comments";
 
 export const revalidate = 3600;
 
@@ -355,6 +357,9 @@ export default async function BlogPostPage({
             ))}
           </div>
         </section>
+      )}
+      {post.allowComments !== false && (
+        <CommentSection postId={post.id} initialComments={await getApprovedComments(post.id)} />
       )}
     </article>
   );

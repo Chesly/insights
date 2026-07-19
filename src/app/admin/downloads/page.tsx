@@ -2,12 +2,14 @@
 import { useState, useEffect, useCallback } from 'react'
 import Topbar from '@/components/layout/Topbar'
 import Toggle from '@/components/ui/Toggle'
+import TagInput from '@/components/cms/TagInput'
 import { Plus, Edit2, Trash2, Save, X, AlertCircle, Download as DownloadIcon, ExternalLink } from 'lucide-react'
 import type { Download, Category } from '@/types'
 
 interface FormState {
   id?: string
   name: string
+  subtitle: string
   description: string
   thumbnail_url: string
   file_url: string
@@ -15,9 +17,15 @@ interface FormState {
   category_id: string
   is_premium: boolean
   is_published: boolean
+  target_audience: string[]
+  solves: string[]
+  seo_title: string
+  meta_description: string
 }
 
-const EMPTY: FormState = { name:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', is_premium:false, is_published:false }
+const EMPTY: FormState = { name:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', is_premium:false, is_published:false, target_audience:[], solves:[], seo_title:'', meta_description:'' }
+
+const AUDIENCE_OPTIONS = ['Small Businesses (SMEs)','Contractors','Suppliers','Manufacturers','Retailers','Startups','Consultants','NGOs','Freelancers','Accountants','Transport Companies','Construction Companies','Schools','Churches','Farmers']
 
 const FILE_TYPE_ICONS: Record<string,string> = { pdf:'📄', zip:'🗜️', doc:'📝', other:'📦' }
 
@@ -46,7 +54,13 @@ export default function DownloadsPage() {
     setForm(f => ({ ...f, [k]: e.target.value }))
 
   const startEdit = (dl: Download) => {
-    setForm({ id:dl.id, name:dl.name, description:dl.description||'', thumbnail_url:dl.thumbnail_url||'', file_url:dl.file_url, file_type:dl.file_type, category_id:dl.category_id||'', is_premium:dl.is_premium, is_published:dl.is_published })
+    setForm({
+      id:dl.id, name:dl.name, subtitle:(dl as unknown as FormState).subtitle||'', description:dl.description||'',
+      thumbnail_url:dl.thumbnail_url||'', file_url:dl.file_url, file_type:dl.file_type, category_id:dl.category_id||'',
+      is_premium:dl.is_premium, is_published:dl.is_published,
+      target_audience:(dl as unknown as FormState).target_audience||[], solves:(dl as unknown as FormState).solves||[],
+      seo_title:(dl as unknown as FormState).seo_title||'', meta_description:(dl as unknown as FormState).meta_description||'',
+    })
     setShowForm(true); setError('')
   }
 
@@ -138,6 +152,10 @@ export default function DownloadsPage() {
                 <input className="cms-input" value={form.name} onChange={set('name')} placeholder="50 AI Prompts for SA Entrepreneurs"/>
               </div>
               <div>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Subtitle</label>
+                <input className="cms-input" value={form.subtitle} onChange={set('subtitle')} placeholder="A short tagline under the title"/>
+              </div>
+              <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>File Type</label>
                 <select className="cms-input cms-select" value={form.file_type} onChange={set('file_type')}>
                   {['pdf','zip','doc','other'].map(t=><option key={t} value={t}>{FILE_TYPE_ICONS[t]} {t.toUpperCase()}</option>)}
@@ -161,6 +179,22 @@ export default function DownloadsPage() {
                   <option value="">— None —</option>
                   {categories.map(c=><option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
                 </select>
+              </div>
+              <div style={{ gridColumn:'1/-1' }}>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Target Audience</label>
+                <TagInput tags={form.target_audience} onChange={v=>setForm(f=>({...f,target_audience:v}))} placeholder="Add audience…" suggestions={AUDIENCE_OPTIONS}/>
+              </div>
+              <div style={{ gridColumn:'1/-1' }}>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Problems It Solves</label>
+                <TagInput tags={form.solves} onChange={v=>setForm(f=>({...f,solves:v}))} placeholder="e.g. Cuts costs, Saves time…"/>
+              </div>
+              <div>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>SEO Title <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional)</span></label>
+                <input className="cms-input" value={form.seo_title} onChange={set('seo_title')} placeholder="Defaults to Name if left blank"/>
+              </div>
+              <div>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Meta Description <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional)</span></label>
+                <input className="cms-input" value={form.meta_description} onChange={set('meta_description')} placeholder="Defaults to Description if left blank"/>
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:12, justifyContent:'center' }}>
                 <Toggle checked={form.is_published} onChange={v=>setForm(f=>({...f,is_published:v}))} label="Published (visible on site)"/>

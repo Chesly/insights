@@ -52,6 +52,7 @@ export default function PostForm({ post, categories }: Props) {
   const [featured, setFeatured] = useState(post?.featured || false)
   const [trending, setTrending] = useState(post?.trending || false)
   const [popular, setPopular] = useState(post?.popular || false)
+  const [allowComments, setAllowComments] = useState((post as { allow_comments?: boolean })?.allow_comments ?? true)
   const [scheduledAt, setScheduledAt] = useState(post?.scheduled_at || '')
   // SEO
   const [seoTitle, setSeoTitle] = useState(post?.seo_title || '')
@@ -81,13 +82,14 @@ export default function PostForm({ post, categories }: Props) {
     tags,
     status: overrideStatus || status,
     featured, trending, popular,
+    allow_comments: allowComments,
     seo_title: seoTitle || title,
     meta_description: metaDesc,
     og_image: ogImage || featuredImage,
     canonical_url: canonical,
     scheduled_at: scheduledAt || null,
     read_time: readTime,
-  }), [title,slug,excerpt,body,bodyJson,featuredImage,imageCaption,categoryIds,section,tags,status,featured,trending,popular,seoTitle,metaDesc,ogImage,canonical,scheduledAt,readTime])
+  }), [title,slug,excerpt,body,bodyJson,featuredImage,imageCaption,categoryIds,section,tags,status,featured,trending,popular,allowComments,seoTitle,metaDesc,ogImage,canonical,scheduledAt,readTime])
 
   const save = async (overrideStatus?: Post['status']) => {
     if (!title.trim()) { setError('Title is required'); return }
@@ -321,6 +323,13 @@ export default function PostForm({ post, categories }: Props) {
                     <div style={{ fontSize:12, color:'#2563eb' }}>Show in popular articles list</div>
                   </div>
                   <Toggle checked={popular} onChange={setPopular}/>
+                </div>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 14px', background:'#f0fdf4', borderRadius:8, border:'1px solid #bbf7d0' }}>
+                  <div>
+                    <div style={{ fontSize:13, fontWeight:600, color:'#166534' }}>💬 Allow Comments</div>
+                    <div style={{ fontSize:12, color:'#16a34a' }}>Readers can comment on this post</div>
+                  </div>
+                  <Toggle checked={allowComments} onChange={setAllowComments}/>
                 </div>
               </div>
             </div>
