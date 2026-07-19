@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -13,8 +14,21 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
   }
 
-  const { data, error } = await supabase.from('comments').update({ status }).eq('id', id).select().single()
+  const { data, error } = await supabase
+    .from('comments')
+    .update({ status })
+    .eq('id', id)
+    .select('*, post:posts!post_id(slug,section)')
+    .single()
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+
+  // Refresh the live post page immediately, instead of waiting up to an
+  // hour for its normal cache to expire — moderators expect to see the
+  // result of approving/removing a comment right away.
+  if (data?.post) {
+    revalidatePath(`/${data.post.section === 'coffee' ? 'coffee' : 'blog'}/${data.post.slug}`)
+  }
+
   return NextResponse.json({ data })
 }
 
