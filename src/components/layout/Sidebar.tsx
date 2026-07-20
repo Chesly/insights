@@ -19,6 +19,7 @@ const NAV = [
   { group: 'Assets', items: [
     { label: 'Media Library', href: '/admin/media', icon: Image },
     { label: 'Downloads', href: '/admin/downloads', icon: Download },
+    { label: 'Leads', href: '/admin/leads', icon: Users },
   ]},
   { group: 'Audience', items: [
     { label: 'Newsletter', href: '/admin/newsletter', icon: Mail },

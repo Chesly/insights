@@ -68,7 +68,7 @@ export default async function DownloadsPage() {
                     </ul>
                   )}
                 </div>
-                <DownloadButton id={item.id} fileUrl={item.fileUrl} label="Download" />
+                <DownloadButton id={item.id} fileUrl={item.fileUrl} label={item.isPremium ? "Get Access" : "Download"} isPremium={item.isPremium} />
               </div>
             ))}
           </div>
