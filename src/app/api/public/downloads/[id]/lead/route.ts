@@ -11,12 +11,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
 
   const supabase = createPublicClient();
-  const { error } = await supabase.from("download_leads").insert({
-    download_id: id,
-    first_name: firstName.trim().slice(0, 100),
-    last_name: lastName.trim().slice(0, 100),
-    email: email.trim().slice(0, 200),
-    whatsapp: whatsapp.trim().slice(0, 50),
+  const { error } = await supabase.rpc("upsert_download_lead", {
+    p_download_id: id,
+    p_first_name: firstName.trim().slice(0, 100),
+    p_last_name: lastName.trim().slice(0, 100),
+    p_email: email.trim().toLowerCase().slice(0, 200),
+    p_whatsapp: whatsapp.trim().slice(0, 50),
   });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });

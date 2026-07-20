@@ -2,16 +2,18 @@
 
 import { useState } from "react";
 
+type Tier = "free" | "premium" | "paid";
+
 export default function DownloadButton({
   id,
   fileUrl,
   label,
-  isPremium = false,
+  tier = "free",
 }: {
   id: string;
   fileUrl: string;
   label: string;
-  isPremium?: boolean;
+  tier?: Tier;
 }) {
   const [showForm, setShowForm] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -20,16 +22,23 @@ export default function DownloadButton({
   const [whatsapp, setWhatsapp] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
 
-  const proceedToFile = () => {
+  const handleFreeClick = () => {
+    // Fire-and-forget — never let a tracking hiccup block the actual download.
     fetch(`/api/public/downloads/${id}/track`, { method: "POST" }).catch(() => {});
     window.open(fileUrl, "_blank", "noopener,noreferrer");
   };
 
-  const handleFreeClick = () => proceedToFile();
-
   const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("sending");
+
+    // Open the tab SYNCHRONOUSLY, right here, as the direct result of the
+    // click — browsers silently block window.open() called after an
+    // await, since by then it's no longer considered a direct response
+    // to user action. Opening a blank tab now and filling in its
+    // destination once the lead is saved avoids that entirely.
+    const newTab = window.open("", "_blank");
+
     try {
       const res = await fetch(`/api/public/downloads/${id}/lead`, {
         method: "POST",
@@ -37,16 +46,33 @@ export default function DownloadButton({
         body: JSON.stringify({ firstName, lastName, email, whatsapp }),
       });
       if (!res.ok) throw new Error();
-      proceedToFile();
+
+      fetch(`/api/public/downloads/${id}/track`, { method: "POST" }).catch(() => {});
+      if (newTab) newTab.location.href = fileUrl;
+      else window.open(fileUrl, "_blank", "noopener,noreferrer"); // popup fully blocked — best effort
+
       setShowForm(false);
       setFirstName(""); setLastName(""); setEmail(""); setWhatsapp("");
       setStatus("idle");
     } catch {
+      newTab?.close();
       setStatus("error");
     }
   };
 
-  if (!isPremium) {
+  if (tier === "paid") {
+    return (
+      <button
+        disabled
+        title="Payments are launching soon"
+        className="mt-6 inline-flex items-center justify-center gap-1.5 border border-red-300 bg-red-50 px-4 py-2 text-center text-xs font-semibold uppercase tracking-wide text-red-400 cursor-not-allowed"
+      >
+        Coming Soon
+      </button>
+    );
+  }
+
+  if (tier !== "premium") {
     return (
       <button
         onClick={handleFreeClick}
@@ -69,7 +95,7 @@ export default function DownloadButton({
       {showForm && (
         <div
           role="dialog"
-          aria-label="Get access"
+          aria-label="Unlock your download"
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4"
           onClick={() => setShowForm(false)}
         >
@@ -77,9 +103,10 @@ export default function DownloadButton({
             className="w-full max-w-sm bg-white p-6 dark:bg-navy"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-bold text-navy dark:text-white">Get instant access</h3>
+            <h3 className="text-lg font-bold text-navy dark:text-white">Unlock Your Download</h3>
             <p className="mt-1 text-sm text-navy/60 dark:text-white/60">
-              This is a premium download — just a few details and it&apos;s yours.
+              Complete the short form below to access this premium resource. Your download will
+              begin immediately after submission.
             </p>
 
             <form onSubmit={handleLeadSubmit} className="mt-5 space-y-3">
@@ -120,7 +147,11 @@ export default function DownloadButton({
                 <p className="text-sm text-red-600">Something went wrong — please try again.</p>
               )}
 
-              <div className="flex gap-2 pt-2">
+              <p className="text-xs text-navy/40 dark:text-white/40">
+                🔒 We respect your privacy and will never share your information.
+              </p>
+
+              <div className="flex gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
@@ -133,7 +164,7 @@ export default function DownloadButton({
                   disabled={status === "sending"}
                   className="flex-1 bg-gold px-4 py-2 text-sm font-semibold text-white hover:bg-gold-dark disabled:opacity-60"
                 >
-                  {status === "sending" ? "Please wait…" : "Get Access"}
+                  {status === "sending" ? "Please wait…" : "Unlock Download"}
                 </button>
               </div>
             </form>

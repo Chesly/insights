@@ -16,7 +16,7 @@ interface FormState {
   file_url: string
   file_type: string
   category_id: string
-  is_premium: boolean
+  tier: 'free' | 'premium' | 'paid'
   is_published: boolean
   target_audience: string[]
   solves: string[]
@@ -24,7 +24,13 @@ interface FormState {
   meta_description: string
 }
 
-const EMPTY: FormState = { name:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', is_premium:false, is_published:false, target_audience:[], solves:[], seo_title:'', meta_description:'' }
+const EMPTY: FormState = { name:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', tier:'free', is_published:false, target_audience:[], solves:[], seo_title:'', meta_description:'' }
+
+const TIER_OPTIONS: { value: FormState['tier']; label: string; color: string; bg: string }[] = [
+  { value:'free', label:'🟢 Free', color:'#16a34a', bg:'#f0fdf4' },
+  { value:'premium', label:'🟡 Premium', color:'#8B6914', bg:'#fefce8' },
+  { value:'paid', label:'🔴 Paid', color:'#dc2626', bg:'#fef2f2' },
+]
 
 const AUDIENCE_OPTIONS = ['Small Businesses (SMEs)','Contractors','Suppliers','Manufacturers','Retailers','Startups','Consultants','NGOs','Freelancers','Accountants','Transport Companies','Construction Companies','Schools','Churches','Farmers']
 
@@ -58,7 +64,7 @@ export default function DownloadsPage() {
     setForm({
       id:dl.id, name:dl.name, subtitle:(dl as unknown as FormState).subtitle||'', description:dl.description||'',
       thumbnail_url:dl.thumbnail_url||'', file_url:dl.file_url, file_type:dl.file_type, category_id:dl.category_id||'',
-      is_premium:dl.is_premium, is_published:dl.is_published,
+      tier:(dl as unknown as FormState).tier || 'free', is_published:dl.is_published,
       target_audience:(dl as unknown as FormState).target_audience||[], solves:(dl as unknown as FormState).solves||[],
       seo_title:(dl as unknown as FormState).seo_title||'', meta_description:(dl as unknown as FormState).meta_description||'',
     })
@@ -97,7 +103,7 @@ export default function DownloadsPage() {
   const stats = {
     total: downloads.length,
     published: downloads.filter(d=>d.is_published).length,
-    premium: downloads.filter(d=>d.is_premium).length,
+    premium: downloads.filter(d=>(d as unknown as FormState).tier==='premium').length,
     totalDownloads: downloads.reduce((s,d)=>s+(d.download_count||0),0),
   }
 
@@ -213,9 +219,25 @@ export default function DownloadsPage() {
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Meta Description <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional)</span></label>
                 <input className="cms-input" value={form.meta_description} onChange={set('meta_description')} placeholder="Defaults to Description if left blank"/>
               </div>
+              <div style={{ gridColumn:'1/-1' }}>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Access Tier</label>
+                <div style={{ display:'flex', gap:8 }}>
+                  {TIER_OPTIONS.map(opt=>(
+                    <button key={opt.value} type="button" onClick={()=>setForm(f=>({...f,tier:opt.value}))}
+                      style={{ flex:1, padding:'10px 14px', borderRadius:8, fontWeight:600, fontSize:13.5, cursor:'pointer',
+                        border:`1px solid ${form.tier===opt.value?opt.color:'#e2e8f0'}`,
+                        background:form.tier===opt.value?opt.bg:'#fff',
+                        color:form.tier===opt.value?opt.color:'#374151' }}>
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p style={{ fontSize:11.5, color:'#94a3b8', marginTop:6 }}>
+                  Free — instant download. Premium — free, but requires Name/Surname/Email/WhatsApp first. Paid — reserved for future payments, shows &quot;Coming Soon&quot;.
+                </p>
+              </div>
               <div style={{ display:'flex', flexDirection:'column', gap:12, justifyContent:'center' }}>
                 <Toggle checked={form.is_published} onChange={v=>setForm(f=>({...f,is_published:v}))} label="Published (visible on site)"/>
-                <Toggle checked={form.is_premium} onChange={v=>setForm(f=>({...f,is_premium:v}))} label="Premium (requires signup)"/>
               </div>
             </div>
 
@@ -268,9 +290,12 @@ export default function DownloadsPage() {
                     </td>
                     <td><Toggle checked={dl.is_published} onChange={()=>togglePublish(dl)} size="sm"/></td>
                     <td>
-                      {dl.is_premium
-                        ? <span style={{ fontSize:11, fontWeight:700, background:'#fef3c7', color:'#92400e', padding:'2px 8px', borderRadius:999 }}>⭐ Premium</span>
-                        : <span style={{ fontSize:11, color:'#94a3b8' }}>Free</span>}
+                      {(() => {
+                        const t = (dl as unknown as FormState).tier || 'free'
+                        if (t === 'premium') return <span style={{ fontSize:11, fontWeight:700, background:'#fefce8', color:'#8B6914', padding:'2px 8px', borderRadius:999 }}>🟡 Premium</span>
+                        if (t === 'paid') return <span style={{ fontSize:11, fontWeight:700, background:'#fef2f2', color:'#dc2626', padding:'2px 8px', borderRadius:999 }}>🔴 Paid</span>
+                        return <span style={{ fontSize:11, fontWeight:700, background:'#f0fdf4', color:'#16a34a', padding:'2px 8px', borderRadius:999 }}>🟢 Free</span>
+                      })()}
                     </td>
                     <td style={{ fontSize:13, fontWeight:700, color:'#8B6914' }}>{(dl.download_count||0).toLocaleString()}</td>
                     <td>

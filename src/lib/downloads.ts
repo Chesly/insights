@@ -10,7 +10,7 @@ export interface DownloadItem {
   fileUrl: string;
   fileType: "pdf" | "zip" | "doc" | "other";
   category?: string;
-  isPremium: boolean;
+  tier: "free" | "premium" | "paid";
   downloadCount: number;
   targetAudience: string[];
   solves: string[];
@@ -29,7 +29,7 @@ function rowToDownload(row: any): DownloadItem {
     fileUrl: row.file_url,
     fileType: row.file_type || "other",
     category: row.category?.name,
-    isPremium: !!row.is_premium,
+    tier: row.tier === "premium" || row.tier === "paid" ? row.tier : "free",
     downloadCount: row.download_count || 0,
     targetAudience: row.target_audience || [],
     solves: row.solves || [],

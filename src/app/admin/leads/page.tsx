@@ -10,6 +10,8 @@ interface Lead {
   email: string
   whatsapp: string
   created_at: string
+  access_count: number
+  last_accessed_at: string
   download?: { name: string } | null
 }
 
@@ -30,10 +32,10 @@ export default function LeadsPage() {
   useEffect(() => { load() }, [load])
 
   const exportCsv = () => {
-    const header = ['First Name', 'Surname', 'Email', 'WhatsApp', 'Download', 'Date']
+    const header = ['First Name', 'Surname', 'Email', 'WhatsApp', 'Download', 'Requests', 'Date']
     const rows = leads.map(l => [
       l.first_name, l.last_name, l.email, l.whatsapp,
-      l.download?.name || '', new Date(l.created_at).toLocaleDateString(),
+      l.download?.name || '', l.access_count, new Date(l.created_at).toLocaleDateString(),
     ])
     const csv = [header, ...rows]
       .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
@@ -76,6 +78,7 @@ export default function LeadsPage() {
                   <th style={{ padding: '10px 16px', fontWeight: 700, color: '#64748b' }}>Name</th>
                   <th style={{ padding: '10px 16px', fontWeight: 700, color: '#64748b' }}>Contact</th>
                   <th style={{ padding: '10px 16px', fontWeight: 700, color: '#64748b' }}>Download</th>
+                  <th style={{ padding: '10px 16px', fontWeight: 700, color: '#64748b' }}>Requests</th>
                   <th style={{ padding: '10px 16px', fontWeight: 700, color: '#64748b' }}>Date</th>
                 </tr>
               </thead>
@@ -88,6 +91,15 @@ export default function LeadsPage() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}><Phone size={11} />{l.whatsapp}</div>
                     </td>
                     <td style={{ padding: '10px 16px', color: '#64748b' }}>{l.download?.name || '—'}</td>
+                    <td style={{ padding: '10px 16px' }}>
+                      {l.access_count > 1 ? (
+                        <span style={{ fontSize: 11, fontWeight: 700, background: '#fefce8', color: '#8B6914', padding: '2px 8px', borderRadius: 999 }}>
+                          {l.access_count}× repeat
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: 12, color: '#94a3b8' }}>1</span>
+                      )}
+                    </td>
                     <td style={{ padding: '10px 16px', color: '#94a3b8' }}>{new Date(l.created_at).toLocaleDateString()}</td>
                   </tr>
                 ))}
