@@ -47,6 +47,10 @@ export default function PostForm({ post, categories }: Props) {
     post?.categories?.length ? post.categories.map(c => c.id) : (post?.category_id ? [post.category_id] : [])
   )
   const [section, setSection] = useState<'insights' | 'coffee'>(post?.section || 'insights')
+  const [seriesList, setSeriesList] = useState<{id:string,name:string}[]>([])
+  const [seriesId, setSeriesId] = useState((post as unknown as {series_id?:string})?.series_id || '')
+  const [seriesOrder, setSeriesOrder] = useState((post as unknown as {series_order?:number})?.series_order || '')
+  const [newSeriesName, setNewSeriesName] = useState('')
   const [tags, setTags] = useState<string[]>(post?.tags?.map(t => t.name) || [])
   const [status, setStatus] = useState<Post['status']>(post?.status || 'draft')
   const [featured, setFeatured] = useState(post?.featured || false)
@@ -71,6 +75,10 @@ export default function PostForm({ post, categories }: Props) {
     if (!seoTitle && title) setSeoTitle(title)
   }, [title])
 
+  useEffect(() => {
+    fetch('/api/series').then(r=>r.json()).then(j=>setSeriesList(j.data||[])).catch(()=>{})
+  }, [])
+
   const readTime = estimateReadTime(body)
 
   const buildPayload = useCallback((overrideStatus?: Post['status']) => ({
@@ -79,6 +87,8 @@ export default function PostForm({ post, categories }: Props) {
     category_id: categoryIds[0] || null,
     category_ids: categoryIds,
     section,
+    series_id: seriesId || null,
+    series_order: seriesOrder ? Number(seriesOrder) : null,
     tags,
     status: overrideStatus || status,
     featured, trending, popular,
@@ -89,7 +99,7 @@ export default function PostForm({ post, categories }: Props) {
     canonical_url: canonical,
     scheduled_at: scheduledAt || null,
     read_time: readTime,
-  }), [title,slug,excerpt,body,bodyJson,featuredImage,imageCaption,categoryIds,section,tags,status,featured,trending,popular,allowComments,seoTitle,metaDesc,ogImage,canonical,scheduledAt,readTime])
+  }), [title,slug,excerpt,body,bodyJson,featuredImage,imageCaption,categoryIds,section,seriesId,seriesOrder,tags,status,featured,trending,popular,allowComments,seoTitle,metaDesc,ogImage,canonical,scheduledAt,readTime])
 
   const save = async (overrideStatus?: Post['status']) => {
     if (!title.trim()) { setError('Title is required'); return }
@@ -190,6 +200,25 @@ export default function PostForm({ post, categories }: Props) {
                     <span>{opt.emoji}</span>{opt.label}
                   </button>
                 ))}
+              </div>
+            </Field>
+
+            <Field>
+              <Label sub="Optional — group related posts into a numbered conversation, like a LinkedIn series">Series</Label>
+              <div style={{ display:'flex', gap:8, marginBottom:8 }}>
+                <select className="cms-input cms-select" value={seriesId} onChange={e=>setSeriesId(e.target.value)} style={{ flex:2 }}>
+                  <option value="">— No series —</option>
+                  {seriesList.map(s=>(<option key={s.id} value={s.id}>{s.name}</option>))}
+                </select>
+                <input className="cms-input" type="number" min={1} placeholder="Part #" value={seriesOrder} onChange={e=>setSeriesOrder(e.target.value)} style={{ flex:1 }}/>
+              </div>
+              <div style={{ display:'flex', gap:8 }}>
+                <input className="cms-input" placeholder="Or create a new series…" value={newSeriesName} onChange={e=>setNewSeriesName(e.target.value)} style={{ flex:2 }}/>
+                <button type="button" className="btn btn-secondary btn-sm" style={{ flex:1 }} disabled={!newSeriesName.trim()} onClick={async ()=>{
+                  const res = await fetch('/api/series', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name:newSeriesName }) })
+                  const json = await res.json()
+                  if (res.ok) { setSeriesList(prev=>[...prev, json.data]); setSeriesId(json.data.id); setNewSeriesName('') }
+                }}>+ Create</button>
               </div>
             </Field>
 

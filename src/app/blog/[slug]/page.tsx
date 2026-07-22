@@ -9,6 +9,7 @@ import { slugify } from "@/lib/types";
 import { articleSchema, breadcrumbSchema, faqSchema, howToSchema } from "@/lib/schema";
 import SocialShare from "@/components/SocialShare";
 import CommentSection from "@/components/CommentSection";
+import SeriesBanner from "@/components/SeriesBanner";
 import { getApprovedComments } from "@/lib/comments";
 
 export const revalidate = 3600;
@@ -123,7 +124,7 @@ export default async function BlogPostPage({
         <span className="mb-4 inline-block bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold">
           {post.category}
         </span>
-        <h1 className="text-3xl font-bold text-navy dark:text-white sm:text-4xl">{post.title}</h1>
+        <h1 className="text-2xl font-bold text-navy dark:text-white sm:text-3xl">{post.title}</h1>
         <p className="mt-4 text-lg text-navy/60 dark:text-white/60">{post.description}</p>
         <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-sm text-navy/50 dark:text-white/50">
           <span>
@@ -145,7 +146,7 @@ export default async function BlogPostPage({
         </div>
       </header>
 
-      <div className="relative mx-auto mt-10 aspect-video max-w-4xl overflow-hidden ">
+      <div className="relative mx-auto mt-7 aspect-video max-w-4xl overflow-hidden ">
         <Image
           src={post.image}
           alt={post.title}
@@ -156,22 +157,24 @@ export default async function BlogPostPage({
         />
       </div>
 
+      <SeriesBanner post={post} />
+
       {/* AI Summary — a concise, self-contained answer AI search engines can quote/cite directly */}
       {post.aiSummary && (
-        <div className="mx-auto mt-10 max-w-3xl border-l-4 border-gold bg-gold/5 p-6">
+        <div className="mx-auto mt-7 max-w-3xl border-l-4 border-gold bg-gold/5 p-6">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-gold">AI Summary</h2>
           <p className="mt-2 text-navy dark:text-white">{post.aiSummary}</p>
         </div>
       )}
 
      <div
-        className="prose prose-lg mx-auto mt-10 max-w-3xl prose-headings:text-navy dark:prose-invert dark:prose-headings:text-white"
+        className="prose prose-lg mx-auto mt-7 max-w-3xl prose-headings:text-navy dark:prose-invert dark:prose-headings:text-white prose-headings:mt-8 prose-headings:mb-3 prose-h2:text-xl prose-h3:text-lg prose-p:my-3 prose-img:my-6 prose-blockquote:my-4 prose-ul:my-3 prose-ol:my-3 prose-li:my-1"
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
 
       {/* Key Takeaways */}
       {post.keyTakeaways && post.keyTakeaways.length > 0 && (
-        <section className="mx-auto mt-10 max-w-3xl border border-gold/20 p-6">
+        <section className="mx-auto mt-7 max-w-3xl border border-gold/20 p-6">
           <h2 className="text-lg font-bold text-navy dark:text-white">Key Takeaways</h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-navy/80 dark:text-white/80">
             {post.keyTakeaways.map((point, i) => (
@@ -183,7 +186,7 @@ export default async function BlogPostPage({
 
       {/* Pros & Cons */}
       {(post.pros?.length || post.cons?.length) ? (
-        <section className="mx-auto mt-10 grid max-w-3xl gap-6 sm:grid-cols-2">
+        <section className="mx-auto mt-7 grid max-w-3xl gap-6 sm:grid-cols-2">
           {post.pros && post.pros.length > 0 && (
             <div className="border border-green-600/20 bg-green-600/5 p-5">
               <h3 className="font-semibold text-navy dark:text-white">Pros</h3>
@@ -209,7 +212,7 @@ export default async function BlogPostPage({
 
       {/* Comparison table */}
       {post.comparisonTable && post.comparisonTable.rows.length > 0 && (
-        <section className="mx-auto mt-10 max-w-3xl overflow-x-auto">
+        <section className="mx-auto mt-7 max-w-3xl overflow-x-auto">
           {post.comparisonTable.title && (
             <h2 className="mb-3 text-lg font-bold text-navy dark:text-white">
               {post.comparisonTable.title}
@@ -244,7 +247,7 @@ export default async function BlogPostPage({
 
       {/* Definitions — glossary-style entity definitions AI engines can lift directly */}
       {post.definitions && post.definitions.length > 0 && (
-        <section className="mx-auto mt-10 max-w-3xl">
+        <section className="mx-auto mt-7 max-w-3xl">
           <h2 className="text-lg font-bold text-navy dark:text-white">Definitions</h2>
           <dl className="mt-3 space-y-4">
             {post.definitions.map((d, i) => (
@@ -259,7 +262,7 @@ export default async function BlogPostPage({
 
       {/* Expert Insight */}
       {post.expertInsight && (
-        <section className="mx-auto mt-10 max-w-3xl bg-navy p-6 text-white">
+        <section className="mx-auto mt-7 max-w-3xl bg-navy p-6 text-white">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-gold">
             Expert Insight
           </h2>
@@ -269,7 +272,7 @@ export default async function BlogPostPage({
 
       {/* FAQ */}
       {post.faq && post.faq.length > 0 && (
-        <section className="mx-auto mt-10 max-w-3xl">
+        <section className="mx-auto mt-7 max-w-3xl">
           <h2 className="text-lg font-bold text-navy dark:text-white">
             Frequently Asked Questions
           </h2>
@@ -288,7 +291,7 @@ export default async function BlogPostPage({
 
       {/* Related Topics / semantic entities */}
       {post.relatedTopics && post.relatedTopics.length > 0 && (
-        <section className="mx-auto mt-10 max-w-3xl">
+        <section className="mx-auto mt-7 max-w-3xl">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-navy/60 dark:text-white/60">
             Related Topics
           </h2>
@@ -306,7 +309,7 @@ export default async function BlogPostPage({
       )}
 
       {post.tags?.length > 0 && (
-        <div className="mx-auto mt-10 flex max-w-3xl flex-wrap gap-2">
+        <div className="mx-auto mt-7 flex max-w-3xl flex-wrap gap-2">
           {post.tags.map((tag) => (
             <Link
               key={tag}
@@ -327,7 +330,7 @@ export default async function BlogPostPage({
         excerpt={post.description}
       />
 
-      <div className="mx-auto mt-8 flex max-w-3xl items-center gap-4 border border-gold/20 p-6">
+      <div className="mx-auto mt-6 flex max-w-3xl items-center gap-4 border border-gold/20 p-6">
         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full">
           <Image src={author.image} alt={author.name} fill className="object-cover" />
         </div>
@@ -340,7 +343,7 @@ export default async function BlogPostPage({
       </div>
 
       {related.length > 0 && (
-        <section className="mx-auto mt-16 max-w-5xl" aria-labelledby="related-articles-heading">
+        <section className="mx-auto mt-12 max-w-5xl" aria-labelledby="related-articles-heading">
           <h2 id="related-articles-heading" className="mb-6 text-2xl font-bold text-navy dark:text-white">
             Related Articles
           </h2>

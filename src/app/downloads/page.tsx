@@ -31,16 +31,6 @@ export default async function DownloadsPage() {
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Business Toolkit" }]}
       />
       <div className="container-page py-12">
-        {/* How Downloads Work */}
-        <div className="mx-auto mb-10 max-w-3xl border border-gold/15 bg-gold/5 p-5 text-sm">
-          <p className="font-semibold text-navy dark:text-white">How Downloads Work</p>
-          <ul className="mt-2 space-y-1 text-navy/70 dark:text-white/70">
-            <li><span className="font-medium text-green-700">🟢 FREE</span> — Download instantly, no form required.</li>
-            <li><span className="font-medium text-amber-700">🟡 PREMIUM</span> — Complete a short form to unlock your download instantly.</li>
-            <li><span className="font-medium text-red-700">🔴 PAID</span> — Purchase securely to gain immediate access (coming soon).</li>
-          </ul>
-        </div>
-
         {downloads.length === 0 ? (
           <p className="text-center text-navy/50 dark:text-white/50">
             No downloads published yet — check back soon.
