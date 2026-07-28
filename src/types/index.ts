@@ -98,6 +98,18 @@ export interface Download {
   updated_at: string
 }
 
+export interface ContactMessage {
+  id: string
+  name: string
+  email: string
+  phone?: string
+  subject?: string
+  message: string
+  source_page: string
+  status: 'new' | 'read' | 'replied' | 'archived'
+  created_at: string
+}
+
 export interface NewsletterSubscriber {
   id: string
   email: string

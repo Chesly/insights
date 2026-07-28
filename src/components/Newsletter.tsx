@@ -5,12 +5,38 @@ import { siteConfig } from "@/lib/siteConfig";
 
 export default function Newsletter() {
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
   const { newsletter } = siteConfig;
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // Wire up to a real provider (Mailchimp/ConvertKit/etc.) before launch.
-    setSubmitted(true);
+    setSubmitting(true);
+    setError("");
+
+    const form = e.currentTarget;
+    const data = new FormData(form);
+
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          full_name: data.get("name"),
+          email: data.get("email"),
+          phone: data.get("phone"),
+          business: data.get("business"),
+          source: "website",
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Something went wrong. Please try again.");
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -31,6 +57,7 @@ export default function Newsletter() {
               </label>
               <input
                 id="nl-name"
+                name="name"
                 type="text"
                 required
                 placeholder={newsletter.fields.name.placeholder}
@@ -43,6 +70,7 @@ export default function Newsletter() {
               </label>
               <input
                 id="nl-email"
+                name="email"
                 type="email"
                 required
                 placeholder={newsletter.fields.email.placeholder}
@@ -55,6 +83,7 @@ export default function Newsletter() {
               </label>
               <input
                 id="nl-phone"
+                name="phone"
                 type="tel"
                 placeholder={newsletter.fields.phone.placeholder}
                 className="w-full border border-white/20 bg-white/5 px-5 py-3 text-sm text-white placeholder-white/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold"
@@ -66,16 +95,24 @@ export default function Newsletter() {
               </label>
               <input
                 id="nl-business"
+                name="business"
                 type="text"
                 placeholder={newsletter.fields.business.placeholder}
                 className="w-full border border-white/20 bg-white/5 px-5 py-3 text-sm text-white placeholder-white/40 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold"
               />
             </div>
+            {error && (
+              <p className="col-span-full text-left text-sm font-medium text-red-300" role="alert">
+                {error}
+              </p>
+            )}
+
             <button
               type="submit"
-              className="col-span-full mt-1 bg-gold px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              disabled={submitting}
+              className="col-span-full mt-1 bg-gold px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-gold-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {newsletter.submitLabel}
+              {submitting ? "Subscribing…" : newsletter.submitLabel}
             </button>
           </form>
         )}
