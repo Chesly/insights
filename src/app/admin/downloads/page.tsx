@@ -6,10 +6,12 @@ import TagInput from '@/components/cms/TagInput'
 import FileUploadButton from '@/components/cms/FileUploadButton'
 import { Plus, Edit2, Trash2, Save, X, AlertCircle, Download as DownloadIcon, ExternalLink } from 'lucide-react'
 import type { Download, Category } from '@/types'
+import { slugify } from '@/lib/types'
 
 interface FormState {
   id?: string
   name: string
+  slug: string
   subtitle: string
   description: string
   thumbnail_url: string
@@ -22,9 +24,10 @@ interface FormState {
   solves: string[]
   seo_title: string
   meta_description: string
+  store_url: string
 }
 
-const EMPTY: FormState = { name:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', tier:'free', is_published:false, target_audience:[], solves:[], seo_title:'', meta_description:'' }
+const EMPTY: FormState = { name:'', slug:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', tier:'free', is_published:false, target_audience:[], solves:[], seo_title:'', meta_description:'', store_url:'' }
 
 const TIER_OPTIONS: { value: FormState['tier']; label: string; color: string; bg: string }[] = [
   { value:'free', label:'🟢 Free', color:'#16a34a', bg:'#f0fdf4' },
@@ -62,11 +65,12 @@ export default function DownloadsPage() {
 
   const startEdit = (dl: Download) => {
     setForm({
-      id:dl.id, name:dl.name, subtitle:(dl as unknown as FormState).subtitle||'', description:dl.description||'',
+      id:dl.id, name:dl.name, slug:(dl as unknown as FormState).slug||'', subtitle:(dl as unknown as FormState).subtitle||'', description:dl.description||'',
       thumbnail_url:dl.thumbnail_url||'', file_url:dl.file_url, file_type:dl.file_type, category_id:dl.category_id||'',
       tier:(dl as unknown as FormState).tier || 'free', is_published:dl.is_published,
       target_audience:(dl as unknown as FormState).target_audience||[], solves:(dl as unknown as FormState).solves||[],
       seo_title:(dl as unknown as FormState).seo_title||'', meta_description:(dl as unknown as FormState).meta_description||'',
+      store_url:(dl as unknown as FormState).store_url||'',
     })
     setShowForm(true); setError('')
   }
@@ -159,6 +163,16 @@ export default function DownloadsPage() {
                 <input className="cms-input" value={form.name} onChange={set('name')} placeholder="50 AI Prompts for SA Entrepreneurs"/>
               </div>
               <div>
+                <label style={{ display:'flex', alignItems:'center', justifyContent:'space-between', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  <span>Slug (its page URL: /downloads/…)</span>
+                  <button type="button" onClick={()=>setForm(f=>({...f, slug: slugify(f.name)}))}
+                    style={{ fontSize:11, fontWeight:600, color:'#8B6914', background:'none', border:'none', cursor:'pointer' }}>
+                    Generate from name
+                  </button>
+                </label>
+                <input className="cms-input" value={form.slug} onChange={set('slug')} placeholder="50-ai-prompts-for-sa-entrepreneurs"/>
+              </div>
+              <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Subtitle</label>
                 <input className="cms-input" value={form.subtitle} onChange={set('subtitle')} placeholder="A short tagline under the title"/>
               </div>
@@ -218,6 +232,12 @@ export default function DownloadsPage() {
               <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Meta Description <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional)</span></label>
                 <input className="cms-input" value={form.meta_description} onChange={set('meta_description')} placeholder="Defaults to Description if left blank"/>
+              </div>
+              <div style={{ gridColumn:'1/-1' }}>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  Store / Checkout Link <span style={{ fontWeight:400, color:'#94a3b8' }}>(only used when Tier is Paid — leave blank until you have a payment link)</span>
+                </label>
+                <input className="cms-input" value={form.store_url} onChange={set('store_url')} placeholder="https://…"/>
               </div>
               <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Access Tier</label>

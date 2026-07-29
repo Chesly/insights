@@ -9,11 +9,15 @@ export default function DownloadButton({
   fileUrl,
   label,
   tier = "free",
+  storeUrl,
 }: {
   id: string;
   fileUrl: string;
   label: string;
   tier?: Tier;
+  /** Checkout/payment link. When set on a "paid" download, shows a real
+      "Buy Now" button instead of the disabled "Coming Soon" state. */
+  storeUrl?: string;
 }) {
   const [showForm, setShowForm] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -61,6 +65,18 @@ export default function DownloadButton({
   };
 
   if (tier === "paid") {
+    if (storeUrl) {
+      return (
+        <a
+          href={storeUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-6 inline-flex items-center justify-center gap-1.5 border border-gold bg-gold px-4 py-2 text-center text-xs font-semibold uppercase tracking-wide text-white hover:bg-gold-dark transition-colors"
+        >
+          🛒 Buy Now
+        </a>
+      );
+    }
     return (
       <button
         disabled
