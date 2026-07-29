@@ -38,10 +38,43 @@ export default function DownloadButton({
   const [whatsapp, setWhatsapp] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
 
-  const handleFreeClick = () => {
-    // Fire-and-forget — never let a tracking hiccup block the actual download.
-    fetch(`/api/public/downloads/${id}/track`, { method: "POST" }).catch(() => {});
-    window.open(fileUrl, "_blank", "noopener,noreferrer");
+  const [showFreeForm, setShowFreeForm] = useState(false);
+  const [freeName, setFreeName] = useState("");
+  const [freeEmail, setFreeEmail] = useState("");
+  const [freeStatus, setFreeStatus] = useState<"idle" | "sending" | "error">("idle");
+  const [freeError, setFreeError] = useState("");
+
+  const handleFreeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFreeStatus("sending");
+    setFreeError("");
+
+    // Same synchronous-tab-open trick as the paid flow below — must
+    // happen directly inside the click handler, before any await, or
+    // browsers treat it as a popup and block it.
+    const newTab = window.open("", "_blank");
+
+    try {
+      const res = await fetch("/api/downloads/claim", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ downloadId: id, name: freeName, email: freeEmail }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Something went wrong.");
+
+      if (newTab) newTab.location.href = json.downloadUrl;
+      else window.open(json.downloadUrl, "_blank", "noopener,noreferrer");
+
+      setShowFreeForm(false);
+      setFreeName("");
+      setFreeEmail("");
+      setFreeStatus("idle");
+    } catch (err) {
+      newTab?.close();
+      setFreeStatus("error");
+      setFreeError(err instanceof Error ? err.message : "Something went wrong — please try again.");
+    }
   };
 
   const handleLeadSubmit = async (e: React.FormEvent) => {
@@ -64,8 +97,19 @@ export default function DownloadButton({
       if (!res.ok) throw new Error();
 
       fetch(`/api/public/downloads/${id}/track`, { method: "POST" }).catch(() => {});
-      if (newTab) newTab.location.href = fileUrl;
-      else window.open(fileUrl, "_blank", "noopener,noreferrer"); // popup fully blocked — best effort
+
+      // Issue a secure token rather than sending the raw fileUrl to the
+      // browser — same reasoning as the Free tier flow below.
+      const claimRes = await fetch("/api/downloads/claim", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ downloadId: id, name: `${firstName} ${lastName}`.trim(), email }),
+      });
+      const claimJson = await claimRes.json();
+      const target = claimRes.ok ? claimJson.downloadUrl : fileUrl; // graceful fallback, never block a paid-for lead
+
+      if (newTab) newTab.location.href = target;
+      else window.open(target, "_blank", "noopener,noreferrer"); // popup fully blocked — best effort
 
       setShowForm(false);
       setFirstName(""); setLastName(""); setEmail(""); setWhatsapp("");
@@ -122,12 +166,68 @@ export default function DownloadButton({
 
   if (tier !== "premium") {
     return (
-      <button
-        onClick={handleFreeClick}
-        className="mt-6 inline-block border border-gold bg-gold px-4 py-2 text-center text-xs font-semibold uppercase tracking-wide text-white hover:bg-gold-dark transition-colors"
-      >
-        {label}
-      </button>
+      <>
+        <button
+          onClick={() => setShowFreeForm(true)}
+          className="mt-6 inline-block border border-gold bg-gold px-4 py-2 text-center text-xs font-semibold uppercase tracking-wide text-white hover:bg-gold-dark transition-colors"
+        >
+          {label}
+        </button>
+
+        {showFreeForm && (
+          <div
+            role="dialog"
+            aria-label="Get your free download"
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4"
+            onClick={() => setShowFreeForm(false)}
+          >
+            <div className="w-full max-w-sm bg-white p-6 dark:bg-navy" onClick={(e) => e.stopPropagation()}>
+              <h3 className="text-lg font-bold text-navy dark:text-white">Get Your Free Download</h3>
+              <p className="mt-1 text-sm text-navy/60 dark:text-white/60">
+                We&rsquo;ll also add you to our newsletter for more free resources like this — unsubscribe
+                anytime.
+              </p>
+
+              <form onSubmit={handleFreeSubmit} className="mt-5 space-y-3">
+                <input
+                  required
+                  placeholder="Your name"
+                  value={freeName}
+                  onChange={(e) => setFreeName(e.target.value)}
+                  className="w-full border border-gold/20 px-3 py-2 text-sm outline-none focus:border-gold"
+                />
+                <input
+                  required
+                  type="email"
+                  placeholder="Email address"
+                  value={freeEmail}
+                  onChange={(e) => setFreeEmail(e.target.value)}
+                  className="w-full border border-gold/20 px-3 py-2 text-sm outline-none focus:border-gold"
+                />
+
+                {freeStatus === "error" && <p className="text-sm text-red-600">{freeError}</p>}
+
+                <div className="flex gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setShowFreeForm(false)}
+                    className="flex-1 border border-gold/30 px-4 py-2 text-sm font-semibold text-navy hover:bg-gold/5 dark:text-white"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={freeStatus === "sending"}
+                    className="flex-1 bg-gold px-4 py-2 text-sm font-semibold text-white hover:bg-gold-dark disabled:opacity-60"
+                  >
+                    {freeStatus === "sending" ? "Please wait…" : "Get Download"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </>
     );
   }
 
