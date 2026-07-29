@@ -10,17 +10,19 @@ export default function PageHero({
   title,
   subtitle,
   breadcrumbs,
-  backgroundImage
+  backgroundImage,
+  heightPx
 }: {
   title: string;
   subtitle?: string;
   breadcrumbs: Crumb[];
   backgroundImage?: string;
+  heightPx?: number;
 }) {
   return (
     <div
       className="relative flex items-end overflow-hidden bg-utility-bg"
-      style={{ height: `${siteConfig.pageHero.heightPx}px` }}
+      style={{ height: `${heightPx ?? siteConfig.pageHero.heightPx}px` }}
     >
       {/* Background image at ~40% opacity */}
       <div

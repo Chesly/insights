@@ -1,20 +1,22 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/siteConfig";
 import PageHero from "@/components/PageHero";
+import Newsletter from "@/components/Newsletter";
 
 export const metadata: Metadata = {
   title: siteConfig.pages.about.title,
   description: `About ${siteConfig.name} — a South African business built on AI, technology and SEO insight, from Chesly.Tech Creative Studio.`
 };
 
-// Swap these for real photography whenever you have it — square corners,
-// no rounding, matching the picture-driven layout below. Filenames double
-// as a shot list: what each spot on the page actually needs.
-const PLACEHOLDER = {
-  background: "https://placehold.co/900x700/1B2A4A/F4EDD8?text=Background+Photo",
-  goal: "https://placehold.co/900x700/8B6914/FFFFFF?text=Our+Goal",
+// Real photography — square corners, natural aspect ratio (frame fits the
+// image, not the other way around). Swap the one still-missing spot
+// (whoWeAre) whenever you have a shot for it.
+const IMAGES = {
+  breadcrumb: "https://ik.imagekit.io/mkvu8hdr5/insights/chesly-tech-about.jpg",
+  background: "https://ik.imagekit.io/mkvu8hdr5/insights/AI-powered%20knowledge%20hub.jpg",
+  goal: "https://ik.imagekit.io/mkvu8hdr5/insights/our-goal.jpg",
   whoWeAre: "https://placehold.co/900x700/1B2A4A/F4EDD8?text=Who+We+Are",
-  compliance: "https://placehold.co/900x700/8B6914/FFFFFF?text=BBBEE+%26+Compliance",
+  compliance: "https://ik.imagekit.io/mkvu8hdr5/insights/compliance.jpg",
 };
 
 export default function AboutPage() {
@@ -24,6 +26,8 @@ export default function AboutPage() {
         title={siteConfig.pages.about.title}
         subtitle="A South African business built on AI, technology and SEO insight."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "About Us" }]}
+        backgroundImage={IMAGES.breadcrumb}
+        heightPx={Math.round(siteConfig.pageHero.heightPx * 0.6)}
       />
 
       {/* ── Background ─────────────────────────────────────────────── */}
@@ -31,9 +35,9 @@ export default function AboutPage() {
         <div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={PLACEHOLDER.background}
+            src={IMAGES.background}
             alt="Chesly.Tech background"
-            className="aspect-[4/3] w-full object-cover"
+            className="w-full"
           />
         </div>
         <div>
@@ -71,15 +75,15 @@ export default function AboutPage() {
           <div className="order-1 lg:order-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={PLACEHOLDER.goal}
+              src={IMAGES.goal}
               alt="Our goal"
-              className="aspect-[4/3] w-full object-cover"
+              className="w-full"
             />
           </div>
         </div>
       </section>
 
-      {/* ── Mission & Vision ───────────────────────────────────────── */}
+      {/* ── Mission, Vision, Values & Promise ──────────────────────── */}
       <section className="container-page py-16">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold">What Drives Us</p>
@@ -87,7 +91,7 @@ export default function AboutPage() {
             Mission &amp; Vision
           </h2>
         </div>
-        <div className="mx-auto mt-10 grid max-w-4xl gap-6 sm:grid-cols-2">
+        <div className="mx-auto mt-10 grid max-w-5xl gap-6 sm:grid-cols-2">
           <div className="border border-navy/10 p-8 dark:border-white/10">
             <span className="text-3xl" aria-hidden="true">🎯</span>
             <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">Our Mission</h3>
@@ -105,6 +109,22 @@ export default function AboutPage() {
               South African business — the place people turn to before they turn to hype.
             </p>
           </div>
+          <div className="border border-navy/10 p-8 dark:border-white/10">
+            <span className="text-3xl" aria-hidden="true">⚖️</span>
+            <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">Our Values</h3>
+            <p className="mt-2 leading-relaxed text-navy/70 dark:text-white/70">
+              Clarity over jargon, evidence over hype, and a South Africa-first perspective in
+              everything we publish — because trust is earned one honest article at a time.
+            </p>
+          </div>
+          <div className="border border-navy/10 p-8 dark:border-white/10">
+            <span className="text-3xl" aria-hidden="true">🤍</span>
+            <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">Our Promise</h3>
+            <p className="mt-2 leading-relaxed text-navy/70 dark:text-white/70">
+              We simplify life by quietly turning uncertainty into clarity — the same philosophy
+              behind every Chesly.Tech product, applied here to how we write and what we publish.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -114,9 +134,9 @@ export default function AboutPage() {
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={PLACEHOLDER.whoWeAre}
+              src={IMAGES.whoWeAre}
               alt="Who we are"
-              className="aspect-[4/3] w-full object-cover"
+              className="w-full"
             />
           </div>
           <div>
@@ -147,46 +167,38 @@ export default function AboutPage() {
             BBBEE &amp; Compliance
           </h2>
           <p className="mt-4 leading-relaxed text-navy/75 dark:text-white/75">
-            {siteConfig.companyName} is a 100% South African-owned and independently operated
-            business. As a small enterprise, we qualify for Exempt Micro Enterprise (EME) status
-            under the B-BBEE Codes of Good Practice, which can be confirmed with a sworn affidavit
-            on request — making us a straightforward, low-friction partner for organisations with
-            local procurement or transformation goals.
+            {siteConfig.name} is published under <strong>Digitalized Art (Pty) Ltd</strong> and its
+            community initiative, <strong>Yinhla Cares</strong> — both 100% South African-owned and
+            independently operated, and both rated <strong>BBBEE Level 1</strong>. The formal
+            affidavit will be issued once the current tax return has been filed, and can be
+            supplied on request from that point.
           </p>
           <div className="mt-6 flex gap-8">
             <div>
-              <p className="text-2xl font-bold text-gold">100%</p>
-              <p className="text-xs font-semibold uppercase tracking-wide text-navy/60 dark:text-white/60">SA Owned</p>
+              <p className="text-2xl font-bold text-gold">Level 1</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-navy/60 dark:text-white/60">BBBEE Status</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-gold">EME</p>
-              <p className="text-xs font-semibold uppercase tracking-wide text-navy/60 dark:text-white/60">B-BBEE Status</p>
+              <p className="text-2xl font-bold text-gold">100%</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-navy/60 dark:text-white/60">SA Owned</p>
             </div>
           </div>
         </div>
         <div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={PLACEHOLDER.compliance}
+            src={IMAGES.compliance}
             alt="BBBEE and compliance"
-            className="aspect-[4/3] w-full object-cover"
+            className="w-full"
           />
         </div>
       </section>
 
-      {/* ── Contact ────────────────────────────────────────────────── */}
-      <section className="bg-navy/[0.03] dark:bg-white/5">
-        <div className="container-page py-16 text-center">
-          <h2 className="text-xl font-bold text-navy dark:text-white">Get in touch</h2>
-          <p className="mt-2 text-navy/70 dark:text-white/70">
-            Reach us at{" "}
-            <a href={`mailto:${siteConfig.contact.email}`} className="font-semibold text-gold hover:underline">
-              {siteConfig.contact.email}
-            </a>{" "}
-            or {siteConfig.contact.phone}.
-          </p>
-        </div>
-      </section>
+      {/* ── Newsletter (replaces the old plain Contact block) ────────── */}
+      <Newsletter
+        noteBody={siteConfig.editorsNote.body}
+        noteSignature={siteConfig.editorsNote.signature}
+      />
     </div>
   );
 }

@@ -3,7 +3,15 @@
 import { useState } from "react";
 import { siteConfig } from "@/lib/siteConfig";
 
-export default function Newsletter() {
+export default function Newsletter({
+  noteBody,
+  noteSignature,
+}: {
+  /** Optional short note shown above the title — e.g. the former homepage
+      Editor's Note, reused here so that content isn't lost, just relocated. */
+  noteBody?: string;
+  noteSignature?: string;
+}) {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -42,6 +50,12 @@ export default function Newsletter() {
   return (
     <section className="w-full bg-gradient-to-br from-navy-light to-navy px-4 py-5 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl text-center">
+        {noteBody && (
+          <p className="mx-auto mb-6 max-w-2xl border-b border-white/10 pb-6 font-serif text-base italic leading-relaxed text-white/70">
+            {noteBody}
+            {noteSignature && <span className="mt-2 block text-sm not-italic text-white/50">— {noteSignature}</span>}
+          </p>
+        )}
         <h2 className="text-2xl font-bold sm:text-3xl">{newsletter.title}</h2>
         <p className="mx-auto mt-2 max-w-md text-white/70">{newsletter.description}</p>
 

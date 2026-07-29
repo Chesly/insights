@@ -154,7 +154,7 @@ export const siteConfig = {
 
   // ── Newsletter ───────────────────────────────────────────────────────────
   newsletter: {
-    title: "Get the newsletter",
+    title: "Stay Ahead of the Curve",
     description: "Weekly AI, SEO and South African tech insights — straight to your inbox.",
     fields: {
       name: { label: "Full Name", placeholder: "Jane Dlamini" },

@@ -71,13 +71,10 @@ export default async function HomePage() {
       {/* White background from the nav down to the Newsletter section */}
       <div className="bg-white dark:bg-navy">
         <div className="container-page py-5 sm:py-6">
-          {/* Hero heading — small gold eyebrow + a stronger, more inviting
-              headline than a plain tagline restate. Kept compact so it
-              still doesn't push real content below the fold. */}
+          {/* Hero heading — a stronger, more inviting headline than a
+              plain tagline restate. Kept compact so it still doesn't
+              push real content below the fold. */}
           <section className="mb-8 pt-2 text-center">
-            <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-gold">
-              Chesly.Tech Insights
-            </p>
             <h1 className="mx-auto max-w-2xl text-xl font-bold leading-snug tracking-tight text-navy dark:text-white sm:text-2xl">
               Clear thinking on AI, technology &amp; SEO — for South African businesses
             </h1>
