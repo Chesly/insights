@@ -3,7 +3,7 @@ import {
   getAllPosts,
   getFeaturedPosts,
 } from "@/lib/posts";
-import { getAllDownloads } from "@/lib/downloads";
+import { getAllDownloads, pricing } from "@/lib/downloads";
 import { siteConfig } from "@/lib/siteConfig";
 import { collectionPageSchema, itemListSchema } from "@/lib/schema";
 import Carousel from "@/components/Carousel";
@@ -47,7 +47,7 @@ export default async function HomePage() {
   const editorsPickFlagged = remaining.filter((p) => p.editorsPick);
   const popular = (editorsPickFlagged.length > 0 ? editorsPickFlagged : remaining.slice(4, 8));
 
-  const latestDownloads = downloads.slice(0, 4);
+  const latestDownloads = downloads.slice(0, 3);
 
   const listSchema = itemListSchema(
     latest.map((p) => ({
@@ -129,9 +129,9 @@ export default async function HomePage() {
                   View All
                 </Link>
               </div>
-              <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
+              <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
                 {latestDownloads.map((item) => (
-                  <Link key={item.id} href="/downloads" className="group block">
+                  <Link key={item.id} href={`/downloads/${item.slug}`} className="group block">
                     <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-[285/200]">
                       {item.thumbnailUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -146,7 +146,7 @@ export default async function HomePage() {
                     </div>
                     <div className="pt-3">
                       <span className="text-xs font-semibold uppercase tracking-wide text-gold">
-                        {item.tier === "premium" ? "Premium" : item.tier === "paid" ? "Paid" : "Free"}
+                        {pricing(item).label}
                       </span>
                       <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-navy group-hover:text-gold dark:text-white">
                         {item.name}

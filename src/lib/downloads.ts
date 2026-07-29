@@ -13,6 +13,12 @@ export interface DownloadItem {
   fileType: "pdf" | "zip" | "doc" | "other";
   category?: string;
   tier: "free" | "premium" | "paid";
+  /** ZAR selling price, only meaningful when tier is the paid/"Premium" tier. */
+  price?: number;
+  /** ZAR original price. When set and higher than `price`, the item is
+      automatically treated as "On Sale" — no separate tier needed for
+      that, it's just a price comparison. */
+  compareAtPrice?: number;
   downloadCount: number;
   targetAudience: string[];
   solves: string[];
@@ -38,6 +44,8 @@ function rowToDownload(row: any): DownloadItem {
     fileType: row.file_type || "other",
     category: row.category?.name,
     tier: row.tier === "premium" || row.tier === "paid" ? row.tier : "free",
+    price: row.price != null ? Number(row.price) : undefined,
+    compareAtPrice: row.compare_at_price != null ? Number(row.compare_at_price) : undefined,
     downloadCount: row.download_count || 0,
     targetAudience: row.target_audience || [],
     solves: row.solves || [],
@@ -62,3 +70,37 @@ export const getDownloadBySlug = cache(async (slug: string): Promise<DownloadIte
   const all = await getAllDownloads();
   return all.find((d) => d.slug === slug) || null;
 });
+
+/** The three states you actually see — Free, On Sale, Premium — derived
+    from just two fields (price + compareAtPrice) rather than a third tier
+    value. An "On Sale" item IS a Premium item, just discounted right now;
+    modelling it as its own tier would let it silently disagree with the
+    price (e.g. marked On Sale with no discount set). This can't happen. */
+export function pricing(item: Pick<DownloadItem, "tier" | "price" | "compareAtPrice">): {
+  state: "free" | "sale" | "premium";
+  label: string;
+  price?: number;
+  compareAtPrice?: number;
+} {
+  if (item.tier === "free") return { state: "free", label: "Free" };
+
+  const onSale = item.compareAtPrice != null && item.price != null && item.compareAtPrice > item.price;
+  if (onSale) {
+    return {
+      state: "sale",
+      label: `On Sale — R${item.price!.toLocaleString("en-ZA")}`,
+      price: item.price,
+      compareAtPrice: item.compareAtPrice,
+    };
+  }
+  return {
+    state: "premium",
+    label: item.price != null ? `Premium — R${item.price.toLocaleString("en-ZA")}` : "Premium",
+    price: item.price,
+  };
+}
+
+/** Plain string version for places that just need the label (badges etc). */
+export function tierLabel(item: Pick<DownloadItem, "tier" | "price" | "compareAtPrice">): string {
+  return pricing(item).label;
+}

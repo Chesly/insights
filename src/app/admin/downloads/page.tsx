@@ -19,6 +19,8 @@ interface FormState {
   file_type: string
   category_id: string
   tier: 'free' | 'premium' | 'paid'
+  price: string
+  compare_at_price: string
   is_published: boolean
   target_audience: string[]
   solves: string[]
@@ -27,12 +29,14 @@ interface FormState {
   store_url: string
 }
 
-const EMPTY: FormState = { name:'', slug:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', tier:'free', is_published:false, target_audience:[], solves:[], seo_title:'', meta_description:'', store_url:'' }
+const EMPTY: FormState = { name:'', slug:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', tier:'free', price:'', compare_at_price:'', is_published:false, target_audience:[], solves:[], seo_title:'', meta_description:'', store_url:'' }
 
+// Only two choices in the UI now: Free, and Premium — Premium is the
+// paid version, backed by the same DB value ('paid') that already drives
+// the Buy Now / store_url behaviour, just relabelled here for clarity.
 const TIER_OPTIONS: { value: FormState['tier']; label: string; color: string; bg: string }[] = [
   { value:'free', label:'🟢 Free', color:'#16a34a', bg:'#f0fdf4' },
-  { value:'premium', label:'🟡 Premium', color:'#8B6914', bg:'#fefce8' },
-  { value:'paid', label:'🔴 Paid', color:'#dc2626', bg:'#fef2f2' },
+  { value:'paid', label:'💎 Premium', color:'#8B6914', bg:'#fefce8' },
 ]
 
 const AUDIENCE_OPTIONS = ['Small Businesses (SMEs)','Contractors','Suppliers','Manufacturers','Retailers','Startups','Consultants','NGOs','Freelancers','Accountants','Transport Companies','Construction Companies','Schools','Churches','Farmers']
@@ -68,6 +72,8 @@ export default function DownloadsPage() {
       id:dl.id, name:dl.name, slug:(dl as unknown as FormState).slug||'', subtitle:(dl as unknown as FormState).subtitle||'', description:dl.description||'',
       thumbnail_url:dl.thumbnail_url||'', file_url:dl.file_url, file_type:dl.file_type, category_id:dl.category_id||'',
       tier:(dl as unknown as FormState).tier || 'free', is_published:dl.is_published,
+      price: (dl as unknown as { price?: number }).price != null ? String((dl as unknown as { price?: number }).price) : '',
+      compare_at_price: (dl as unknown as { compare_at_price?: number }).compare_at_price != null ? String((dl as unknown as { compare_at_price?: number }).compare_at_price) : '',
       target_audience:(dl as unknown as FormState).target_audience||[], solves:(dl as unknown as FormState).solves||[],
       seo_title:(dl as unknown as FormState).seo_title||'', meta_description:(dl as unknown as FormState).meta_description||'',
       store_url:(dl as unknown as FormState).store_url||'',
@@ -81,7 +87,7 @@ export default function DownloadsPage() {
     if (!form.name.trim() || !form.file_url.trim()) { setError('Name and File URL are required'); return }
     setSaving(true); setError('')
     try {
-      const payload = { ...form, category_id: form.category_id || null }
+      const payload = { ...form, category_id: form.category_id || null, price: form.price.trim() ? Number(form.price) : null, compare_at_price: form.compare_at_price.trim() ? Number(form.compare_at_price) : null }
       const url = form.id ? `/api/downloads/${form.id}` : '/api/downloads'
       const method = form.id ? 'PATCH' : 'POST'
       const res = await fetch(url, { method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })
@@ -107,7 +113,7 @@ export default function DownloadsPage() {
   const stats = {
     total: downloads.length,
     published: downloads.filter(d=>d.is_published).length,
-    premium: downloads.filter(d=>(d as unknown as FormState).tier==='premium').length,
+    premium: downloads.filter(d=>(d as unknown as FormState).tier==='paid').length,
     totalDownloads: downloads.reduce((s,d)=>s+(d.download_count||0),0),
   }
 
@@ -252,8 +258,29 @@ export default function DownloadsPage() {
                     </button>
                   ))}
                 </div>
+                {form.tier === 'paid' && (
+                  <div style={{ marginTop:10, display:'flex', gap:10 }}>
+                    <div style={{ flex:1 }}>
+                      <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                        Price (ZAR)
+                      </label>
+                      <input className="cms-input" type="number" min="0" step="0.01" value={form.price} onChange={set('price')} placeholder="149"/>
+                    </div>
+                    <div style={{ flex:1 }}>
+                      <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                        Was (ZAR) <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional — set to show "On Sale")</span>
+                      </label>
+                      <input className="cms-input" type="number" min="0" step="0.01" value={form.compare_at_price} onChange={set('compare_at_price')} placeholder="e.g. 249"/>
+                    </div>
+                  </div>
+                )}
+                {form.tier === 'paid' && form.price && form.compare_at_price && Number(form.compare_at_price) > Number(form.price) && (
+                  <p style={{ marginTop:6, fontSize:12, fontWeight:600, color:'#8B6914' }}>
+                    Will show as: On Sale — R{form.price} <span style={{ textDecoration:'line-through', color:'#94a3b8', fontWeight:400 }}>R{form.compare_at_price}</span>
+                  </p>
+                )}
                 <p style={{ fontSize:11.5, color:'#94a3b8', marginTop:6 }}>
-                  Free — instant download. Premium — free, but requires Name/Surname/Email/WhatsApp first. Paid — reserved for future payments, shows &quot;Coming Soon&quot;.
+                  Free — instant download, no form. Premium — the paid version; set a price above and a Store/Checkout Link when you have one, or it shows &quot;Coming Soon&quot; until you do.
                 </p>
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:12, justifyContent:'center' }}>
@@ -312,8 +339,9 @@ export default function DownloadsPage() {
                     <td>
                       {(() => {
                         const t = (dl as unknown as FormState).tier || 'free'
-                        if (t === 'premium') return <span style={{ fontSize:11, fontWeight:700, background:'#fefce8', color:'#8B6914', padding:'2px 8px', borderRadius:999 }}>🟡 Premium</span>
-                        if (t === 'paid') return <span style={{ fontSize:11, fontWeight:700, background:'#fef2f2', color:'#dc2626', padding:'2px 8px', borderRadius:999 }}>🔴 Paid</span>
+                        const price = (dl as unknown as { price?: number }).price
+                        if (t === 'paid') return <span style={{ fontSize:11, fontWeight:700, background:'#fefce8', color:'#8B6914', padding:'2px 8px', borderRadius:999 }}>💎 Premium{price!=null?` — R${price}`:''}</span>
+                        if (t === 'premium') return <span style={{ fontSize:11, fontWeight:700, background:'#f1f5f9', color:'#64748b', padding:'2px 8px', borderRadius:999 }} title="Legacy tier — no longer selectable, consider moving to Free or Premium">🟡 Legacy Premium</span>
                         return <span style={{ fontSize:11, fontWeight:700, background:'#f0fdf4', color:'#16a34a', padding:'2px 8px', borderRadius:999 }}>🟢 Free</span>
                       })()}
                     </td>
