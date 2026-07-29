@@ -8,11 +8,13 @@ import { siteConfig } from "@/lib/siteConfig";
 import SearchBar from "./SearchBar";
 import SocialLinks from "./SocialLinks";
 import Greeting from "./Greeting";
+import { useCart } from "@/lib/cart/CartContext";
 
 export default function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const { count } = useCart();
 
   return (
     <header className="sticky top-0 z-40 shadow-lg shadow-black/10">
@@ -72,10 +74,42 @@ export default function Header() {
               })}
             </nav>
             <SearchBar variant="header" />
+            <Link
+              href="/cart"
+              aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`}
+              className="relative flex h-9 w-9 items-center justify-center rounded-full text-white/75 transition-colors hover:bg-white/10 hover:text-gold"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5" aria-hidden="true">
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+              </svg>
+              {count > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[10px] font-bold text-white">
+                  {count}
+                </span>
+              )}
+            </Link>
           </div>
 
-          {/* Mobile: search icon + hamburger */}
+          {/* Mobile: cart + search icon + hamburger */}
           <div className="flex items-center gap-1 md:hidden">
+            <Link
+              href="/cart"
+              aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`}
+              className="relative flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-gold"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5" aria-hidden="true">
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+              </svg>
+              {count > 0 && (
+                <span className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[10px] font-bold text-white">
+                  {count}
+                </span>
+              )}
+            </Link>
             {/* Search icon button */}
             <button
               onClick={() => { setSearchOpen(!searchOpen); setMenuOpen(false); }}

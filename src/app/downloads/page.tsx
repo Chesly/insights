@@ -23,6 +23,8 @@ export default async function DownloadsPage() {
         title={siteConfig.pages.downloads.title}
         subtitle={siteConfig.pages.downloads.intro}
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Business Toolkit" }]}
+        backgroundImage="https://ik.imagekit.io/mkvu8hdr5/downloads_page.jpg"
+        heightPx={Math.round(siteConfig.pageHero.heightPx * 0.6)}
       />
       <div className="container-page py-12">
         {downloads.length === 0 ? (

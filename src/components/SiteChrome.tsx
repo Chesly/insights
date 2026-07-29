@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
+import { CartProvider } from "@/lib/cart/CartContext"
 
 // The admin panel and login page have their own chrome (sidebar, footer)
 // and should never show the public site's nav/footer around them.
@@ -17,10 +18,10 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <>
+    <CartProvider>
       <Header />
       <main id="main-content">{children}</main>
       <Footer />
-    </>
+    </CartProvider>
   )
 }

@@ -1,24 +1,36 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useCart } from "@/lib/cart/CartContext";
 
 type Tier = "free" | "premium" | "paid";
 
 export default function DownloadButton({
   id,
+  slug,
+  name,
+  price,
+  thumbnailUrl,
   fileUrl,
   label,
   tier = "free",
   storeUrl,
 }: {
   id: string;
+  slug?: string;
+  name?: string;
+  price?: number;
+  thumbnailUrl?: string;
   fileUrl: string;
   label: string;
   tier?: Tier;
-  /** Checkout/payment link. When set on a "paid" download, shows a real
-      "Buy Now" button instead of the disabled "Coming Soon" state. */
+  /** Manual external checkout link — set this on a download to bypass
+      the built-in cart entirely (e.g. a Gumroad link, or a bundle sold
+      elsewhere). Leave blank to use the native cart + Paystack checkout. */
   storeUrl?: string;
 }) {
+  const { addItem, isInCart } = useCart();
   const [showForm, setShowForm] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -77,14 +89,34 @@ export default function DownloadButton({
         </a>
       );
     }
+
+    // No external store link set — sell it through the built-in cart.
+    if (price == null || !slug || !name) {
+      return (
+        <button
+          disabled
+          title="Set a price and slug in the admin to enable checkout"
+          className="mt-6 inline-flex items-center justify-center gap-1.5 border border-red-300 bg-red-50 px-4 py-2 text-center text-xs font-semibold uppercase tracking-wide text-red-400 cursor-not-allowed"
+        >
+          Coming Soon
+        </button>
+      );
+    }
+
+    const inCart = isInCart(id);
     return (
-      <button
-        disabled
-        title="Payments are launching soon"
-        className="mt-6 inline-flex items-center justify-center gap-1.5 border border-red-300 bg-red-50 px-4 py-2 text-center text-xs font-semibold uppercase tracking-wide text-red-400 cursor-not-allowed"
+      <Link
+        href="/cart"
+        onClick={(e) => {
+          if (inCart) return; // already added — just go straight to cart
+          e.preventDefault();
+          addItem({ productId: id, slug, name, price, thumbnailUrl });
+          window.location.href = "/cart";
+        }}
+        className="mt-6 inline-flex items-center justify-center gap-1.5 border border-gold bg-gold px-4 py-2 text-center text-xs font-semibold uppercase tracking-wide text-white hover:bg-gold-dark transition-colors"
       >
-        Coming Soon
-      </button>
+        🛒 {inCart ? "View Cart" : "Buy Now"}
+      </Link>
     );
   }
 
