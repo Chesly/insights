@@ -1,40 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 
-// GET /api/download/[token] — the ONLY link ever shown to a shopper.
-// Validates the token (exists, not expired, not used up), then redirects
-// to the actual file. The real storage URL is never embedded in any page
-// HTML or exposed in the UI, so it can't be casually copy-pasted and
-// shared the way a direct file link could.
-export async function GET(_req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
-  const { token } = await params;
+export async function computeDiscount(
+  code: string,
+  subtotal: number
+): Promise<{ valid: true; discount: number; coupon: { code: string } } | { valid: false; error: string }> {
   const supabase = createServiceClient();
-
-  const { data: record } = await supabase
-    .from("download_tokens")
-    .select("*, download:downloads(file_url, name, is_published)")
-    .eq("token", token)
+  const { data: coupon } = await supabase
+    .from("coupons")
+    .select("*")
+    .eq("code", code.trim().toUpperCase())
     .single();
 
-  if (!record) {
-    return NextResponse.redirect(new URL("/download-expired?reason=invalid", _req.url));
+  if (!coupon || !coupon.active) return { valid: false, error: "That coupon code isn't valid." };
+  if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) {
+    return { valid: false, error: "That coupon has expired." };
   }
-  if (new Date(record.expires_at) < new Date()) {
-    return NextResponse.redirect(new URL("/download-expired?reason=expired", _req.url));
-  }
-  if (record.use_count >= record.max_uses) {
-    return NextResponse.redirect(new URL("/download-expired?reason=used-up", _req.url));
+  if (coupon.max_uses != null && coupon.use_count >= coupon.max_uses) {
+    return { valid: false, error: "That coupon has already been fully redeemed." };
   }
 
-  const fileUrl = record.download?.file_url;
-  if (!fileUrl) {
-    return NextResponse.redirect(new URL("/download-expired?reason=invalid", _req.url));
+  const discount =
+    coupon.type === "percent" ? Math.round(subtotal * (coupon.value / 100) * 100) / 100 : Math.min(coupon.value, subtotal);
+
+  return { valid: true, discount, coupon: { code: coupon.code } };
+}
+
+// POST — used by the cart page to preview a discount before checkout.
+// The real checkout route re-runs this same check server-side rather
+// than trusting whatever discount the browser sends back.
+export async function POST(req: NextRequest) {
+  const body = await req.json().catch(() => null);
+  if (!body?.code || typeof body.subtotal !== "number") {
+    return NextResponse.json({ valid: false, error: "Missing code or subtotal." }, { status: 400 });
   }
-
-  await supabase
-    .from("download_tokens")
-    .update({ use_count: record.use_count + 1 })
-    .eq("id", record.id);
-
-  return NextResponse.redirect(fileUrl);
+  const result = await computeDiscount(body.code, body.subtotal);
+  return NextResponse.json(result);
 }
