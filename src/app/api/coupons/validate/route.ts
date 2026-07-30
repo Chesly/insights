@@ -1,40 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
-import { fulfillOrder } from "@/lib/orders";
 
-// GET /api/checkout/verify?reference=xxx — called by the success page
-// right after Paystack redirects back. Never trust the redirect alone —
-// always re-confirm the transaction status directly with Paystack's API
-// before marking anything paid or handing over a download token.
-export async function GET(req: NextRequest) {
-  const reference = req.nextUrl.searchParams.get("reference");
-  if (!reference) return NextResponse.json({ error: "Missing reference" }, { status: 400 });
-
-  const secretKey = process.env.PAYSTACK_SECRET_KEY;
-  if (!secretKey) {
-    return NextResponse.json({ error: "Payments aren't configured on this site." }, { status: 500 });
-  }
-
+export async function computeDiscount(
+  code: string,
+  subtotal: number
+): Promise<{ valid: true; discount: number; coupon: { code: string } } | { valid: false; error: string }> {
   const supabase = createServiceClient();
-  const { data: order } = await supabase.from("orders").select("status").eq("paystack_reference", reference).single();
-  if (!order) return NextResponse.json({ error: "Order not found." }, { status: 404 });
+  const { data: coupon } = await supabase
+    .from("coupons")
+    .select("*")
+    .eq("code", code.trim().toUpperCase())
+    .single();
 
-  if (order.status !== "paid") {
-    const paystackRes = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
-      headers: { Authorization: `Bearer ${secretKey}` },
-    });
-    const paystackJson = await paystackRes.json();
-    const success = paystackRes.ok && paystackJson.status && paystackJson.data?.status === "success";
-
-    if (!success) {
-      await supabase.from("orders").update({ status: "failed" }).eq("paystack_reference", reference);
-      return NextResponse.json({ status: "failed" });
-    }
+  if (!coupon || !coupon.active) return { valid: false, error: "That coupon code isn't valid." };
+  if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) {
+    return { valid: false, error: "That coupon has expired." };
+  }
+  if (coupon.max_uses != null && coupon.use_count >= coupon.max_uses) {
+    return { valid: false, error: "That coupon has already been fully redeemed." };
   }
 
-  const result = await fulfillOrder(reference);
-  if (result.status === "not_found") {
-    return NextResponse.json({ error: "Order not found." }, { status: 404 });
+  const discount =
+    coupon.type === "percent" ? Math.round(subtotal * (coupon.value / 100) * 100) / 100 : Math.min(coupon.value, subtotal);
+
+  return { valid: true, discount, coupon: { code: coupon.code } };
+}
+
+// POST — used by the cart page to preview a discount before checkout.
+// The real checkout route re-runs this same check server-side rather
+// than trusting whatever discount the browser sends back.
+export async function POST(req: NextRequest) {
+  const body = await req.json().catch(() => null);
+  if (!body?.code || typeof body.subtotal !== "number") {
+    return NextResponse.json({ valid: false, error: "Missing code or subtotal." }, { status: 400 });
   }
+  const result = await computeDiscount(body.code, body.subtotal);
   return NextResponse.json(result);
 }
