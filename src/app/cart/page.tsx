@@ -19,6 +19,7 @@ export default function CartPage() {
   const [couponError, setCouponError] = useState("");
 
   const finalTotal = Math.max(0, total - (coupon?.discount || 0));
+  const isFree = finalTotal <= 0;
 
   async function applyCoupon(e: React.FormEvent) {
     e.preventDefault();
@@ -53,9 +54,9 @@ export default function CartPage() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Something went wrong — please try again.");
-      // Cart is cleared once we know Paystack accepted the transaction —
-      // if the shopper abandons checkout, their items simply aren't lost,
-      // since nothing here clears the cart until this point is reached.
+      // Cart is cleared once we know the order was accepted — if the
+      // shopper abandons checkout, their items simply aren't lost, since
+      // nothing here clears the cart until this point is reached.
       clearCart();
       window.location.href = json.authorizationUrl;
     } catch (err) {
@@ -124,7 +125,7 @@ export default function CartPage() {
               )}
               <div className="flex items-center justify-between pt-1">
                 <span className="font-semibold text-navy dark:text-white">Total</span>
-                <span className="text-xl font-bold text-gold">R{finalTotal.toLocaleString("en-ZA")}</span>
+                <span className="text-xl font-bold text-gold">{isFree ? "Free" : `R${finalTotal.toLocaleString("en-ZA")}`}</span>
               </div>
             </div>
 
@@ -183,10 +184,14 @@ export default function CartPage() {
                 disabled={status === "submitting"}
                 className="w-full bg-gold px-4 py-3 text-sm font-semibold text-white hover:bg-gold-dark disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {status === "submitting" ? "Redirecting to Paystack…" : "Checkout with Paystack"}
+                {status === "submitting"
+                  ? isFree ? "Processing…" : "Redirecting to Paystack…"
+                  : isFree ? "Get for Free" : "Checkout with Paystack"}
               </button>
               <p className="text-center text-[11px] text-navy/40 dark:text-white/40">
-                🔒 Secure payment via Paystack. You&rsquo;ll be redirected to complete payment.
+                {isFree
+                  ? "🎉 Covered in full — no payment needed. Your download link will be ready on the next screen."
+                  : "🔒 Secure payment via Paystack. You'll be redirected to complete payment."}
               </p>
             </form>
           </aside>

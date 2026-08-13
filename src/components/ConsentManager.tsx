@@ -77,50 +77,51 @@ export default function ConsentManager({
     <div
       role="dialog"
       aria-label="Cookie consent"
-      style={{
-        position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 9999,
-        background: "#0f172a", color: "#e2e8f0", padding: "18px 20px",
-        boxShadow: "0 -4px 24px rgba(0,0,0,0.2)",
-        display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16,
-        justifyContent: "center", fontFamily: "Inter, sans-serif",
-      }}
+      className="fixed inset-x-0 bottom-0 z-[9999] flex flex-wrap items-center justify-center gap-4 border-t border-white/10 bg-footer px-5 py-4 shadow-[0_-6px_20px_rgba(0,0,0,0.35)]"
     >
-      <p style={{ fontSize: 13, lineHeight: 1.6, maxWidth: 560, margin: 0, flex: "1 1 320px" }}>
+      <p className="m-0 max-w-[560px] flex-1 basis-80 text-[13px] leading-relaxed text-white/60">
         We use cookies for analytics to understand how visitors use this site. Essential site
         functions work regardless of your choice. See our privacy practices for details.
       </p>
 
       {showPreferences ? (
-        <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, opacity: 0.6 }}>
+        <div className="flex flex-wrap items-center gap-3.5">
+          <label className="flex items-center gap-1.5 text-xs text-white/40">
             <input type="checkbox" checked disabled /> Necessary (always on)
           </label>
-          <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, cursor: "pointer" }}>
+          <label className="flex cursor-pointer items-center gap-1.5 text-xs text-white/70">
             <input type="checkbox" checked={analyticsToggle} onChange={(e) => setAnalyticsToggle(e.target.checked)} />
             Analytics
           </label>
-          <button onClick={savePreferences} style={btnStyle("#8B6914", "#fff")}>Save Preferences</button>
+          <button
+            onClick={savePreferences}
+            className="whitespace-nowrap bg-gold px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-gold-light"
+          >
+            Save Preferences
+          </button>
         </div>
       ) : (
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          <button onClick={() => setShowPreferences(true)} style={btnStyle("transparent", "#e2e8f0", "1px solid #334155")}>
+        <div className="flex flex-wrap gap-2.5">
+          <button
+            onClick={() => setShowPreferences(true)}
+            className="whitespace-nowrap border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white/70 transition-colors hover:border-white/40 hover:text-white"
+          >
             Preferences
           </button>
-          <button onClick={rejectNonEssential} style={btnStyle("transparent", "#e2e8f0", "1px solid #334155")}>
+          <button
+            onClick={rejectNonEssential}
+            className="whitespace-nowrap border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white/70 transition-colors hover:border-white/40 hover:text-white"
+          >
             Reject Non-Essential
           </button>
-          <button onClick={acceptAll} style={btnStyle("#8B6914", "#fff")}>
+          <button
+            onClick={acceptAll}
+            className="whitespace-nowrap bg-gold px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-gold-light"
+          >
             Accept
           </button>
         </div>
       )}
     </div>
   );
-}
-
-function btnStyle(bg: string, color: string, border?: string): React.CSSProperties {
-  return {
-    background: bg, color, border: border || "none", padding: "9px 18px",
-    borderRadius: 6, fontSize: 12.5, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap",
-  };
 }
