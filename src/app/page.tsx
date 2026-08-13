@@ -3,12 +3,12 @@ import {
   getAllPosts,
   getFeaturedPosts,
 } from "@/lib/posts";
-import { getAllDownloads, pricing } from "@/lib/downloads";
 import { siteConfig } from "@/lib/siteConfig";
 import { collectionPageSchema, itemListSchema } from "@/lib/schema";
 import Carousel from "@/components/Carousel";
 import ArticleRow from "@/components/ArticleRow";
 import Newsletter from "@/components/Newsletter";
+import ProductsTeaser from "@/components/ProductsTeaser";
 
 export const revalidate = 3600;
 
@@ -18,10 +18,9 @@ export default async function HomePage() {
   // thing to read") rather than two separate silos. Every row below is
   // derived from this one array instead of separate DB calls, keeping the
   // whole homepage consistent and fast.
-  const [posts, featuredPosts, downloads] = await Promise.all([
+  const [posts, featuredPosts] = await Promise.all([
     getAllPosts(false, ["insights", "coffee"]),
     getFeaturedPosts(),
-    getAllDownloads(),
   ]);
 
   const carouselSource = featuredPosts.length > 0 ? featuredPosts : posts;
@@ -46,8 +45,6 @@ export default async function HomePage() {
   const latest = remaining.slice(0, 4);
   const editorsPickFlagged = remaining.filter((p) => p.editorsPick);
   const popular = (editorsPickFlagged.length > 0 ? editorsPickFlagged : remaining.slice(4, 8));
-
-  const latestDownloads = downloads.slice(0, 3);
 
   const listSchema = itemListSchema(
     latest.map((p) => ({
@@ -117,48 +114,10 @@ export default async function HomePage() {
           {/* No "Latest" heading — flows straight from hero into content */}
           <ArticleRow posts={latest} />
           <ArticleRow heading="Popular" posts={popular} />
-
-          {/* Business Toolkit — bottom of the homepage, same grid as articles */}
-          {latestDownloads.length > 0 && (
-            <section className="mt-14" aria-labelledby="toolkit-heading">
-              <div className="mb-6 flex items-center justify-between">
-                <h2 id="toolkit-heading" className="text-xl font-bold uppercase tracking-wide text-navy dark:text-white">
-                  Business Toolkit
-                </h2>
-                <Link href="/downloads" className="text-xs font-semibold uppercase tracking-wide text-gold hover:underline">
-                  View All
-                </Link>
-              </div>
-              <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
-                {latestDownloads.map((item) => (
-                  <Link key={item.id} href={`/downloads/${item.slug}`} className="group block">
-                    <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-[285/200]">
-                      {item.thumbnailUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={item.thumbnailUrl}
-                          alt={item.name}
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center text-3xl">📄</div>
-                      )}
-                    </div>
-                    <div className="pt-3">
-                      <span className="text-xs font-semibold uppercase tracking-wide text-gold">
-                        {pricing(item).label}
-                      </span>
-                      <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-navy group-hover:text-gold dark:text-white">
-                        {item.name}
-                      </h3>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          )}
         </div>
       </div>
+
+      <ProductsTeaser />
 
       <Newsletter />
     </div>

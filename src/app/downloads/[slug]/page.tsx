@@ -5,7 +5,8 @@ import Link from "next/link";
 import { siteConfig } from "@/lib/siteConfig";
 import PageHero from "@/components/PageHero";
 import DownloadButton from "@/components/DownloadButton";
-import { getAllDownloads, getDownloadBySlug, pricing } from "@/lib/downloads";
+import { getAllDownloads, getDownloadBySlug, getRelatedDownloads, pricing } from "@/lib/downloads";
+import { getAllPosts } from "@/lib/posts";
 
 const FILE_TYPE_ICONS: Record<string, string> = { pdf: "📄", zip: "🗜️", doc: "📝", other: "📦" };
 
@@ -40,6 +41,12 @@ export default async function DownloadDetailPage({
   const item = await getDownloadBySlug(slug);
   if (!item) notFound();
   const p = pricing(item);
+
+  const [relatedProducts, allPosts] = await Promise.all([
+    getRelatedDownloads(item),
+    getAllPosts(false, ["insights", "coffee"]),
+  ]);
+  const latestPosts = allPosts.slice(0, 4);
 
   return (
     <div>
@@ -170,6 +177,87 @@ export default async function DownloadDetailPage({
           />
         </aside>
       </div>
+
+      {relatedProducts.length > 0 && (
+        <section className="container-page pb-14" aria-labelledby="related-products-heading">
+          <div className="mb-6 flex items-center justify-between">
+            <h2 id="related-products-heading" className="text-xl font-bold uppercase tracking-wide text-navy dark:text-white">
+              Related Products
+            </h2>
+            <Link href="/downloads" className="text-xs font-semibold uppercase tracking-wide text-gold hover:underline">
+              View All →
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
+            {relatedProducts.map((rp) => {
+              const rpPricing = pricing(rp);
+              return (
+                <Link key={rp.id} href={`/downloads/${rp.slug}`} className="group block">
+                  <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-[285/200]">
+                    {rp.thumbnailUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={rp.thumbnailUrl}
+                        alt={rp.name}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-3xl">📄</div>
+                    )}
+                  </div>
+                  <div className="pt-3">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-gold">
+                      {rpPricing.label}
+                    </span>
+                    <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-navy group-hover:text-gold dark:text-white">
+                      {rp.name}
+                    </h3>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {latestPosts.length > 0 && (
+        <section className="border-t border-navy/10 bg-navy/[0.02] py-14 dark:border-white/10 dark:bg-white/[0.02]" aria-labelledby="latest-posts-heading">
+          <div className="container-page">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 id="latest-posts-heading" className="text-xl font-bold uppercase tracking-wide text-navy dark:text-white">
+                From the Blog
+              </h2>
+              <Link href="/blog" className="text-xs font-semibold uppercase tracking-wide text-gold hover:underline">
+                View All →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
+              {latestPosts.map((post) => (
+                <Link
+                  key={post.slug}
+                  href={`/${post.section === "coffee" ? "coffee" : "blog"}/${post.slug}`}
+                  className="group block"
+                >
+                  <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-[285/200]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={post.image}
+                      alt={post.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="pt-3">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-gold">{post.category}</span>
+                    <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-navy group-hover:text-gold dark:text-white">
+                      {post.title}
+                    </h3>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

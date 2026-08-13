@@ -71,6 +71,16 @@ export const getDownloadBySlug = cache(async (slug: string): Promise<DownloadIte
   return all.find((d) => d.slug === slug) || null;
 });
 
+/** Same-category downloads first (excluding the item itself), padded out
+    with the most recent other downloads so the section is never empty. */
+export async function getRelatedDownloads(item: DownloadItem, limit = 4): Promise<DownloadItem[]> {
+  const all = await getAllDownloads();
+  const others = all.filter((d) => d.id !== item.id);
+  const sameCategory = item.category ? others.filter((d) => d.category === item.category) : [];
+  const rest = others.filter((d) => !sameCategory.includes(d));
+  return [...sameCategory, ...rest].slice(0, limit);
+}
+
 /** The three states you actually see — Free, On Sale, Premium — derived
     from just two fields (price + compareAtPrice) rather than a third tier
     value. An "On Sale" item IS a Premium item, just discounted right now;
