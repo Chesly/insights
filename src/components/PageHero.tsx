@@ -17,6 +17,11 @@ export default function PageHero({
   subtitle?: string;
   breadcrumbs: Crumb[];
   backgroundImage?: string;
+  /** Template standard: every page's breadcrumb hero is the same height
+      site-wide (siteConfig.pageHero.heightPx). Leave this unset — new
+      pages should inherit the shared height automatically, not set their
+      own, so the site can't drift out of sync page by page again. Only
+      pass this if a page has a real, deliberate reason to differ. */
   heightPx?: number;
 }) {
   return (

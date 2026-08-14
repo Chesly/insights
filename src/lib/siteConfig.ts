@@ -188,9 +188,12 @@ export const siteConfig = {
   pageHero: {
     backgroundImage: "https://ik.imagekit.io/mkvu8hdr5/insights/typing.jpg",
     overlayOpacity: 0.68, // ~32-40% background image visibility = darker overlay for contrast
-    // Standardized to the compact height already used on Cart/Tools/About —
-    // every page's breadcrumb hero should read the same height, not just
-    // the ones that happened to set an explicit override.
+    // TEMPLATE STANDARD — every PageHero (breadcrumb image banner) on the
+    // site reads this height unless a page explicitly overrides it, which
+    // none currently do on purpose. When adding a new page later, just
+    // pass `backgroundImage` (and title/subtitle/breadcrumbs) to PageHero
+    // and leave heightPx unset so it automatically matches every other
+    // page — change the value here, once, if the standard itself changes.
     heightPx: 168
   },
 
