@@ -10,6 +10,7 @@ export interface CarouselSlide {
   description: string;
   category: string;
   image: string;
+  section?: "insights" | "coffee";
 }
 
 const AUTOPLAY_MS = 6000;
@@ -84,7 +85,7 @@ export default function Carousel({ slides }: { slides: CarouselSlide[] }) {
               {slide.description}
             </p>
             <Link
-              href={`/blog/${slide.slug}`}
+              href={`/${slide.section === "coffee" ? "coffee" : "insights"}/${slide.slug}`}
               className="mt-5 inline-flex items-center gap-2 bg-white px-5 py-2.5 text-sm font-semibold text-navy transition-colors hover:bg-gold hover:text-white"
             >
               Read Article <span aria-hidden="true">→</span>

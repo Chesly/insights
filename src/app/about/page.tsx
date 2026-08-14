@@ -24,10 +24,9 @@ export default function AboutPage() {
     <div>
       <PageHero
         title={siteConfig.pages.about.title}
-        subtitle="A South African business built on AI, technology and SEO insight."
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "About Us" }]}
+        subtitle={siteConfig.pages.about.intro}
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "About Chesly.Tech Insights" }]}
         backgroundImage={IMAGES.breadcrumb}
-        heightPx={Math.round(siteConfig.pageHero.heightPx * 0.6)}
       />
 
       {/* ── Background ─────────────────────────────────────────────── */}
@@ -195,10 +194,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── Newsletter (replaces the old plain Contact block) ────────── */}
-      <Newsletter
-        noteBody={siteConfig.editorsNote.body}
-        noteSignature={siteConfig.editorsNote.signature}
-      />
+      <Newsletter />
     </div>
   );
 }

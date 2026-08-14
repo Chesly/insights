@@ -29,7 +29,8 @@ export default async function HomePage() {
     title: p.title,
     description: p.description,
     category: p.category,
-    image: p.image
+    image: p.image,
+    section: p.section
   }));
 
   const featuredSlugs = new Set(carouselSlides.map((s) => s.slug));
@@ -73,7 +74,7 @@ export default async function HomePage() {
               push real content below the fold. */}
           <section className="mb-8 pt-2 text-center">
             <h1 className="mx-auto max-w-2xl text-xl font-bold leading-snug tracking-tight text-navy dark:text-white sm:text-2xl">
-              Clear thinking on AI, technology &amp; SEO — for South African businesses
+              Practical ideas for building a better business and a better future.
             </h1>
           </section>
 

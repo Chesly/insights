@@ -49,7 +49,7 @@ export default async function CategoryPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
-            itemListSchema(posts.map((p) => ({ name: p.title, url: `${siteConfig.url}/blog/${p.slug}` })))
+            itemListSchema(posts.map((p) => ({ name: p.title, url: `${siteConfig.url}/insights/${p.slug}` })))
           )
         }}
       />
@@ -81,7 +81,7 @@ export default async function CategoryPage({
           {posts.map((post) => (
             <Link
               key={post.slug}
-              href={`/blog/${post.slug}`}
+              href={`/insights/${post.slug}`}
               className="group overflow-hidden border border-gold/10 shadow-sm hover:shadow-md"
             >
               <div className="relative aspect-video">

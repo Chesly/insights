@@ -170,7 +170,7 @@ export default function DownloadsPage() {
               </div>
               <div>
                 <label style={{ display:'flex', alignItems:'center', justifyContent:'space-between', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
-                  <span>Slug (its page URL: /downloads/…)</span>
+                  <span>Slug (its page URL: /tools/…)</span>
                   <button type="button" onClick={()=>setForm(f=>({...f, slug: slugify(f.name)}))}
                     style={{ fontSize:11, fontWeight:600, color:'#8B6914', background:'none', border:'none', cursor:'pointer' }}>
                     Generate from name

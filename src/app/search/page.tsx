@@ -37,7 +37,7 @@ export default async function SearchPage({
         {results.map((post) => (
           <Link
             key={post.slug}
-            href={`/blog/${post.slug}`}
+            href={`/insights/${post.slug}`}
             className="group overflow-hidden border border-gold/10 shadow-sm hover:shadow-md"
           >
             <div className="relative aspect-video">

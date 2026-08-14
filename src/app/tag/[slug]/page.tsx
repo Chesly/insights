@@ -56,7 +56,7 @@ export default async function TagPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
-            itemListSchema(posts.map((p) => ({ name: p.title, url: `${siteConfig.url}/blog/${p.slug}` })))
+            itemListSchema(posts.map((p) => ({ name: p.title, url: `${siteConfig.url}/insights/${p.slug}` })))
           )
         }}
       />
@@ -66,7 +66,7 @@ export default async function TagPage({
           __html: JSON.stringify(
             breadcrumbSchema([
               { name: "Home", url: siteConfig.url },
-              { name: "Articles", url: `${siteConfig.url}/blog` },
+              { name: "Articles", url: `${siteConfig.url}/insights` },
               { name: `#${label}`, url }
             ])
           )
@@ -78,7 +78,7 @@ export default async function TagPage({
         subtitle={`${posts.length} article${posts.length === 1 ? "" : "s"}`}
         breadcrumbs={[
           { label: "Home", href: "/" },
-          { label: "Articles", href: "/blog" },
+          { label: "Articles", href: "/insights" },
           { label: `#${label}` }
         ]}
       />
@@ -88,7 +88,7 @@ export default async function TagPage({
           {posts.map((post) => (
             <Link
               key={post.slug}
-              href={`/blog/${post.slug}`}
+              href={`/insights/${post.slug}`}
               className="group overflow-hidden border border-gold/10 shadow-sm hover:shadow-md"
             >
               <div className="relative aspect-video">

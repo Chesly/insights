@@ -32,6 +32,17 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    // Permanent — /downloads and /blog were indexed under the old paths
+    // (see Search Console), so these 301s carry that ranking/link equity
+    // over to /tools and /insights instead of leaving 404s behind.
+    return [
+      { source: "/downloads", destination: "/tools", permanent: true },
+      { source: "/downloads/:slug", destination: "/tools/:slug", permanent: true },
+      { source: "/blog", destination: "/insights", permanent: true },
+      { source: "/blog/:slug", destination: "/insights/:slug", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

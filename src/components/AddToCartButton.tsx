@@ -33,7 +33,7 @@ export default function AddToCartButton({ item, className = "" }: { item: Downlo
   }
 
   return (
-    <Link href={`/downloads/${item.slug}`} className={`${baseClass} ${className}`}>
+    <Link href={`/tools/${item.slug}`} className={`${baseClass} ${className}`}>
       {item.tier === "free" ? "Get for Free" : "View Details"}
     </Link>
   );

@@ -112,9 +112,9 @@ export const siteConfig = {
   nav: [
     { label: "Home", href: "/" },
     { label: "About Us", href: "/about" },
-    { label: "Insights", href: "/blog" },
+    { label: "Insights", href: "/insights" },
     { label: "Let's Have ☕", href: "/coffee" },
-    { label: "Downloads", href: "/downloads" },
+    { label: "Business Tools", href: "/tools" },
     { label: "Contact", href: "/contact" }
   ] as NavLink[],
 
@@ -133,8 +133,8 @@ export const siteConfig = {
       { label: "Brand Strategy", href: "https://chesly.tech/#services" }
     ] satisfies FooterLink[],
     resources: [
-      { label: "Insights", href: "/blog" },
-      { label: "Downloads", href: "/downloads" },
+      { label: "Insights", href: "/insights" },
+      { label: "Business Tools", href: "/tools" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms of Use", href: "/terms" },
       { label: "Disclaimer", href: "/disclaimer" },
@@ -188,7 +188,10 @@ export const siteConfig = {
   pageHero: {
     backgroundImage: "https://ik.imagekit.io/mkvu8hdr5/insights/typing.jpg",
     overlayOpacity: 0.68, // ~32-40% background image visibility = darker overlay for contrast
-    heightPx: 280
+    // Standardized to the compact height already used on Cart/Tools/About —
+    // every page's breadcrumb hero should read the same height, not just
+    // the ones that happened to set an explicit override.
+    heightPx: 168
   },
 
   // ── Page intros (shown in the page hero subtitle) ───────────────────────
@@ -196,12 +199,12 @@ export const siteConfig = {
     blog: {
       title: "Insights",
       intro:
-        "Explore expert insights covering Artificial Intelligence, SEO, Google AI Search, digital marketing, cybersecurity, startups and emerging technology. Every article is written to help professionals and businesses stay ahead."
+        "Practical ideas, opportunities and advice for people building businesses and making things happen."
     },
     about: {
-      title: "About Us",
+      title: "About Insights",
       intro:
-        "Chesly Insights is a South African technology publication focused on AI, digital innovation and business growth — helping founders, marketers and professionals make sense of a fast-moving industry."
+        "Why we created Insights — and what we want it to do for you."
     },
     contact: {
       title: "Contact Us",
@@ -209,9 +212,9 @@ export const siteConfig = {
         "We welcome partnerships, media enquiries, collaborations and general communication. Tell us what you're working on and we'll get back to you."
     },
     downloads: {
-      title: "Downloads",
+      title: "Business Tools",
       intro:
-        "Free and premium resources — templates, guides and tools — built to help South African businesses put AI, SEO and digital strategy into practice."
+        "Practical tools for real business problems. Track your money, prepare for funding, manage your operations and make better business decisions with ready-to-use tools built for entrepreneurs and small businesses."
     },
     spazaSupport: {
       title: "Spaza Support",
@@ -221,12 +224,6 @@ export const siteConfig = {
     category: {
       title: "Categories"
     }
-  },
-
-  editorsNote: {
-    body:
-      "Every week, we bring you the AI, technology, SEO and digital marketing insights that matter most to South African businesses, founders and marketers—without the hype. Thanks for reading.",
-    signature: "Chesly Silaule, Chesly.Tech"
   },
 
   downloads: [

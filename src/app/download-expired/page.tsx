@@ -17,7 +17,7 @@ export default async function DownloadExpiredPage({
 
   return (
     <div>
-      <PageHero title="Download Link" breadcrumbs={[{ label: "Home", href: "/" }]} heightPx={140} />
+      <PageHero title="Download Link" breadcrumbs={[{ label: "Home", href: "/" }]} />
       <div className="container-page py-16 text-center">
         <div className="mx-auto max-w-md">
           <p className="text-3xl">🔗</p>
@@ -26,8 +26,8 @@ export default async function DownloadExpiredPage({
             If you paid for this download and need it again, contact us and we&rsquo;ll sort you out — or
             browse the toolkit below.
           </p>
-          <Link href="/downloads" className="mt-6 inline-block text-sm font-semibold text-gold hover:underline">
-            ← Back to Business Toolkit
+          <Link href="/tools" className="mt-6 inline-block text-sm font-semibold text-gold hover:underline">
+            ← Back to Business Tools
           </Link>
         </div>
       </div>

@@ -79,10 +79,11 @@ export function personSchema(author: Author) {
 }
 
 export function articleSchema(post: Post, authorUrl?: string) {
+  const basePath = post.section === "coffee" ? "coffee" : "insights";
   return {
     "@context": "https://schema.org",
     "@type": "Article",
-    "@id": `${siteConfig.url}/blog/${post.slug}/#article`,
+    "@id": `${siteConfig.url}/${basePath}/${post.slug}/#article`,
     headline: post.title,
     description: post.description,
     image: [post.image],
@@ -95,7 +96,7 @@ export function articleSchema(post: Post, authorUrl?: string) {
     publisher: { "@id": `${siteConfig.url}/#organization` },
     datePublished: post.publishedDate,
     dateModified: post.modifiedDate || post.publishedDate,
-    mainEntityOfPage: { "@type": "WebPage", "@id": `${siteConfig.url}/blog/${post.slug}` },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${siteConfig.url}/${basePath}/${post.slug}` },
     articleSection: post.category,
     keywords: [...(post.keywords || []), ...(post.semanticKeywords || [])].join(", "),
     inLanguage: siteConfig.language,

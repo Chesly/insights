@@ -2,15 +2,21 @@ import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/siteConfig";
 import { getAllPosts, getAllTags } from "@/lib/posts";
 import { getAllAuthors } from "@/lib/authors";
+import { getAllDownloads } from "@/lib/downloads";
 import { slugify } from "@/lib/types";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [posts, tags, authors] = await Promise.all([getAllPosts(false, ["insights", "coffee"]), getAllTags(), getAllAuthors()]);
+  const [posts, tags, authors, downloads] = await Promise.all([
+    getAllPosts(false, ["insights", "coffee"]),
+    getAllTags(),
+    getAllAuthors(),
+    getAllDownloads(),
+  ]);
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: siteConfig.url, changeFrequency: "daily", priority: 1 },
-    { url: `${siteConfig.url}/blog`, changeFrequency: "daily", priority: 0.9 },
-    { url: `${siteConfig.url}/downloads`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${siteConfig.url}/insights`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${siteConfig.url}/tools`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${siteConfig.url}/spaza-support`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${siteConfig.url}/category`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${siteConfig.url}/author`, changeFrequency: "monthly", priority: 0.5 },
@@ -40,11 +46,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const postRoutes: MetadataRoute.Sitemap = posts.map((p) => ({
-    url: `${siteConfig.url}/${p.section === "coffee" ? "coffee" : "blog"}/${p.slug}`,
+    url: `${siteConfig.url}/${p.section === "coffee" ? "coffee" : "insights"}/${p.slug}`,
     lastModified: p.modifiedDate || p.publishedDate,
     changeFrequency: "monthly",
     priority: 0.8
   }));
 
-  return [...staticRoutes, ...categoryRoutes, ...tagRoutes, ...authorRoutes, ...postRoutes];
+  const toolRoutes: MetadataRoute.Sitemap = downloads.map((d) => ({
+    url: `${siteConfig.url}/tools/${d.slug}`,
+    changeFrequency: "monthly",
+    priority: 0.7
+  }));
+
+  return [...staticRoutes, ...categoryRoutes, ...tagRoutes, ...authorRoutes, ...postRoutes, ...toolRoutes];
 }

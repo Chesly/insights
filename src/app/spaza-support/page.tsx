@@ -50,7 +50,7 @@ export default async function SpazaSupportPage() {
               {relatedPosts.map((post) => (
                 <Link
                   key={post.slug}
-                  href={`/blog/${post.slug}`}
+                  href={`/insights/${post.slug}`}
                   className="border border-gold/10 p-5 hover:shadow-md"
                 >
                   <span className="text-xs font-semibold uppercase tracking-wide text-gold">

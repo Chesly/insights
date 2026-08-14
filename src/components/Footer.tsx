@@ -7,10 +7,10 @@ import { siteConfig } from "@/lib/siteConfig";
 import SocialLinks from "./SocialLinks";
 
 export default function Footer({ settings }: { settings?: Record<string, string> }) {
-  // Defaults open (unlike chesly.tech's collapsed-by-default tab) so
-  // Privacy/Terms/Contact links stay reachable without an extra click —
-  // the toggle just gives visitors the option to tuck the footer away.
-  const [expanded, setExpanded] = useState(true);
+  // Collapsed by default, matching chesly.tech's floating footer exactly —
+  // only the copyright/credit chips and the Show/Hide toggle are visible
+  // until a visitor opts in to expanding it.
+  const [expanded, setExpanded] = useState(false);
 
   // Admin > Settings overrides — fall back to siteConfig.ts when unset.
   const logoFooter = settings?.logo_footer_url || siteConfig.branding.logoFooter;
@@ -27,6 +27,15 @@ export default function Footer({ settings }: { settings?: Record<string, string>
         <div className="flex items-center whitespace-nowrap rounded-t-md bg-footer px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white/50">
           {siteConfig.copyright.replace("All Rights Reserved.", "").trim()}
         </div>
+        <a
+          href={siteConfig.owner.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Website by Chesly.Tech"
+          className="flex items-center whitespace-nowrap rounded-t-md bg-footer px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-gold-light transition-colors hover:text-gold"
+        >
+          Website by Chesly.Tech
+        </a>
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}

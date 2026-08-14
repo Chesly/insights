@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { NextRequest, NextResponse } from 'next/server'
 
 const CORS = {
@@ -19,7 +19,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Valid email required' }, { status: 400, headers: CORS })
   }
 
-  const supabase = await createClient()
+  // Service-role client: the anon-permission RLS policy that was meant to
+  // allow this insert doesn't actually pass in production (confirmed
+  // live — every public signup was silently failing with an RLS
+  // violation). Validation above is what actually gates this write.
+  const supabase = createServiceClient()
   const { error } = await supabase
     .from('newsletter_subscribers')
     .upsert({

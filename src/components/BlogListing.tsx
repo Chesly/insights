@@ -16,7 +16,7 @@ interface Props {
 // browse by category already have dedicated /category/[slug] pages;
 // duplicating that as a wall of buttons here was exactly the kind of
 // clutter the confirmed design direction asked to remove.
-export default function BlogListing({ posts, initialCount, perLoad, basePath = "/blog" }: Props) {
+export default function BlogListing({ posts, initialCount, perLoad, basePath = "/insights" }: Props) {
   const [visible, setVisible] = useState(initialCount);
   const [loading, setLoading] = useState(false);
   const loaderRef = useRef<HTMLDivElement>(null);

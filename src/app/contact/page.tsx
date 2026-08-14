@@ -25,6 +25,7 @@ export default async function ContactPage() {
         title={siteConfig.pages.contact.title}
         subtitle={siteConfig.pages.contact.intro}
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Contact" }]}
+        backgroundImage="https://ik.imagekit.io/mkvu8hdr5/contact_page_image.jpg"
       />
       <div className="container-page grid gap-12 py-16 lg:grid-cols-3">
         <ContactForm />

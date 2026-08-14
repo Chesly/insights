@@ -69,8 +69,9 @@ export default function CartPage() {
     <div>
       <PageHero
         title="Your Cart"
+        subtitle="Review the tools you've selected and get ready to put them to work."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Cart" }]}
-        heightPx={140}
+        backgroundImage="https://ik.imagekit.io/mkvu8hdr5/open_cart_shopping_center.jpg"
       />
 
       <div className="container-page grid gap-10 py-12 lg:grid-cols-[1fr_380px]">
@@ -78,8 +79,8 @@ export default function CartPage() {
           {items.length === 0 ? (
             <div className="border border-gold/15 p-10 text-center">
               <p className="text-navy/60 dark:text-white/60">Your cart is empty.</p>
-              <Link href="/downloads" className="mt-4 inline-block text-sm font-semibold text-gold hover:underline">
-                Browse the Business Toolkit →
+              <Link href="/tools" className="mt-4 inline-block text-sm font-semibold text-gold hover:underline">
+                Browse Business Tools →
               </Link>
             </div>
           ) : (

@@ -67,7 +67,7 @@ export default async function NotFound() {
             {trending.map((post, i) => (
               <li key={post.slug}>
                 <Link
-                  href={`/${post.section === "coffee" ? "coffee" : "blog"}/${post.slug}`}
+                  href={`/${post.section === "coffee" ? "coffee" : "insights"}/${post.slug}`}
                   className="flex items-center gap-3 p-3 hover:bg-gold/5"
                 >
                   <span className="text-lg font-bold text-gold/40 w-6 shrink-0">{i + 1}</span>
@@ -84,9 +84,9 @@ export default async function NotFound() {
       {/* ── Quick links ── */}
       <div className="mt-14 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
         <Link href="/" className="text-navy/60 hover:text-gold dark:text-white/60">Home</Link>
-        <Link href="/blog" className="text-navy/60 hover:text-gold dark:text-white/60">Insights</Link>
+        <Link href="/insights" className="text-navy/60 hover:text-gold dark:text-white/60">Insights</Link>
         <Link href="/coffee" className="text-navy/60 hover:text-gold dark:text-white/60">Let&apos;s Have Coffee</Link>
-        <Link href="/downloads" className="text-navy/60 hover:text-gold dark:text-white/60">Downloads</Link>
+        <Link href="/tools" className="text-navy/60 hover:text-gold dark:text-white/60">Business Tools</Link>
         <Link href="/about" className="text-navy/60 hover:text-gold dark:text-white/60">About</Link>
         <Link href="/contact" className="text-navy/60 hover:text-gold dark:text-white/60">Contact</Link>
       </div>

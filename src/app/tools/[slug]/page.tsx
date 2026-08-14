@@ -26,7 +26,7 @@ export async function generateMetadata({
   return {
     title: item.seoTitle || `${item.name} | ${siteConfig.pages.downloads.title}`,
     description: item.metaDescription || item.description,
-    alternates: { canonical: `${siteConfig.url}/downloads/${item.slug}` },
+    alternates: { canonical: `${siteConfig.url}/tools/${item.slug}` },
   };
 }
 
@@ -55,7 +55,7 @@ export default async function DownloadDetailPage({
         subtitle={item.subtitle}
         breadcrumbs={[
           { label: "Home", href: "/" },
-          { label: "Business Toolkit", href: "/downloads" },
+          { label: "Business Tools", href: "/tools" },
           { label: item.name },
         ]}
       />
@@ -138,10 +138,10 @@ export default async function DownloadDetailPage({
           )}
 
           <Link
-            href="/downloads"
+            href="/tools"
             className="mt-10 inline-block text-sm font-semibold text-gold hover:underline"
           >
-            ← Back to Business Toolkit
+            ← Back to Business Tools
           </Link>
         </div>
 
@@ -184,7 +184,7 @@ export default async function DownloadDetailPage({
             <h2 id="related-products-heading" className="text-xl font-bold uppercase tracking-wide text-navy dark:text-white">
               Related Products
             </h2>
-            <Link href="/downloads" className="text-xs font-semibold uppercase tracking-wide text-gold hover:underline">
+            <Link href="/tools" className="text-xs font-semibold uppercase tracking-wide text-gold hover:underline">
               View All →
             </Link>
           </div>
@@ -192,7 +192,7 @@ export default async function DownloadDetailPage({
             {relatedProducts.map((rp) => {
               const rpPricing = pricing(rp);
               return (
-                <Link key={rp.id} href={`/downloads/${rp.slug}`} className="group block">
+                <Link key={rp.id} href={`/tools/${rp.slug}`} className="group block">
                   <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-[285/200]">
                     {rp.thumbnailUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -227,7 +227,7 @@ export default async function DownloadDetailPage({
               <h2 id="latest-posts-heading" className="text-xl font-bold uppercase tracking-wide text-navy dark:text-white">
                 From the Blog
               </h2>
-              <Link href="/blog" className="text-xs font-semibold uppercase tracking-wide text-gold hover:underline">
+              <Link href="/insights" className="text-xs font-semibold uppercase tracking-wide text-gold hover:underline">
                 View All →
               </Link>
             </div>
@@ -235,7 +235,7 @@ export default async function DownloadDetailPage({
               {latestPosts.map((post) => (
                 <Link
                   key={post.slug}
-                  href={`/${post.section === "coffee" ? "coffee" : "blog"}/${post.slug}`}
+                  href={`/${post.section === "coffee" ? "coffee" : "insights"}/${post.slug}`}
                   className="group block"
                 >
                   <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-[285/200]">

@@ -13,7 +13,7 @@ interface Result {
 
 // Next.js doesn't pass the attempted URL into not-found.tsx, but the
 // browser's address bar still shows it — so we read it client-side and
-// turn the slug into a search query. "/blog/how-ai-helps-small-business"
+// turn the slug into a search query. "/insights/how-ai-helps-small-business"
 // becomes "how ai helps small business", searched against real content.
 export default function SmartSuggestions() {
   const pathname = usePathname();
@@ -52,7 +52,7 @@ export default function SmartSuggestions() {
         {results.map((r) => (
           <Link
             key={r.slug}
-            href={`/blog/${r.slug}`}
+            href={`/insights/${r.slug}`}
             className="border border-gold/15 p-4 text-left hover:border-gold/40 hover:bg-gold/5 transition-colors"
           >
             <span className="text-[11px] font-bold uppercase tracking-wider text-gold">

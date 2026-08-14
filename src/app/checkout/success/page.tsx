@@ -31,7 +31,6 @@ function CheckoutSuccessFallback() {
       <PageHero
         title="Order Confirmation"
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Cart", href: "/cart" }, { label: "Confirmation" }]}
-        heightPx={140}
       />
       <div className="container-page py-16 text-center">
         <div className="mx-auto max-w-md">
@@ -69,7 +68,6 @@ function CheckoutSuccessContent() {
       <PageHero
         title="Order Confirmation"
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Cart", href: "/cart" }, { label: "Confirmation" }]}
-        heightPx={140}
       />
       <div className="container-page py-16 text-center">
         <div className="mx-auto max-w-md">
@@ -103,8 +101,8 @@ function CheckoutSuccessContent() {
                   ))}
                 </ul>
               )}
-              <Link href="/downloads" className="mt-6 inline-block text-sm font-semibold text-gold hover:underline">
-                ← Back to Business Toolkit
+              <Link href="/tools" className="mt-6 inline-block text-sm font-semibold text-gold hover:underline">
+                ← Back to Business Tools
               </Link>
             </>
           )}
@@ -129,8 +127,8 @@ function CheckoutSuccessContent() {
               <p className="mt-2 text-sm text-navy/60 dark:text-white/60">
                 If you were charged and need help, contact us and we&rsquo;ll sort you out.
               </p>
-              <Link href="/downloads" className="mt-6 inline-block text-sm font-semibold text-gold hover:underline">
-                ← Back to Business Toolkit
+              <Link href="/tools" className="mt-6 inline-block text-sm font-semibold text-gold hover:underline">
+                ← Back to Business Tools
               </Link>
             </>
           )}

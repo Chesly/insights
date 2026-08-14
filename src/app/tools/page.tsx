@@ -7,7 +7,7 @@ import { getAllDownloads, pricing } from "@/lib/downloads";
 export const metadata: Metadata = {
   title: siteConfig.pages.downloads.title,
   description: siteConfig.pages.downloads.intro,
-  alternates: { canonical: `${siteConfig.url}/downloads` }
+  alternates: { canonical: `${siteConfig.url}/tools` }
 };
 
 export const revalidate = 3600;
@@ -22,14 +22,13 @@ export default async function DownloadsPage() {
       <PageHero
         title={siteConfig.pages.downloads.title}
         subtitle={siteConfig.pages.downloads.intro}
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Business Toolkit" }]}
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Business Tools" }]}
         backgroundImage="https://ik.imagekit.io/mkvu8hdr5/downloads_page.jpg"
-        heightPx={Math.round(siteConfig.pageHero.heightPx * 0.6)}
       />
       <div className="container-page py-12">
         {downloads.length === 0 ? (
           <p className="text-center text-navy/50 dark:text-white/50">
-            No downloads published yet — check back soon.
+            No tools published yet — check back soon.
           </p>
         ) : (
           // 3 per row, equal card heights via items-stretch + flex column,
@@ -42,7 +41,7 @@ export default async function DownloadsPage() {
               return (
               <Link
                 key={item.id}
-                href={`/downloads/${item.slug}`}
+                href={`/tools/${item.slug}`}
                 className="group flex flex-col border border-gold/15 p-6 transition-colors hover:border-gold/40"
               >
                 {/* Badges */}

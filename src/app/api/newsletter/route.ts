@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const { searchParams } = new URL(req.url)
   const status = searchParams.get('status') || ''
   const segment = searchParams.get('segment') || ''
@@ -27,8 +30,13 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ data, count })
 }
 
+// Admin-only manual add (the public signup form posts to
+// /api/public/subscribe instead, which uses the service-role client).
 export async function POST(req: NextRequest) {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const body = await req.json()
   const { data, error } = await supabase
     .from('newsletter_subscribers')

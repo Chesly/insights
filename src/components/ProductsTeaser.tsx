@@ -16,9 +16,9 @@ export default async function ProductsTeaser() {
       <div className="container-page">
         <div className="mb-8 flex items-center justify-between">
           <h2 id="products-teaser-heading" className="text-xl font-bold uppercase tracking-wide text-navy dark:text-white">
-            From the Business Toolkit
+            From the Business Tools
           </h2>
-          <Link href="/downloads" className="text-xs font-semibold uppercase tracking-wide text-gold hover:underline">
+          <Link href="/tools" className="text-xs font-semibold uppercase tracking-wide text-gold hover:underline">
             View All →
           </Link>
         </div>
@@ -36,7 +36,7 @@ export default async function ProductsTeaser() {
                     : "border border-navy/10 dark:border-white/10"
                 }`}
               >
-                <Link href={`/downloads/${item.slug}`} className="block">
+                <Link href={`/tools/${item.slug}`} className="block">
                   <div className="aspect-video w-full overflow-hidden bg-gold/5">
                     {item.thumbnailUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element

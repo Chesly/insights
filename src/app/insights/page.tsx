@@ -8,11 +8,11 @@ import ProductsTeaser from "@/components/ProductsTeaser";
 export const metadata: Metadata = {
   title: "Articles — AI, Websites, Design & Growth",
   description: `Practical insights on AI, websites, SEO, GEO, and South African business growth from ${siteConfig.shortName}.`,
-  alternates: { canonical: `${siteConfig.url}/blog` },
+  alternates: { canonical: `${siteConfig.url}/insights` },
   openGraph: {
     title: `Articles | ${siteConfig.shortName}`,
     description: `Practical insights on AI, websites, SEO, and South African business growth.`,
-    url: `${siteConfig.url}/blog`,
+    url: `${siteConfig.url}/insights`,
     type: "website",
   },
 };
@@ -33,6 +33,7 @@ export default async function BlogIndexPage() {
         title={siteConfig.pages.blog.title}
         subtitle={siteConfig.pages.blog.intro}
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Insights" }]}
+        backgroundImage="https://ik.imagekit.io/mkvu8hdr5/insights.jpg"
       />
 
       {featured && (
@@ -42,7 +43,7 @@ export default async function BlogIndexPage() {
         </section>
       )}
 
-      <BlogListing posts={rest} initialCount={12} perLoad={12} hasFeatured={Boolean(featured)} />
+      <BlogListing posts={rest} initialCount={12} perLoad={12} hasFeatured={Boolean(featured)} basePath="/insights" />
 
       <ProductsTeaser />
     </div>
@@ -54,7 +55,7 @@ export default async function BlogIndexPage() {
 function FeaturedPost({ post }: { post: import("@/lib/types").Post }) {
   return (
     <a
-      href={`/blog/${post.slug}`}
+      href={`/insights/${post.slug}`}
       className="group grid grid-cols-1 overflow-hidden border border-navy/10 transition-shadow hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold dark:border-white/10 md:grid-cols-2"
       aria-label={post.title}
     >

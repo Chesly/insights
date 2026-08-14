@@ -26,12 +26,12 @@ export async function GET() {
     `Owner: ${siteConfig.owner.name} — ${siteConfig.owner.role}`,
     "",
     "## Sections",
-    `- Insights: ${siteConfig.url}/blog`,
+    `- Insights: ${siteConfig.url}/insights`,
     `- Let's Have Coffee: ${siteConfig.url}/coffee`,
     "",
     "## Recent Articles",
     ...recent.map(
-      (p) => `- [${p.title}](${siteConfig.url}/${p.section === "coffee" ? "coffee" : "blog"}/${p.slug}): ${p.description}`
+      (p) => `- [${p.title}](${siteConfig.url}/${p.section === "coffee" ? "coffee" : "insights"}/${p.slug}): ${p.description}`
     ),
   ];
 
