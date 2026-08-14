@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import type { Post } from "@/lib/types";
-import { slugify } from "@/lib/types";
 
 interface Props {
   posts: Post[];
@@ -13,28 +12,18 @@ interface Props {
   basePath?: string;
 }
 
-export default function BlogListing({ posts, initialCount, perLoad, hasFeatured, basePath = "/blog" }: Props) {
+// Plain, uncluttered grid — no category filter bar. Readers who want to
+// browse by category already have dedicated /category/[slug] pages;
+// duplicating that as a wall of buttons here was exactly the kind of
+// clutter the confirmed design direction asked to remove.
+export default function BlogListing({ posts, initialCount, perLoad, basePath = "/blog" }: Props) {
   const [visible, setVisible] = useState(initialCount);
   const [loading, setLoading] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<string>("All");
   const loaderRef = useRef<HTMLDivElement>(null);
 
-  // Derive unique categories from all posts (multi-category aware)
-  const allCategories = ["All", ...Array.from(
-    new Set(posts.flatMap(p => p.categories?.length ? p.categories : [p.category]))
-  ).sort()];
-
-  // Filter by active category
-  const filtered = activeCategory === "All"
-    ? posts
-    : posts.filter(p => (p.categories?.length ? p.categories : [p.category]).includes(activeCategory));
-
-  const shown = filtered.slice(0, visible);
-  const hasMore = visible < filtered.length;
-  const remaining = filtered.length - visible;
-
-  // Reset visible count when category changes
-  useEffect(() => { setVisible(initialCount); }, [activeCategory, initialCount]);
+  const shown = posts.slice(0, visible);
+  const hasMore = visible < posts.length;
+  const remaining = posts.length - visible;
 
   const loadMore = () => {
     setLoading(true);
@@ -45,54 +34,22 @@ export default function BlogListing({ posts, initialCount, perLoad, hasFeatured,
     }, 300);
   };
 
+  if (posts.length === 0) {
+    return (
+      <section className="container-page py-10">
+        <div className="py-20 text-center">
+          <p className="text-navy/40 dark:text-white/30 text-sm">No articles yet — check back soon.</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="container-page py-10">
-      {/* Category tabs */}
-      <div className="mb-8 flex flex-wrap items-center gap-2">
-        {allCategories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            aria-pressed={activeCategory === cat}
-            className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all border focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold ${
-              activeCategory === cat
-                ? "border-gold bg-gold text-white"
-                : "border-navy/20 bg-transparent text-navy/60 hover:border-navy hover:text-navy dark:border-white/20 dark:text-white/50 dark:hover:border-white dark:hover:text-white"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-        {activeCategory !== "All" && (
-          <span className="ml-auto text-xs text-navy/40 dark:text-white/30">
-            {filtered.length} article{filtered.length !== 1 ? "s" : ""}
-          </span>
-        )}
-      </div>
-
-      {/* Section label */}
-      <div className="flex items-center gap-3 mb-6">
-        <span className="h-px flex-1 bg-gold/20" />
-        <span className="text-xs font-bold uppercase tracking-widest text-gold">
-          {activeCategory === "All" ? "All Insights" : activeCategory}
-        </span>
-        <span className="h-px flex-1 bg-gold/20" />
-      </div>
-
-      {/* No results */}
-      {filtered.length === 0 && (
-        <div className="py-20 text-center">
-          <p className="text-navy/40 dark:text-white/30 text-sm">No articles in this category yet.</p>
-          <button onClick={() => setActiveCategory("All")} className="mt-4 text-gold text-sm font-semibold underline">
-            View all articles
-          </button>
-        </div>
-      )}
-
-      {/* Grid — 4 cols desktop, 2 tablet, 1 mobile */}
-      <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
+      {/* Grid — 3 cols desktop, 2 tablet, 1 mobile, per the confirmed reference layout */}
+      <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-3">
         {shown.map((post, i) => (
-          <ArticleCard key={post.slug} post={post} priority={i < 4} basePath={basePath} />
+          <ArticleCard key={post.slug} post={post} priority={i < 3} basePath={basePath} />
         ))}
       </div>
 
@@ -101,13 +58,13 @@ export default function BlogListing({ posts, initialCount, perLoad, hasFeatured,
         <div ref={loaderRef} className="mt-12 flex flex-col items-center gap-3">
           {/* Progress indicator */}
           <div className="flex items-center gap-3 text-xs text-navy/40 dark:text-white/30">
-            <span>Showing {shown.length} of {filtered.length} articles</span>
+            <span>Showing {shown.length} of {posts.length} articles</span>
           </div>
           {/* Progress bar */}
           <div className="w-48 h-0.5 bg-navy/10 dark:bg-white/10 rounded-full overflow-hidden">
             <div
               className="h-full bg-gold transition-all duration-500"
-              style={{ width: `${(shown.length / filtered.length) * 100}%` }}
+              style={{ width: `${(shown.length / posts.length) * 100}%` }}
             />
           </div>
 
@@ -142,12 +99,12 @@ export default function BlogListing({ posts, initialCount, perLoad, hasFeatured,
       )}
 
       {/* End of results */}
-      {!hasMore && filtered.length > 0 && (
+      {!hasMore && (
         <div className="mt-10 text-center">
           <div className="flex items-center gap-3 justify-center mb-4">
             <span className="h-px w-16 bg-gold/20" />
             <span className="text-xs text-navy/30 dark:text-white/20 uppercase tracking-widest">
-              All {filtered.length} articles loaded
+              All {posts.length} articles loaded
             </span>
             <span className="h-px w-16 bg-gold/20" />
           </div>

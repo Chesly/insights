@@ -53,7 +53,9 @@ h1,h2,h3,h4,h5 { font-family: 'Plus Jakarta Sans', sans-serif; }
 /* Badge */
 .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
 
-/* Table */
+/* Table — the card wrapping it scrolls horizontally on narrow screens
+   instead of the table squeezing its columns or blowing out the page. */
+.cms-card:has(table.cms-table) { overflow-x: auto; }
 .cms-table { width: 100%; border-collapse: collapse; }
 .cms-table th { font-size: 11.5px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; text-align: left; }
 .cms-table td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 13.5px; vertical-align: middle; }
@@ -90,9 +92,20 @@ h1,h2,h3,h4,h5 { font-family: 'Plus Jakarta Sans', sans-serif; }
 ::-webkit-scrollbar-thumb:hover { background: #8B6914; }
 
 /* Responsive */
+.cms-sidebar-toggle { display: none; }
+@media (min-width: 769px) {
+  .cms-sidebar-backdrop { display: none; }
+}
 @media (max-width: 768px) {
-  .cms-sidebar { position: fixed; top: 40px; bottom: 60px; left: 0; z-index: 50; transform: translateX(-100%); transition: transform 0.2s; }
+  .cms-sidebar-toggle { display: inline-flex; }
+  .cms-sidebar { position: fixed; top: 40px; bottom: 60px; left: 0; z-index: 50; width: min(var(--sidebar-w), 82vw); transform: translateX(-100%); transition: transform 0.2s; box-shadow: 4px 0 24px rgba(0,0,0,0.25); }
   .cms-sidebar.open { transform: translateX(0); }
+  .cms-topbar { padding: 0 12px; gap: 4px; }
+  .cms-main { padding-left: 0; }
+}
+@media (max-width: 480px) {
+  .cms-topbar h1 { font-size: 15px !important; }
+  .cms-table th, .cms-table td { padding: 8px 10px; font-size: 12.5px; white-space: nowrap; }
 }
 .stat-card-hover:hover {
   transform: translateY(-2px);

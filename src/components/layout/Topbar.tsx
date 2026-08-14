@@ -1,5 +1,5 @@
 "use client"
-import { Bell, Search, Plus } from 'lucide-react'
+import { Bell, Search, Plus, Menu } from 'lucide-react'
 import Link from 'next/link'
 
 interface Props { title: string; action?: { label: string; href: string } }
@@ -7,7 +7,15 @@ interface Props { title: string; action?: { label: string; href: string } }
 export default function Topbar({ title, action }: Props) {
   return (
     <div className="cms-topbar">
-      <h1 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, fontSize: 18, color: '#1e293b', flex: 1 }}>{title}</h1>
+      <button
+        className="btn btn-ghost btn-sm cms-sidebar-toggle"
+        style={{ padding: '6px', marginRight: 4 }}
+        aria-label="Toggle menu"
+        onClick={() => window.dispatchEvent(new Event('admin-toggle-sidebar'))}
+      >
+        <Menu size={18}/>
+      </button>
+      <h1 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, fontSize: 18, color: '#1e293b', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</h1>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <button className="btn btn-ghost btn-sm" style={{ padding: '6px' }}><Search size={16}/></button>
         <button className="btn btn-ghost btn-sm" style={{ padding: '6px', position: 'relative' }}>

@@ -1,4 +1,5 @@
 "use client"
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -37,6 +38,20 @@ export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+  const [open, setOpen] = useState(false)
+
+  // Mobile hamburger in Topbar dispatches this rather than sharing React
+  // state directly — the two components are siblings, not parent/child,
+  // and this keeps the wiring to a single small event instead of lifting
+  // state up into a new shared layout wrapper.
+  useEffect(() => {
+    const toggle = () => setOpen((v) => !v)
+    window.addEventListener('admin-toggle-sidebar', toggle)
+    return () => window.removeEventListener('admin-toggle-sidebar', toggle)
+  }, [])
+
+  // Close on navigation so the next page isn't hidden behind an open drawer.
+  useEffect(() => { setOpen(false) }, [pathname])
 
   const signOut = async () => {
     await supabase.auth.signOut()
@@ -47,49 +62,59 @@ export default function Sidebar() {
     href === '/admin/dashboard' ? pathname === href : pathname.startsWith(href)
 
   return (
-    <aside className="cms-sidebar">
-      {/* Logo */}
-      <div style={{ padding: '20px 16px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <Link href="/admin/dashboard" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-          <img src="https://ik.imagekit.io/mkvu8hdr5/insights/Chesly-Tech-Gol-Logo.png" alt="Chesly.Tech" style={{ height: 30 }}/>
-        </Link>
-      </div>
+    <>
+      {open && (
+        <div
+          onClick={() => setOpen(false)}
+          aria-hidden="true"
+          style={{ position: 'fixed', inset: 0, top: 40, background: 'rgba(0,0,0,0.4)', zIndex: 45 }}
+          className="cms-sidebar-backdrop"
+        />
+      )}
+      <aside className={`cms-sidebar ${open ? 'open' : ''}`}>
+        {/* Logo */}
+        <div style={{ padding: '20px 16px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <Link href="/admin/dashboard" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+            <img src="https://ik.imagekit.io/mkvu8hdr5/insights/Chesly-Tech-Gol-Logo.png" alt="Chesly.Tech" style={{ height: 30 }}/>
+          </Link>
+        </div>
 
-      {/* Nav */}
-      <nav style={{ padding: '12px 10px', flex: 1 }}>
-        {NAV.map(group => (
-          <div key={group.group}>
-            <div className="nav-group-label">{group.group}</div>
-            {group.items.map(item => {
-              const Icon = item.icon
-              const active = isActive(item.href)
-              return (
-                <Link key={item.href} href={item.href}
-                  className={`nav-item ${active ? 'active' : ''}`}>
-                  <Icon size={15} />
-                  <span style={{ flex: 1 }}>{item.label}</span>
-                  {item.badge && (
-                    <span style={{ fontSize: 9, fontWeight: 700, background: '#8B6914', color: '#fff', padding: '2px 6px', borderRadius: 999, textTransform: 'uppercase' }}>{item.badge}</span>
-                  )}
-                  {active && <ChevronRight size={12} style={{ opacity: 0.5 }} />}
-                </Link>
-              )
-            })}
-          </div>
-        ))}
-      </nav>
+        {/* Nav */}
+        <nav style={{ padding: '12px 10px', flex: 1 }}>
+          {NAV.map(group => (
+            <div key={group.group}>
+              <div className="nav-group-label">{group.group}</div>
+              {group.items.map(item => {
+                const Icon = item.icon
+                const active = isActive(item.href)
+                return (
+                  <Link key={item.href} href={item.href}
+                    className={`nav-item ${active ? 'active' : ''}`}>
+                    <Icon size={15} />
+                    <span style={{ flex: 1 }}>{item.label}</span>
+                    {item.badge && (
+                      <span style={{ fontSize: 9, fontWeight: 700, background: '#8B6914', color: '#fff', padding: '2px 6px', borderRadius: 999, textTransform: 'uppercase' }}>{item.badge}</span>
+                    )}
+                    {active && <ChevronRight size={12} style={{ opacity: 0.5 }} />}
+                  </Link>
+                )
+              })}
+            </div>
+          ))}
+        </nav>
 
-      {/* Profile + Sign out */}
-      <div style={{ padding: '12px 10px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-        <Link href="/admin/profile" className={`nav-item ${isActive('/admin/profile') ? 'active' : ''}`}>
-          <UserCircle size={15} />
-          <span>My Profile</span>
-        </Link>
-        <button onClick={signOut} className="nav-item" style={{ color: '#ef4444' }}>
-          <LogOut size={15} />
-          <span>Sign Out</span>
-        </button>
-      </div>
-    </aside>
+        {/* Profile + Sign out */}
+        <div style={{ padding: '12px 10px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <Link href="/admin/profile" className={`nav-item ${isActive('/admin/profile') ? 'active' : ''}`}>
+            <UserCircle size={15} />
+            <span>My Profile</span>
+          </Link>
+          <button onClick={signOut} className="nav-item" style={{ color: '#ef4444' }}>
+            <LogOut size={15} />
+            <span>Sign Out</span>
+          </button>
+        </div>
+      </aside>
+    </>
   )
 }
