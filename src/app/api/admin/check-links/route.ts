@@ -92,6 +92,18 @@ async function checkUrlsPooled(urls: string[], budgetMs: number): Promise<Map<st
 }
 
 export async function POST() {
+  try {
+    return await runScan();
+  } catch (err) {
+    // A visible error beats an opaque empty 500 — this is the only place
+    // in the route without one, since everything runScan() awaits is
+    // otherwise unguarded.
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+async function runScan() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
