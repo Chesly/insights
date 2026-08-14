@@ -1,8 +1,8 @@
 import { getSiteSetting } from "@/lib/settings";
-import InjectHTML from "./InjectHTML";
+import { parseRawHtmlTags } from "@/lib/parseRawHtmlTags";
 
 export default async function CustomHeadCode() {
   const code = await getSiteSetting("custom_head_code");
-  if (!code) return null;
-  return <InjectHTML html={code} target="head" />;
+  if (!code || !code.trim()) return null;
+  return <>{parseRawHtmlTags(code)}</>;
 }

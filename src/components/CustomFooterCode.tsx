@@ -1,8 +1,8 @@
 import { getSiteSetting } from "@/lib/settings";
-import InjectHTML from "./InjectHTML";
+import { parseRawHtmlTags } from "@/lib/parseRawHtmlTags";
 
 export default async function CustomFooterCode() {
   const code = await getSiteSetting("custom_footer_code");
-  if (!code) return null;
-  return <InjectHTML html={code} target="body-end" />;
+  if (!code || !code.trim()) return null;
+  return <>{parseRawHtmlTags(code)}</>;
 }
