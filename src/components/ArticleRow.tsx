@@ -23,7 +23,7 @@ export default function ArticleRow({
       )}
       <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
         {posts.slice(0, 4).map((post) => {
-          const basePath = post.section === "coffee" ? "coffee" : "blog";
+          const basePath = post.section === "coffee" ? "coffee" : "insights";
           return (
             <Link key={post.slug} href={`/${basePath}/${post.slug}`} className="group block">
               <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-[285/200]">

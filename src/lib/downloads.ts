@@ -27,6 +27,18 @@ export interface DownloadItem {
   /** Optional checkout/payment link. When set on a "paid" download, the
       site shows a real "Buy Now" button instead of "Coming Soon". */
   storeUrl?: string;
+  /** Extra photos shown in the single-product gallery, beyond thumbnailUrl
+      (which stays the featured image used everywhere else — cards, teasers). */
+  galleryImages: string[];
+  /** What's actually included/capable — distinct from `solves` (the
+      problem) and `targetAudience` (who it's for). Shown only on the
+      single product page. */
+  keyFeatures: string[];
+  howItHelps: string[];
+  whyYouNeedIt: string[];
+  /** SEO/long-tail terms — shown only on the single product page, never
+      on the shop grid. */
+  tags: string[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,6 +64,11 @@ function rowToDownload(row: any): DownloadItem {
     seoTitle: row.seo_title || undefined,
     metaDescription: row.meta_description || undefined,
     storeUrl: row.store_url || undefined,
+    galleryImages: row.gallery_images || [],
+    keyFeatures: row.key_features || [],
+    howItHelps: row.how_it_helps || [],
+    whyYouNeedIt: row.why_you_need_it || [],
+    tags: row.tags || [],
   };
 }
 

@@ -115,7 +115,7 @@ export default function CommentsPage() {
                       <span>{new Date(c.created_at).toLocaleString()}</span>
                       {c.post && (
                         <a
-                          href={`/${c.post.section === 'coffee' ? 'coffee' : 'blog'}/${c.post.slug}`}
+                          href={`/${c.post.section === 'coffee' ? 'coffee' : 'insights'}/${c.post.slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{ display: 'flex', alignItems: 'center', gap: 3, color: '#8B6914' }}

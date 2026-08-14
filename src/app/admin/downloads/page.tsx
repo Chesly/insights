@@ -27,9 +27,14 @@ interface FormState {
   seo_title: string
   meta_description: string
   store_url: string
+  gallery_images: string[]
+  key_features: string[]
+  how_it_helps: string[]
+  why_you_need_it: string[]
+  tags: string[]
 }
 
-const EMPTY: FormState = { name:'', slug:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', tier:'free', price:'', compare_at_price:'', is_published:false, target_audience:[], solves:[], seo_title:'', meta_description:'', store_url:'' }
+const EMPTY: FormState = { name:'', slug:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', tier:'free', price:'', compare_at_price:'', is_published:false, target_audience:[], solves:[], seo_title:'', meta_description:'', store_url:'', gallery_images:[], key_features:[], how_it_helps:[], why_you_need_it:[], tags:[] }
 
 // Only two choices in the UI now: Free, and Premium — Premium is the
 // paid version, backed by the same DB value ('paid') that already drives
@@ -77,6 +82,9 @@ export default function DownloadsPage() {
       target_audience:(dl as unknown as FormState).target_audience||[], solves:(dl as unknown as FormState).solves||[],
       seo_title:(dl as unknown as FormState).seo_title||'', meta_description:(dl as unknown as FormState).meta_description||'',
       store_url:(dl as unknown as FormState).store_url||'',
+      gallery_images:(dl as unknown as FormState).gallery_images||[], key_features:(dl as unknown as FormState).key_features||[],
+      how_it_helps:(dl as unknown as FormState).how_it_helps||[], why_you_need_it:(dl as unknown as FormState).why_you_need_it||[],
+      tags:(dl as unknown as FormState).tags||[],
     })
     setShowForm(true); setError('')
   }
@@ -216,6 +224,28 @@ export default function DownloadsPage() {
                   />
                 </div>
               </div>
+              <div style={{ gridColumn:'1/-1' }}>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  Gallery Photos <span style={{ fontWeight:400, color:'#94a3b8' }}>(extra images shown on the single product page, beyond the thumbnail above)</span>
+                </label>
+                <div style={{ display:'flex', flexWrap:'wrap', gap:10, marginBottom:8 }}>
+                  {form.gallery_images.map((url, i) => (
+                    <div key={url+i} style={{ position:'relative', width:64, height:64 }}>
+                      <img src={url+'?tr=w-64,h-64,fo-auto'} alt="" style={{ width:64, height:64, objectFit:'cover', borderRadius:8, border:'1px solid #e2e8f0' }}/>
+                      <button type="button" onClick={()=>setForm(f=>({...f, gallery_images: f.gallery_images.filter((_,idx)=>idx!==i)}))}
+                        style={{ position:'absolute', top:-6, right:-6, width:20, height:20, borderRadius:'50%', background:'#ef4444', color:'#fff', border:'2px solid #fff', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, lineHeight:1 }}>
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <FileUploadButton
+                  accept="image/*"
+                  folder="/downloads"
+                  label="Add Photo"
+                  onUploaded={(row) => setForm(f => ({ ...f, gallery_images: [...f.gallery_images, row.url] }))}
+                />
+              </div>
               <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Category</label>
                 <select className="cms-input cms-select" value={form.category_id} onChange={set('category_id')}>
@@ -230,6 +260,26 @@ export default function DownloadsPage() {
               <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Problems It Solves</label>
                 <TagInput tags={form.solves} onChange={v=>setForm(f=>({...f,solves:v}))} placeholder="e.g. Cuts costs, Saves time…"/>
+              </div>
+              <div style={{ gridColumn:'1/-1' }}>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  Key Features <span style={{ fontWeight:400, color:'#94a3b8' }}>(what's actually in it — distinct from the problems it solves)</span>
+                </label>
+                <TagInput tags={form.key_features} onChange={v=>setForm(f=>({...f,key_features:v}))} placeholder="e.g. 12 pre-built formulas, Editable in Excel…"/>
+              </div>
+              <div style={{ gridColumn:'1/-1' }}>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>How It Helps You</label>
+                <TagInput tags={form.how_it_helps} onChange={v=>setForm(f=>({...f,how_it_helps:v}))} placeholder="e.g. See your real numbers in minutes…"/>
+              </div>
+              <div style={{ gridColumn:'1/-1' }}>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Why You Need It</label>
+                <TagInput tags={form.why_you_need_it} onChange={v=>setForm(f=>({...f,why_you_need_it:v}))} placeholder="e.g. Avoid costly funding mistakes…"/>
+              </div>
+              <div style={{ gridColumn:'1/-1' }}>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  Tags <span style={{ fontWeight:400, color:'#94a3b8' }}>(SEO — shown only on the single product page)</span>
+                </label>
+                <TagInput tags={form.tags} onChange={v=>setForm(f=>({...f,tags:v}))} placeholder="Add a tag…"/>
               </div>
               <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>SEO Title <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional)</span></label>

@@ -50,7 +50,7 @@ export default async function HomePage() {
   const listSchema = itemListSchema(
     latest.map((p) => ({
       name: p.title,
-      url: `${siteConfig.url}/${p.section === "coffee" ? "coffee" : "blog"}/${p.slug}`,
+      url: `${siteConfig.url}/${p.section === "coffee" ? "coffee" : "insights"}/${p.slug}`,
     }))
   );
 
@@ -95,7 +95,7 @@ export default async function HomePage() {
                   {mostRead.map((post, i) => (
                     <li key={post.slug}>
                       <Link
-                        href={`/${post.section === "coffee" ? "coffee" : "blog"}/${post.slug}`}
+                        href={`/${post.section === "coffee" ? "coffee" : "insights"}/${post.slug}`}
                         className="group flex items-start gap-3 px-5 py-3.5 transition-colors hover:bg-gold/5"
                       >
                         <span className="pt-0.5 text-lg font-bold text-gold/60">{i + 1}</span>

@@ -9,8 +9,8 @@ export async function GET() {
       (p) => `
     <item>
       <title><![CDATA[${p.title}]]></title>
-      <link>${siteConfig.url}/${p.section === "coffee" ? "coffee" : "blog"}/${p.slug}</link>
-      <guid isPermaLink="true">${siteConfig.url}/${p.section === "coffee" ? "coffee" : "blog"}/${p.slug}</guid>
+      <link>${siteConfig.url}/${p.section === "coffee" ? "coffee" : "insights"}/${p.slug}</link>
+      <guid isPermaLink="true">${siteConfig.url}/${p.section === "coffee" ? "coffee" : "insights"}/${p.slug}</guid>
       <pubDate>${new Date(p.publishedDate).toUTCString()}</pubDate>
       <dc:creator><![CDATA[${p.author || siteConfig.owner.name}]]></dc:creator>
       <description><![CDATA[${p.description}]]></description>

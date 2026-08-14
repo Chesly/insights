@@ -1,5 +1,7 @@
 import { siteConfig } from "./siteConfig";
 import type { Post, Author, HowToStep } from "./types";
+import type { DownloadItem } from "./downloads";
+import { pricing } from "./downloads";
 
 export function organizationSchema() {
   return {
@@ -58,6 +60,41 @@ export function breadcrumbSchema(items: { name: string; url: string }[]) {
       name: item.name,
       item: item.url
     }))
+  };
+}
+
+export function productSchema(
+  item: DownloadItem,
+  reviews: { rating: number }[]
+) {
+  const p = pricing(item);
+  const avgRating =
+    reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : undefined;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "@id": `${siteConfig.url}/tools/${item.slug}/#product`,
+    name: item.name,
+    description: item.metaDescription || item.description,
+    image: [item.thumbnailUrl, ...item.galleryImages].filter(Boolean),
+    category: item.category,
+    brand: { "@type": "Brand", name: siteConfig.shortName },
+    offers: {
+      "@type": "Offer",
+      url: `${siteConfig.url}/tools/${item.slug}`,
+      priceCurrency: "ZAR",
+      price: p.state === "free" ? 0 : p.price ?? 0,
+      availability: "https://schema.org/InStock",
+      seller: { "@id": `${siteConfig.url}/#organization` }
+    },
+    ...(avgRating !== undefined && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: Number(avgRating.toFixed(1)),
+        reviewCount: reviews.length
+      }
+    })
   };
 }
 

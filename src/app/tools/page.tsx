@@ -12,8 +12,6 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
-const FILE_TYPE_ICONS: Record<string, string> = { pdf: "📄", zip: "🗜️", doc: "📝", other: "📦" };
-
 export default async function DownloadsPage() {
   const downloads = await getAllDownloads();
 
@@ -31,72 +29,69 @@ export default async function DownloadsPage() {
             No tools published yet — check back soon.
           </p>
         ) : (
-          // 3 per row, equal card heights via items-stretch + flex column,
-          // with the title/description each reserving fixed space below
-          // (line-clamp + min-height) so shorter entries don't leave the
-          // row looking uneven.
-          <div className="grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          // Card order is deliberate: title first, then the standardized
+          // featured photo (with the price/tier badge overlaid on it, not
+          // competing for space above it), then description, then CTA.
+          // line-clamp + min-height on title/description keep every card
+          // the same height regardless of actual copy length, so a 4-up
+          // grid stays uncluttered instead of degrading into a ragged
+          // masonry look — see PRODUCT_CARD in ProductsTeaser too if this
+          // ever needs to be shared.
+          <div className="grid items-stretch gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
             {downloads.map((item) => {
               const p = pricing(item);
               return (
-              <Link
-                key={item.id}
-                href={`/tools/${item.slug}`}
-                className="group flex flex-col border border-gold/15 p-6 transition-colors hover:border-gold/40"
-              >
-                {/* Badges */}
-                <div className="flex items-center gap-2">
-                  <span className="inline-block bg-gold/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-gold">
-                    {FILE_TYPE_ICONS[item.fileType]} {item.fileType}
-                  </span>
-                  <span
-                    className={`inline-flex items-center gap-1.5 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide ${
-                      p.state === "free"
-                        ? "border border-green-200 bg-green-50 text-green-700"
-                        : p.state === "sale"
-                        ? "border border-red-200 bg-red-50 text-red-700"
-                        : "border border-amber-200 bg-amber-50 text-amber-700"
-                    }`}
-                  >
-                    {p.state === "sale" ? (
-                      <>
-                        On Sale — R{p.price}{" "}
-                        <span className="text-navy/30 line-through dark:text-white/30">R{p.compareAtPrice}</span>
-                      </>
+                <Link
+                  key={item.id}
+                  href={`/tools/${item.slug}`}
+                  className="group flex flex-col"
+                >
+                  {/* Title first */}
+                  <h2 className="line-clamp-2 min-h-[2.75rem] font-semibold leading-snug text-navy group-hover:text-gold dark:text-white">
+                    {item.name}
+                  </h2>
+
+                  {/* Standardized featured photo with the price/tier badge overlaid */}
+                  <div className="relative mt-3 aspect-square overflow-hidden bg-gold/5">
+                    {item.thumbnailUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={item.thumbnailUrl}
+                        alt={item.name}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
                     ) : (
-                      p.label
+                      <div className="flex h-full w-full items-center justify-center text-3xl">📄</div>
                     )}
+                    <span
+                      className={`absolute left-2 top-2 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide ${
+                        p.state === "free"
+                          ? "bg-green-50 text-green-700"
+                          : p.state === "sale"
+                          ? "bg-red-50 text-red-700"
+                          : "bg-amber-50 text-amber-700"
+                      }`}
+                    >
+                      {p.state === "sale" ? (
+                        <>
+                          On Sale — R{p.price}{" "}
+                          <span className="text-navy/30 line-through">R{p.compareAtPrice}</span>
+                        </>
+                      ) : (
+                        p.label
+                      )}
+                    </span>
+                  </div>
+
+                  {/* Description — no heading label, standardized length */}
+                  <p className="mt-3 line-clamp-3 min-h-[4rem] text-sm leading-relaxed text-navy/60 dark:text-white/60">
+                    {item.description}
+                  </p>
+
+                  <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-gold">
+                    View Product <span aria-hidden="true">→</span>
                   </span>
-                </div>
-
-                {/* Image */}
-                <div className="mt-3 aspect-video overflow-hidden bg-gold/5">
-                  {item.thumbnailUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={item.thumbnailUrl}
-                      alt={item.name}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-3xl">📄</div>
-                  )}
-                </div>
-
-                {/* Name — reserves 3 lines of height regardless of actual length */}
-                <h2 className="mt-3 line-clamp-3 min-h-[3.75rem] font-semibold leading-snug text-navy group-hover:text-gold dark:text-white">
-                  {item.name}
-                </h2>
-
-                {/* Short description — reserves 5 lines of height */}
-                <p className="mt-2 line-clamp-5 min-h-[6.25rem] text-sm leading-relaxed text-navy/60 dark:text-white/60">
-                  {item.description}
-                </p>
-
-                <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-gold">
-                  Read More →
-                </span>
-              </Link>
+                </Link>
               );
             })}
           </div>

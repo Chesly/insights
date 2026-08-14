@@ -1,12 +1,16 @@
-
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { siteConfig } from "@/lib/siteConfig";
+import { slugify } from "@/lib/types";
 import PageHero from "@/components/PageHero";
 import DownloadButton from "@/components/DownloadButton";
+import ProductGallery from "@/components/ProductGallery";
+import ProductReviews from "@/components/ProductReviews";
 import { getAllDownloads, getDownloadBySlug, getRelatedDownloads, pricing } from "@/lib/downloads";
+import { getApprovedReviews } from "@/lib/reviews";
 import { getAllPosts } from "@/lib/posts";
+import { breadcrumbSchema, productSchema } from "@/lib/schema";
 
 const FILE_TYPE_ICONS: Record<string, string> = { pdf: "📄", zip: "🗜️", doc: "📝", other: "📦" };
 
@@ -42,14 +46,28 @@ export default async function DownloadDetailPage({
   if (!item) notFound();
   const p = pricing(item);
 
-  const [relatedProducts, allPosts] = await Promise.all([
+  const [relatedProducts, allPosts, reviews] = await Promise.all([
     getRelatedDownloads(item),
     getAllPosts(false, ["insights", "coffee"]),
+    getApprovedReviews(item.id),
   ]);
   const latestPosts = allPosts.slice(0, 4);
+  const galleryImages = [item.thumbnailUrl, ...item.galleryImages].filter(Boolean);
+
+  const crumbs = breadcrumbSchema([
+    { name: "Home", url: siteConfig.url },
+    { name: "Business Tools", url: `${siteConfig.url}/tools` },
+    { name: item.name, url: `${siteConfig.url}/tools/${item.slug}` },
+  ]);
 
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema(item, reviews)) }}
+      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }} />
+
       <PageHero
         title={item.name}
         subtitle={item.subtitle}
@@ -61,28 +79,18 @@ export default async function DownloadDetailPage({
       />
 
       <div className="container-page grid gap-10 py-12 lg:grid-cols-[1fr_380px]">
-        {/* Main content */}
+        {/* Gallery */}
         <div>
-          <div className="flex items-center gap-2">
+          <ProductGallery name={item.name} images={galleryImages} />
+        </div>
+
+        {/* Sticky purchase panel */}
+        <aside className="h-fit border border-gold/15 p-6 lg:sticky lg:top-24">
+          <h1 className="text-xl font-bold text-navy dark:text-white">{item.name}</h1>
+
+          <div className="mt-3 flex flex-wrap items-center gap-2">
             <span className="inline-block bg-gold/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-gold">
               {FILE_TYPE_ICONS[item.fileType]} {item.fileType}
-            </span>
-            <span
-              className={`inline-flex items-center gap-1.5 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide ${
-                p.state === "free"
-                  ? "border border-green-200 bg-green-50 text-green-700"
-                  : p.state === "sale"
-                  ? "border border-red-200 bg-red-50 text-red-700"
-                  : "border border-amber-200 bg-amber-50 text-amber-700"
-              }`}
-            >
-              {p.state === "sale" ? (
-                <>
-                  On Sale — R{p.price} <span className="text-navy/30 line-through dark:text-white/30">R{p.compareAtPrice}</span>
-                </>
-              ) : (
-                p.label
-              )}
             </span>
             {item.category && (
               <span className="inline-block bg-navy/5 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-navy/60 dark:bg-white/10 dark:text-white/60">
@@ -91,64 +99,8 @@ export default async function DownloadDetailPage({
             )}
           </div>
 
-          {item.thumbnailUrl && (
-            <div className="mt-5 overflow-hidden bg-gold/5">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={item.thumbnailUrl} alt={item.name} className="w-full" />
-            </div>
-          )}
-
-          {item.description && (
-            <p className="mt-6 leading-relaxed text-navy/75 dark:text-white/75">
-              {item.description}
-            </p>
-          )}
-
-          {item.solves.length > 0 && (
-            <div className="mt-8">
-              <h2 className="text-sm font-bold uppercase tracking-wide text-navy dark:text-white">
-                What this solves
-              </h2>
-              <ul className="mt-3 space-y-2">
-                {item.solves.map((s) => (
-                  <li key={s} className="flex items-start gap-2 text-sm text-navy/75 dark:text-white/75">
-                    <span className="text-gold">✓</span> {s}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {item.targetAudience.length > 0 && (
-            <div className="mt-8">
-              <h2 className="text-sm font-bold uppercase tracking-wide text-navy dark:text-white">
-                Who it&rsquo;s for
-              </h2>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {item.targetAudience.map((a) => (
-                  <span
-                    key={a}
-                    className="inline-block border border-navy/10 px-3 py-1 text-xs font-medium text-navy/70 dark:border-white/10 dark:text-white/70"
-                  >
-                    {a}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <Link
-            href="/tools"
-            className="mt-10 inline-block text-sm font-semibold text-gold hover:underline"
-          >
-            ← Back to Business Tools
-          </Link>
-        </div>
-
-        {/* Sticky action panel */}
-        <aside className="h-fit border border-gold/15 p-6 lg:sticky lg:top-24">
           {p.state !== "free" && (
-            <p className="mb-1 text-2xl font-bold text-navy dark:text-white">
+            <p className="mt-3 text-2xl font-bold text-navy dark:text-white">
               R{p.price ?? "—"}
               {p.state === "sale" && (
                 <span className="ml-2 text-base font-normal text-navy/30 line-through dark:text-white/30">
@@ -157,7 +109,7 @@ export default async function DownloadDetailPage({
               )}
             </p>
           )}
-          <p className="text-sm text-navy/60 dark:text-white/60">
+          <p className="mt-1 text-sm text-navy/60 dark:text-white/60">
             {p.state === "free"
               ? "Free download — no strings attached."
               : p.state === "sale"
@@ -178,50 +130,169 @@ export default async function DownloadDetailPage({
         </aside>
       </div>
 
-      {relatedProducts.length > 0 && (
-        <section className="container-page pb-14" aria-labelledby="related-products-heading">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 id="related-products-heading" className="text-xl font-bold uppercase tracking-wide text-navy dark:text-white">
-              Related Products
+      <div className="container-page pb-4">
+        {/* Description */}
+        {item.description && (
+          <p className="max-w-3xl leading-relaxed text-navy/75 dark:text-white/75">
+            {item.description}
+          </p>
+        )}
+
+        {/* Key Features */}
+        {item.keyFeatures.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-navy dark:text-white">
+              Key Features
             </h2>
-            <Link href="/tools" className="text-xs font-semibold uppercase tracking-wide text-gold hover:underline">
-              View All →
-            </Link>
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+              {item.keyFeatures.map((f) => (
+                <li key={f} className="flex items-start gap-2 text-sm text-navy/75 dark:text-white/75">
+                  <span className="text-gold">✓</span> {f}
+                </li>
+              ))}
+            </ul>
           </div>
-          <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
-            {relatedProducts.map((rp) => {
-              const rpPricing = pricing(rp);
-              return (
-                <Link key={rp.id} href={`/tools/${rp.slug}`} className="group block">
-                  <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-[285/200]">
-                    {rp.thumbnailUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={rp.thumbnailUrl}
-                        alt={rp.name}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-3xl">📄</div>
-                    )}
+        )}
+
+        {/* What This Solves */}
+        {item.solves.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-navy dark:text-white">
+              What This Solves
+            </h2>
+            <ul className="mt-3 space-y-2">
+              {item.solves.map((s) => (
+                <li key={s} className="flex items-start gap-2 text-sm text-navy/75 dark:text-white/75">
+                  <span className="text-gold">✓</span> {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Who It's For — horizontal flowing point-form, wraps to save space */}
+        {item.targetAudience.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-navy dark:text-white">
+              Who It&rsquo;s For
+            </h2>
+            <ul className="mt-3 flex flex-wrap gap-x-8 gap-y-2">
+              {item.targetAudience.map((a) => (
+                <li key={a} className="text-sm text-navy/75 dark:text-white/75">
+                  – {a}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* How It Helps You */}
+        {item.howItHelps.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-navy dark:text-white">
+              How It Helps You
+            </h2>
+            <ul className="mt-3 space-y-2">
+              {item.howItHelps.map((h) => (
+                <li key={h} className="flex items-start gap-2 text-sm text-navy/75 dark:text-white/75">
+                  <span className="text-gold">✓</span> {h}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Why You Need It */}
+        {item.whyYouNeedIt.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-navy dark:text-white">
+              Why You Need It
+            </h2>
+            <ul className="mt-3 space-y-2">
+              {item.whyYouNeedIt.map((w) => (
+                <li key={w} className="flex items-start gap-2 text-sm text-navy/75 dark:text-white/75">
+                  <span className="text-gold">✓</span> {w}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Tags — SEO, single product page only */}
+        {item.tags.length > 0 && (
+          <div className="mt-8 flex flex-wrap gap-2">
+            {item.tags.map((tag) => (
+              <Link
+                key={tag}
+                href={`/tag/${slugify(tag)}`}
+                className="border border-gold/30 px-3 py-1 text-xs text-navy/70 hover:bg-gold/10 dark:text-white/70"
+              >
+                #{tag}
+              </Link>
+            ))}
+          </div>
+        )}
+
+        <ProductReviews downloadId={item.id} reviews={reviews} />
+
+        <Link
+          href="/tools"
+          className="mt-4 inline-block text-sm font-semibold text-gold hover:underline"
+        >
+          ← Back to Business Tools
+        </Link>
+      </div>
+
+      {relatedProducts.length > 0 && (
+        <section className="border-t border-navy/10 bg-navy/[0.02] py-14 dark:border-white/10 dark:bg-white/[0.02]" aria-labelledby="related-products-heading">
+          <div className="container-page">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 id="related-products-heading" className="text-xl font-bold uppercase tracking-wide text-navy dark:text-white">
+                Related Products
+              </h2>
+              <Link href="/tools" className="text-xs font-semibold uppercase tracking-wide text-gold hover:underline">
+                View All →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
+              {relatedProducts.map((rp) => {
+                const rpPricing = pricing(rp);
+                return (
+                  <div key={rp.id} className="group flex flex-col">
+                    <Link href={`/tools/${rp.slug}`} className="block">
+                      <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-square">
+                        {rp.thumbnailUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={rp.thumbnailUrl}
+                            alt={rp.name}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-3xl">📄</div>
+                        )}
+                      </div>
+                      <h3 className="mt-3 line-clamp-2 text-sm font-semibold leading-snug text-navy group-hover:text-gold dark:text-white">
+                        {rp.name}
+                      </h3>
+                    </Link>
+                    <p className="mt-1 text-sm font-bold text-gold">{rpPricing.label}</p>
+                    <Link
+                      href={`/tools/${rp.slug}`}
+                      className="mt-3 block border border-gold px-3 py-2 text-center text-xs font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-white"
+                    >
+                      View Product
+                    </Link>
                   </div>
-                  <div className="pt-3">
-                    <span className="text-xs font-semibold uppercase tracking-wide text-gold">
-                      {rpPricing.label}
-                    </span>
-                    <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-navy group-hover:text-gold dark:text-white">
-                      {rp.name}
-                    </h3>
-                  </div>
-                </Link>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </section>
       )}
 
       {latestPosts.length > 0 && (
-        <section className="border-t border-navy/10 bg-navy/[0.02] py-14 dark:border-white/10 dark:bg-white/[0.02]" aria-labelledby="latest-posts-heading">
+        <section className="py-14" aria-labelledby="latest-posts-heading">
           <div className="container-page">
             <div className="mb-6 flex items-center justify-between">
               <h2 id="latest-posts-heading" className="text-xl font-bold uppercase tracking-wide text-navy dark:text-white">
