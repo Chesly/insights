@@ -7,6 +7,8 @@ import { getAuthorBySlug } from "@/lib/authors";
 import { siteConfig } from "@/lib/siteConfig";
 import { slugify } from "@/lib/types";
 import { articleSchema, breadcrumbSchema, faqSchema, howToSchema } from "@/lib/schema";
+import PageHero from "@/components/PageHero";
+import ProductsTeaser from "@/components/ProductsTeaser";
 import SocialShare from "@/components/SocialShare";
 import CommentSection from "@/components/CommentSection";
 import SeriesBanner from "@/components/SeriesBanner";
@@ -76,7 +78,7 @@ export default async function BlogPostPage({
   ]);
 
   return (
-    <article className="container-page py-12">
+    <div>
       {/* Structured data: Article, Breadcrumb, and (where present) FAQ / HowTo for AI + rich-result eligibility */}
       <script
         type="application/ld+json"
@@ -101,50 +103,35 @@ export default async function BlogPostPage({
         />
       )}
 
-      <nav aria-label="Breadcrumb" className="mb-6 text-sm text-navy/50 dark:text-white/50 flex justify-center text-center">
-        <ol className="flex flex-wrap items-center justify-center gap-1">
-          <li><Link href="/" className="hover:text-gold">Home</Link></li>
-          <li aria-hidden="true">/</li>
-          <li><Link href="/insights" className="hover:text-gold">Articles</Link></li>
-          <li aria-hidden="true">/</li>
-          <li>
-            {getPostCategories(post).map((cat, i) => (
-              <span key={cat}>
-                <Link href={`/category/${slugify(cat)}`} className="hover:text-gold transition-colors">
-                  {cat}
-                </Link>
-                {i < getPostCategories(post).length - 1 && <span className="mx-1 text-white/20">·</span>}
-              </span>
-            ))}
-          </li>
-        </ol>
-      </nav>
+      <PageHero
+        title={post.title}
+        subtitle={post.description}
+        breadcrumbs={[
+          { label: "Home", href: "/" },
+          { label: "Articles", href: "/insights" },
+          ...getPostCategories(post).map((cat) => ({ label: cat, href: `/category/${slugify(cat)}` })),
+        ]}
+      />
 
-      <header className="mx-auto max-w-3xl text-center">
-        <span className="mb-4 inline-block bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gold">
-          {post.category}
+    <article className="container-page py-12">
+      <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-3 text-center text-sm text-navy/50 dark:text-white/50">
+        <span>
+          By{" "}
+          <Link href={authorUrl} className="font-medium text-gold hover:underline">
+            {post.author || siteConfig.owner.name}
+          </Link>
         </span>
-        <h1 className="text-2xl font-bold text-navy dark:text-white sm:text-3xl">{post.title}</h1>
-        <p className="mt-4 text-lg text-navy/60 dark:text-white/60">{post.description}</p>
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-sm text-navy/50 dark:text-white/50">
-          <span>
-            By{" "}
-            <Link href={authorUrl} className="font-medium text-gold hover:underline">
-              {post.author || siteConfig.owner.name}
-            </Link>
-          </span>
-          <span aria-hidden="true">&middot;</span>
-          <time dateTime={post.publishedDate}>
-            {new Date(post.publishedDate).toLocaleDateString("en-ZA", {
-              year: "numeric",
-              month: "long",
-              day: "numeric"
-            })}
-          </time>
-          <span aria-hidden="true">&middot;</span>
-          <span>{post.readingTime}</span>
-        </div>
-      </header>
+        <span aria-hidden="true">&middot;</span>
+        <time dateTime={post.publishedDate}>
+          {new Date(post.publishedDate).toLocaleDateString("en-ZA", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+          })}
+        </time>
+        <span aria-hidden="true">&middot;</span>
+        <span>{post.readingTime}</span>
+      </div>
 
       <div className="relative mx-auto mt-7 aspect-video max-w-4xl overflow-hidden ">
         <Image
@@ -349,13 +336,21 @@ export default async function BlogPostPage({
           </h2>
           <div className="grid gap-6 sm:grid-cols-3">
             {related.map((r) => (
-              <Link
-                key={r.slug}
-                href={`/insights/${r.slug}`}
-                className="border border-gold/10 p-4 hover:shadow-md"
-              >
-                <span className="text-xs font-semibold uppercase text-gold">{r.category}</span>
-                <h3 className="mt-1 text-sm font-semibold text-navy dark:text-white">{r.title}</h3>
+              <Link key={r.slug} href={`/insights/${r.slug}`} className="group block">
+                <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-[285/200]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={r.image}
+                    alt={r.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+                <div className="pt-3">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-gold">{r.category}</span>
+                  <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-navy group-hover:text-gold dark:text-white">
+                    {r.title}
+                  </h3>
+                </div>
               </Link>
             ))}
           </div>
@@ -365,5 +360,8 @@ export default async function BlogPostPage({
         <CommentSection postId={post.id} initialComments={await getApprovedComments(post.id)} />
       )}
     </article>
+
+      <ProductsTeaser />
+    </div>
   );
 }
