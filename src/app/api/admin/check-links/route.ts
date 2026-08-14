@@ -9,7 +9,7 @@ import { siteConfig } from "@/lib/siteConfig";
 // catch). Keep the checking budget well inside that real ceiling rather
 // than the Pro-plan-style budget this used to assume.
 export const maxDuration = 10;
-const SCAN_DEADLINE_MS = 8000;
+const SCAN_DEADLINE_MS = 6500;
 
 interface LinkCheck {
   url: string;
@@ -26,7 +26,7 @@ interface PostResult {
 }
 
 const HREF_RE = /<a\s+[^>]*href="([^"]+)"/gi;
-const CHECK_TIMEOUT_MS = 3500;
+const CHECK_TIMEOUT_MS = 2500;
 const CONCURRENCY = 20;
 
 function extractLinks(html: string): string[] {
@@ -66,21 +66,28 @@ async function checkUrl(url: string): Promise<LinkCheck> {
 
 // Checks each unique URL once regardless of how many posts reference it,
 // with a small concurrency pool — sequentially checking every link across
-// ~80+ posts one at a time would take minutes. Stops picking up new work
-// past the deadline so a handful of slow hosts can't blow the whole scan;
-// whatever's left just isn't included in this run's results rather than
-// being reported broken.
-async function checkUrlsPooled(urls: string[], deadline: number): Promise<Map<string, LinkCheck>> {
+// ~80+ posts one at a time would take minutes. Races the whole pool
+// against a hard budget: a per-iteration deadline check isn't enough,
+// since a single in-flight fetch can still take up to CHECK_TIMEOUT_MS
+// to settle — on Vercel's Hobby plan (10s hard cap, no exceptions) that
+// straggler is exactly what was blowing the whole function past the
+// limit and killing it outright. Racing means we return with whatever's
+// been checked so far the instant the budget is up, abandoning anything
+// still in flight rather than waiting on it.
+async function checkUrlsPooled(urls: string[], budgetMs: number): Promise<Map<string, LinkCheck>> {
   const results = new Map<string, LinkCheck>();
   const queue = [...urls];
+  let stopped = false;
   async function worker() {
-    while (queue.length > 0 && Date.now() < deadline) {
+    while (queue.length > 0 && !stopped) {
       const url = queue.shift();
       if (!url) return;
       results.set(url, await checkUrl(url));
     }
   }
-  await Promise.all(Array.from({ length: Math.min(CONCURRENCY, urls.length) }, worker));
+  const work = Promise.all(Array.from({ length: Math.min(CONCURRENCY, urls.length) }, worker));
+  const budget = new Promise<void>((resolve) => setTimeout(() => { stopped = true; resolve(); }, budgetMs));
+  await Promise.race([work, budget]);
   return results;
 }
 
@@ -106,8 +113,7 @@ export async function POST() {
     }
   }
 
-  const deadline = Date.now() + SCAN_DEADLINE_MS;
-  const checked = await checkUrlsPooled(Array.from(allUrls), deadline);
+  const checked = await checkUrlsPooled(Array.from(allUrls), SCAN_DEADLINE_MS);
 
   const results: PostResult[] = [];
   for (const post of posts) {
