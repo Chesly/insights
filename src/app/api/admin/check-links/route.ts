@@ -3,11 +3,13 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { siteConfig } from "@/lib/siteConfig";
 
-// Vercel kills the function past this regardless — give the link-checking
-// loop a deadline safely inside that so we always return a real (if
-// partial) response instead of the whole scan silently dying.
-export const maxDuration = 60;
-const SCAN_DEADLINE_MS = 50000;
+// This project is on Vercel's Hobby plan, which hard-caps serverless
+// functions at 10s no matter what maxDuration is set to — exceeding it
+// kills the function outright (empty 500, nothing our own code can
+// catch). Keep the checking budget well inside that real ceiling rather
+// than the Pro-plan-style budget this used to assume.
+export const maxDuration = 10;
+const SCAN_DEADLINE_MS = 8000;
 
 interface LinkCheck {
   url: string;
@@ -24,8 +26,8 @@ interface PostResult {
 }
 
 const HREF_RE = /<a\s+[^>]*href="([^"]+)"/gi;
-const CHECK_TIMEOUT_MS = 6000;
-const CONCURRENCY = 12;
+const CHECK_TIMEOUT_MS = 3500;
+const CONCURRENCY = 20;
 
 function extractLinks(html: string): string[] {
   const links: string[] = [];

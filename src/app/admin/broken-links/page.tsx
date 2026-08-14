@@ -75,6 +75,12 @@ export default function BrokenLinksPage() {
               {data.linksSkipped > 0 && <Stat label="Skipped (ran out of time)" value={data.linksSkipped} />}
             </div>
 
+            {data.linksSkipped > 0 && (
+              <p style={{ fontSize: 12.5, color: '#b45309', marginBottom: 16 }}>
+                The hosting plan caps each scan to a few seconds, so {data.linksSkipped} link{data.linksSkipped === 1 ? '' : 's'} didn&rsquo;t get checked this run. Click &ldquo;Scan All Posts&rdquo; again to pick up more — results aren&rsquo;t cumulative, so re-scanning is the way to eventually cover everything.
+              </p>
+            )}
+
             {data.results.length === 0 ? (
               <div className="cms-card" style={{ padding: '3rem', textAlign: 'center' }}>
                 <Link2Off size={32} color="#22c55e" style={{ margin: '0 auto 12px' }} />
