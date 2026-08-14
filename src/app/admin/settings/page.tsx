@@ -10,7 +10,44 @@ const SECTIONS = [
       { key: 'site_name', label: 'Site Name', type: 'text', placeholder: 'Chesly.Tech Insights' },
       { key: 'site_url', label: 'Site URL', type: 'url', placeholder: 'https://chesly.tech' },
       { key: 'site_tagline', label: 'Tagline', type: 'text', placeholder: 'AI. Websites. Design. Growth.' },
-      { key: 'contact_email', label: 'Contact Email', type: 'email', placeholder: 'hello@chesly.tech' },
+    ]
+  },
+  {
+    id: 'branding', label: 'Logos',
+    fields: [
+      { key: 'logo_header_url', label: 'Header Logo URL', type: 'url', placeholder: 'https://ik.imagekit.io/.../logo.png',
+        help: 'Shown in the sticky navigation bar. Leave blank to use the default.' },
+      { key: 'logo_footer_url', label: 'Footer Logo URL', type: 'url', placeholder: 'https://.../footer-logo.png',
+        help: 'Shown on the dark footer. Leave blank to use the default.' },
+    ]
+  },
+  {
+    id: 'footer', label: 'Footer Content',
+    fields: [
+      { key: 'footer_about', label: 'About Blurb', type: 'textarea',
+        placeholder: 'A short paragraph shown in the footer’s first column.',
+        help: 'Leave blank to use the default company description.' },
+    ]
+  },
+  {
+    id: 'social', label: 'Social Media Links',
+    fields: [
+      { key: 'social_facebook', label: 'Facebook URL', type: 'url', placeholder: 'https://facebook.com/...' },
+      { key: 'social_instagram', label: 'Instagram URL', type: 'url', placeholder: 'https://instagram.com/...' },
+      { key: 'social_linkedin', label: 'LinkedIn URL', type: 'url', placeholder: 'https://linkedin.com/in/...' },
+      { key: 'social_pinterest', label: 'Pinterest URL', type: 'url', placeholder: 'https://pinterest.com/...' },
+      { key: 'social_youtube', label: 'YouTube URL', type: 'url', placeholder: 'https://youtube.com/@...' },
+      { key: 'social_tiktok', label: 'TikTok URL', type: 'url', placeholder: 'https://tiktok.com/@...' },
+    ]
+  },
+  {
+    id: 'contact', label: 'Contact Details',
+    fields: [
+      { key: 'contact_email', label: 'Contact Email', type: 'email', placeholder: 'hello@chesly.tech',
+        help: 'Shown in the footer and used as the default contact address.' },
+      { key: 'contact_phone', label: 'Phone Number', type: 'text', placeholder: '+27 81 586 8101' },
+      { key: 'contact_location', label: 'Location', type: 'text', placeholder: 'Johannesburg, South Africa' },
+      { key: 'contact_hours', label: 'Business Hours', type: 'text', placeholder: 'Mon–Fri, 09:00–17:00 SAST' },
     ]
   },
   {

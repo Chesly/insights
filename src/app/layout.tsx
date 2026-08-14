@@ -8,6 +8,7 @@ import CustomHeadCode from "@/components/CustomHeadCode";
 import CustomFooterCode from "@/components/CustomFooterCode";
 import { siteConfig } from "@/lib/siteConfig";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
+import { getAllSiteSettings } from "@/lib/settings";
 
 // Without this, Next.js treats the whole layout as static and freezes it
 // at build time — meaning settings-driven content (the consent banner,
@@ -55,7 +56,11 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } }
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Branding/footer/social/contact fields editable from Admin > Settings
+  // override their siteConfig.ts defaults — see lib/settings.ts.
+  const settings = await getAllSiteSettings();
+
   return (
     <html lang="en-ZA" className="scroll-smooth" data-scroll-behavior="smooth">
       <head>
@@ -79,7 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to main content
         </a>
-        <SiteChrome>{children}</SiteChrome>
+        <SiteChrome settings={settings}>{children}</SiteChrome>
         <Analytics />
         <CustomFooterCode />
       </body>

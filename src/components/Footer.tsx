@@ -6,11 +6,19 @@ import Image from "next/image";
 import { siteConfig } from "@/lib/siteConfig";
 import SocialLinks from "./SocialLinks";
 
-export default function Footer() {
+export default function Footer({ settings }: { settings?: Record<string, string> }) {
   // Defaults open (unlike chesly.tech's collapsed-by-default tab) so
   // Privacy/Terms/Contact links stay reachable without an extra click —
   // the toggle just gives visitors the option to tuck the footer away.
   const [expanded, setExpanded] = useState(true);
+
+  // Admin > Settings overrides — fall back to siteConfig.ts when unset.
+  const logoFooter = settings?.logo_footer_url || siteConfig.branding.logoFooter;
+  const about = settings?.footer_about || siteConfig.footer.about;
+  const contactEmail = settings?.contact_email || siteConfig.contact.email;
+  const contactPhone = settings?.contact_phone || siteConfig.contact.phone;
+  const contactLocation = settings?.contact_location || siteConfig.contact.location;
+  const contactHours = settings?.contact_hours || siteConfig.contact.hours;
 
   return (
     <footer className="relative bg-footer text-white">
@@ -50,14 +58,14 @@ export default function Footer() {
             {/* Column 1 — Company */}
             <div>
               <Image
-                src={siteConfig.branding.logoFooter}
+                src={logoFooter}
                 alt={`${siteConfig.shortName} logo`}
                 width={168}
                 height={42}
                 className="h-9 w-auto"
               />
               <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/60">
-                {siteConfig.footer.about}
+                {about}
               </p>
               <a
                 href={siteConfig.footer.ctaButton.href}
@@ -114,22 +122,22 @@ export default function Footer() {
               </h3>
               <ul className="space-y-2 text-sm text-white/60">
                 <li>
-                  <a href={`mailto:${siteConfig.contact.email}`} className="transition-colors hover:text-white">
-                    {siteConfig.contact.email}
+                  <a href={`mailto:${contactEmail}`} className="transition-colors hover:text-white">
+                    {contactEmail}
                   </a>
                 </li>
                 <li>
                   <a
-                    href={`tel:${siteConfig.contact.phone.replace(/\s+/g, "")}`}
+                    href={`tel:${contactPhone.replace(/\s+/g, "")}`}
                     className="transition-colors hover:text-white"
                   >
-                    {siteConfig.contact.phone}
+                    {contactPhone}
                   </a>
                 </li>
-                <li>{siteConfig.contact.location}</li>
-                <li>{siteConfig.contact.hours}</li>
+                <li>{contactLocation}</li>
+                <li>{contactHours}</li>
               </ul>
-              <SocialLinks variant="light" className="mt-4 gap-1.5" iconSize="h-8 w-8" />
+              <SocialLinks variant="light" className="mt-4 gap-1.5" iconSize="h-8 w-8" settings={settings} />
             </div>
           </div>
 

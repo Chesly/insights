@@ -10,11 +10,12 @@ import SocialLinks from "./SocialLinks";
 import Greeting from "./Greeting";
 import { useCart } from "@/lib/cart/CartContext";
 
-export default function Header() {
+export default function Header({ settings }: { settings?: Record<string, string> }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { count } = useCart();
+  const logoHeader = settings?.logo_header_url || siteConfig.branding.logoHeader;
 
   return (
     <header className="sticky top-0 z-40 shadow-lg shadow-black/10">
@@ -27,7 +28,7 @@ export default function Header() {
             <Greeting />
           </span>
           {/* Social icons — tight gap, pushed to right, never grow */}
-          <SocialLinks variant="light" className="shrink-0" iconSize="h-6 w-6" />
+          <SocialLinks variant="light" className="shrink-0" iconSize="h-6 w-6" settings={settings} />
         </div>
       </div>
 
@@ -42,7 +43,7 @@ export default function Header() {
             aria-label={`${siteConfig.shortName} home`}
           >
             <Image
-              src={siteConfig.branding.logoHeader}
+              src={logoHeader}
               alt={`${siteConfig.shortName} logo`}
               width={168}
               height={42}
@@ -190,7 +191,7 @@ export default function Header() {
           {/* Social links at bottom of mobile menu */}
           <div className="border-t border-white/10 px-4 py-4">
             <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-white/30">Follow Us</p>
-            <SocialLinks variant="light" className="gap-2" />
+            <SocialLinks variant="light" className="gap-2" settings={settings} />
           </div>
         </nav>
       )}

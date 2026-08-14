@@ -25,22 +25,30 @@ export default function SocialLinks({
   variant = "default",
   showHandles = false,
   className = "",
-  iconSize = "h-9 w-9"
+  iconSize = "h-9 w-9",
+  settings,
 }: {
   variant?: "default" | "light";
   showHandles?: boolean;
   className?: string;
   iconSize?: string;
+  /** Admin > Settings overrides (social_facebook, social_instagram, etc.) —
+      falls back to siteConfig.social when a platform has no override set. */
+  settings?: Record<string, string>;
 }) {
   const colorClass =
     variant === "light"
       ? "text-white hover:text-gold hover:bg-white/10"
       : "text-navy/60 hover:text-gold hover:bg-gold/10 dark:text-white/60";
 
+  const resolvedSocial = siteConfig.social
+    .map((s) => ({ ...s, href: settings?.[`social_${s.icon}`] || s.href }))
+    .filter((s) => s.href);
+
   if (showHandles) {
     return (
       <ul className={`space-y-3 ${className}`}>
-        {siteConfig.social.map((s) => (
+        {resolvedSocial.map((s) => (
           <li key={s.icon}>
             <a
               href={s.href}
@@ -70,7 +78,7 @@ export default function SocialLinks({
 
   return (
     <div className={`flex items-center ${className || "gap-2"}`}>
-      {siteConfig.social.map((s) => (
+      {resolvedSocial.map((s) => (
         <a
           key={s.icon}
           href={s.href}

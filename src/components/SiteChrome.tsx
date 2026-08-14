@@ -9,7 +9,13 @@ import { CartProvider } from "@/lib/cart/CartContext"
 // and should never show the public site's nav/footer around them.
 const HIDDEN_PREFIXES = ["/admin", "/ct-login"]
 
-export default function SiteChrome({ children }: { children: React.ReactNode }) {
+export default function SiteChrome({
+  children,
+  settings,
+}: {
+  children: React.ReactNode
+  settings: Record<string, string>
+}) {
   const pathname = usePathname()
   const hideChrome = HIDDEN_PREFIXES.some((p) => pathname?.startsWith(p))
 
@@ -19,9 +25,9 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
 
   return (
     <CartProvider>
-      <Header />
+      <Header settings={settings} />
       <main id="main-content">{children}</main>
-      <Footer />
+      <Footer settings={settings} />
     </CartProvider>
   )
 }

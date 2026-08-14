@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/siteConfig";
+import { getAllSiteSettings } from "@/lib/settings";
 import PageHero from "@/components/PageHero";
 import SocialLinks from "@/components/SocialLinks";
 import ContactForm from "@/components/ContactForm";
@@ -9,7 +10,15 @@ export const metadata: Metadata = {
   description: `Get in touch with ${siteConfig.name}.`
 };
 
-export default function ContactPage() {
+export const revalidate = 3600;
+
+export default async function ContactPage() {
+  const settings = await getAllSiteSettings();
+  const email = settings.contact_email || siteConfig.contact.email;
+  const phone = settings.contact_phone || siteConfig.contact.phone;
+  const location = settings.contact_location || siteConfig.contact.location;
+  const hours = settings.contact_hours || siteConfig.contact.hours;
+
   return (
     <div>
       <PageHero
@@ -27,22 +36,22 @@ export default function ContactPage() {
               <div>
                 <dt className="font-medium text-navy dark:text-white">Email</dt>
                 <dd>
-                  <a href={`mailto:${siteConfig.contact.email}`} className="text-gold hover:underline">
-                    {siteConfig.contact.email}
+                  <a href={`mailto:${email}`} className="text-gold hover:underline">
+                    {email}
                   </a>
                 </dd>
               </div>
               <div>
                 <dt className="font-medium text-navy dark:text-white">Phone</dt>
-                <dd>{siteConfig.contact.phone}</dd>
+                <dd>{phone}</dd>
               </div>
               <div>
                 <dt className="font-medium text-navy dark:text-white">Location</dt>
-                <dd>{siteConfig.contact.location}</dd>
+                <dd>{location}</dd>
               </div>
               <div>
                 <dt className="font-medium text-navy dark:text-white">Hours</dt>
-                <dd>{siteConfig.contact.hours}</dd>
+                <dd>{hours}</dd>
               </div>
             </dl>
           </div>
@@ -50,7 +59,7 @@ export default function ContactPage() {
           <div className="border border-gold/20 p-6">
             <h2 className="font-semibold text-navy dark:text-white">Follow along</h2>
             <div className="mt-3">
-              <SocialLinks />
+              <SocialLinks settings={settings} />
             </div>
           </div>
         </aside>
