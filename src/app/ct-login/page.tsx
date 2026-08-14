@@ -42,14 +42,14 @@ export default function LoginPage() {
               <label style={{ display:'block', fontSize:13, fontWeight:600, color:'#374151', marginBottom:'0.4rem' }}>Email Address</label>
               <div style={{ position:'relative' }}>
                 <Mail size={15} style={{ position:'absolute', left:12, top:'50%', transform:'translateY(-50%)', color:'#9ca3af' }}/>
-                <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="hello@chesly.tech" required className="cms-input" style={{ paddingLeft:38, width:'100%', padding:'9px 12px 9px 38px', border:'1px solid #334155', borderRadius:8, fontSize:14, fontFamily:"Inter, sans-serif", color:'#1e293b', background:'#fff', outline:'none' }}/>
+                <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" autoComplete="username" required className="cms-input" style={{ paddingLeft:38, width:'100%', padding:'9px 12px 9px 38px', border:'1px solid #334155', borderRadius:8, fontSize:14, fontFamily:"Inter, sans-serif", color:'#1e293b', background:'#fff', outline:'none' }}/>
               </div>
             </div>
             <div>
               <label style={{ display:'block', fontSize:13, fontWeight:600, color:'#374151', marginBottom:'0.4rem' }}>Password</label>
               <div style={{ position:'relative' }}>
                 <Lock size={15} style={{ position:'absolute', left:12, top:'50%', transform:'translateY(-50%)', color:'#9ca3af' }}/>
-                <input type={showPw?'text':'password'} value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••" required className="cms-input" style={{ paddingLeft:38, paddingRight:40, width:'100%', padding:'9px 40px 9px 38px', border:'1px solid #334155', borderRadius:8, fontSize:14, fontFamily:"Inter, sans-serif", color:'#1e293b', background:'#fff', outline:'none' }}/>
+                <input type={showPw?'text':'password'} value={password} onChange={e=>setPassword(e.target.value)} placeholder="Enter your password" autoComplete="current-password" required className="cms-input" style={{ paddingLeft:38, paddingRight:40, width:'100%', padding:'9px 40px 9px 38px', border:'1px solid #334155', borderRadius:8, fontSize:14, fontFamily:"Inter, sans-serif", color:'#1e293b', background:'#fff', outline:'none' }}/>
                 <button type="button" onClick={()=>setShowPw(!showPw)} style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'#9ca3af', padding:4 }}>
                   {showPw ? <EyeOff size={15}/> : <Eye size={15}/>}
                 </button>
