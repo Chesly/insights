@@ -5,11 +5,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/cart/CartContext";
 import PageHero from "@/components/PageHero";
+import { COUNTRIES } from "@/lib/countries";
 
 export default function CartPage() {
   const { items, removeItem, total, clearCart } = useCart();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [whatsapp, setWhatsapp] = useState("+27 ");
+  const [country, setCountry] = useState("South Africa");
+  const [stateProvince, setStateProvince] = useState("");
+  const [newsletterOptIn, setNewsletterOptIn] = useState(false);
+  const [notes, setNotes] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [error, setError] = useState("");
 
@@ -50,7 +56,10 @@ export default function CartPage() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, email, name, couponCode: coupon?.code }),
+        body: JSON.stringify({
+          items, email, name, couponCode: coupon?.code,
+          whatsapp, country, stateProvince, notes, newsletterOptIn,
+        }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Something went wrong — please try again.");
@@ -157,6 +166,7 @@ export default function CartPage() {
                   id="cart-name"
                   type="text"
                   required
+                  placeholder="e.g. Thandiwe Nkosi"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full border border-gold/20 px-3 py-2 text-sm outline-none focus:border-gold"
@@ -170,11 +180,78 @@ export default function CartPage() {
                   id="cart-email"
                   type="email"
                   required
+                  placeholder="e.g. thandiwe@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full border border-gold/20 px-3 py-2 text-sm outline-none focus:border-gold"
                 />
               </div>
+              <div>
+                <label htmlFor="cart-whatsapp" className="mb-1 block text-xs font-semibold text-navy/70 dark:text-white/70">
+                  WhatsApp Number
+                </label>
+                <input
+                  id="cart-whatsapp"
+                  type="tel"
+                  required
+                  placeholder="e.g. +27 82 123 4567"
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                  className="w-full border border-gold/20 px-3 py-2 text-sm outline-none focus:border-gold"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label htmlFor="cart-country" className="mb-1 block text-xs font-semibold text-navy/70 dark:text-white/70">
+                    Country
+                  </label>
+                  <select
+                    id="cart-country"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    className="w-full border border-gold/20 bg-white px-3 py-2 text-sm outline-none focus:border-gold dark:bg-navy"
+                  >
+                    {COUNTRIES.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="cart-state" className="mb-1 block text-xs font-semibold text-navy/70 dark:text-white/70">
+                    State / Province
+                  </label>
+                  <input
+                    id="cart-state"
+                    type="text"
+                    placeholder="e.g. Gauteng"
+                    value={stateProvince}
+                    onChange={(e) => setStateProvince(e.target.value)}
+                    className="w-full border border-gold/20 px-3 py-2 text-sm outline-none focus:border-gold"
+                  />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="cart-notes" className="mb-1 block text-xs font-semibold text-navy/70 dark:text-white/70">
+                  Notes or Payment Suggestions <span className="font-normal text-navy/40 dark:text-white/40">(optional)</span>
+                </label>
+                <textarea
+                  id="cart-notes"
+                  rows={2}
+                  placeholder="e.g. Please could you also accept EFT?"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className="w-full border border-gold/20 px-3 py-2 text-sm outline-none focus:border-gold"
+                />
+              </div>
+              <label className="flex items-start gap-2 text-xs text-navy/70 dark:text-white/70">
+                <input
+                  type="checkbox"
+                  checked={newsletterOptIn}
+                  onChange={(e) => setNewsletterOptIn(e.target.checked)}
+                  className="mt-0.5"
+                />
+                Subscribe to our newsletter <span className="font-normal text-navy/40 dark:text-white/40">(optional)</span>
+              </label>
 
               {status === "error" && (
                 <p className="text-sm text-red-600" role="alert">{error}</p>

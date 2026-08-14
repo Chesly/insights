@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/cart/CartContext";
+import { COUNTRIES } from "@/lib/countries";
 
 type Tier = "free" | "premium" | "paid";
 
@@ -41,6 +42,11 @@ export default function DownloadButton({
   const [showFreeForm, setShowFreeForm] = useState(false);
   const [freeName, setFreeName] = useState("");
   const [freeEmail, setFreeEmail] = useState("");
+  const [freeWhatsapp, setFreeWhatsapp] = useState("+27 ");
+  const [freeCountry, setFreeCountry] = useState("South Africa");
+  const [freeState, setFreeState] = useState("");
+  const [freeNotes, setFreeNotes] = useState("");
+  const [freeNewsletter, setFreeNewsletter] = useState(false);
   const [freeStatus, setFreeStatus] = useState<"idle" | "sending" | "error">("idle");
   const [freeError, setFreeError] = useState("");
 
@@ -49,29 +55,23 @@ export default function DownloadButton({
     setFreeStatus("sending");
     setFreeError("");
 
-    // Same synchronous-tab-open trick as the paid flow below — must
-    // happen directly inside the click handler, before any await, or
-    // browsers treat it as a popup and block it.
-    const newTab = window.open("", "_blank");
-
     try {
-      const res = await fetch("/api/downloads/claim", {
+      const res = await fetch(`/api/downloads/${id}/free-checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ downloadId: id, name: freeName, email: freeEmail }),
+        body: JSON.stringify({
+          name: freeName, email: freeEmail, whatsapp: freeWhatsapp,
+          country: freeCountry, stateProvince: freeState, notes: freeNotes,
+          newsletterOptIn: freeNewsletter,
+        }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Something went wrong.");
 
-      if (newTab) newTab.location.href = json.downloadUrl;
-      else window.open(json.downloadUrl, "_blank", "noopener,noreferrer");
-
-      setShowFreeForm(false);
-      setFreeName("");
-      setFreeEmail("");
-      setFreeStatus("idle");
+      // Full navigation, same confirmation page a paid order lands on —
+      // no more opening the raw file in a new tab.
+      window.location.href = `/checkout/success?reference=${json.reference}`;
     } catch (err) {
-      newTab?.close();
       setFreeStatus("error");
       setFreeError(err instanceof Error ? err.message : "Something went wrong — please try again.");
     }
@@ -184,14 +184,13 @@ export default function DownloadButton({
             <div className="w-full max-w-sm bg-white p-6 dark:bg-navy" onClick={(e) => e.stopPropagation()}>
               <h3 className="text-lg font-bold text-navy dark:text-white">Get Your Free Download</h3>
               <p className="mt-1 text-sm text-navy/60 dark:text-white/60">
-                We&rsquo;ll also add you to our newsletter for more free resources like this — unsubscribe
-                anytime.
+                Fill in your details below and your download will be ready on the next screen.
               </p>
 
               <form onSubmit={handleFreeSubmit} className="mt-5 space-y-3">
                 <input
                   required
-                  placeholder="Your name"
+                  placeholder="e.g. Thandiwe Nkosi"
                   value={freeName}
                   onChange={(e) => setFreeName(e.target.value)}
                   className="w-full border border-gold/20 px-3 py-2 text-sm outline-none focus:border-gold"
@@ -199,11 +198,52 @@ export default function DownloadButton({
                 <input
                   required
                   type="email"
-                  placeholder="Email address"
+                  placeholder="e.g. thandiwe@example.com"
                   value={freeEmail}
                   onChange={(e) => setFreeEmail(e.target.value)}
                   className="w-full border border-gold/20 px-3 py-2 text-sm outline-none focus:border-gold"
                 />
+                <input
+                  required
+                  type="tel"
+                  placeholder="e.g. +27 82 123 4567"
+                  value={freeWhatsapp}
+                  onChange={(e) => setFreeWhatsapp(e.target.value)}
+                  className="w-full border border-gold/20 px-3 py-2 text-sm outline-none focus:border-gold"
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <select
+                    value={freeCountry}
+                    onChange={(e) => setFreeCountry(e.target.value)}
+                    className="w-full border border-gold/20 bg-white px-3 py-2 text-sm outline-none focus:border-gold dark:bg-navy"
+                  >
+                    {COUNTRIES.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                  <input
+                    placeholder="e.g. Gauteng"
+                    value={freeState}
+                    onChange={(e) => setFreeState(e.target.value)}
+                    className="w-full border border-gold/20 px-3 py-2 text-sm outline-none focus:border-gold"
+                  />
+                </div>
+                <textarea
+                  rows={2}
+                  placeholder="Notes (optional)"
+                  value={freeNotes}
+                  onChange={(e) => setFreeNotes(e.target.value)}
+                  className="w-full border border-gold/20 px-3 py-2 text-sm outline-none focus:border-gold"
+                />
+                <label className="flex items-start gap-2 text-xs text-navy/70 dark:text-white/70">
+                  <input
+                    type="checkbox"
+                    checked={freeNewsletter}
+                    onChange={(e) => setFreeNewsletter(e.target.checked)}
+                    className="mt-0.5"
+                  />
+                  Subscribe to our newsletter <span className="font-normal text-navy/40 dark:text-white/40">(optional)</span>
+                </label>
 
                 {freeStatus === "error" && <p className="text-sm text-red-600">{freeError}</p>}
 

@@ -21,6 +21,11 @@ export async function POST(req: NextRequest) {
   const items: CheckoutItem[] = Array.isArray(body.items) ? body.items : [];
   const email = String(body.email || "").trim();
   const name = body.name ? String(body.name).trim() : null;
+  const whatsapp = body.whatsapp ? String(body.whatsapp).trim() : null;
+  const country = body.country ? String(body.country).trim() : null;
+  const stateProvince = body.stateProvince ? String(body.stateProvince).trim() : null;
+  const notes = body.notes ? String(body.notes).trim() : null;
+  const newsletterOptIn = Boolean(body.newsletterOptIn);
 
   if (items.length === 0) {
     return NextResponse.json({ error: "Your cart is empty." }, { status: 400 });
@@ -71,9 +76,22 @@ export async function POST(req: NextRequest) {
     coupon_code: couponCode,
     discount_amount: discountAmount,
     status: "pending",
+    whatsapp,
+    country,
+    state_province: stateProvince,
+    notes,
+    newsletter_opt_in: newsletterOptIn,
   });
   if (insertError) {
     return NextResponse.json({ error: insertError.message }, { status: 400 });
+  }
+
+  // Best-effort — never let a newsletter hiccup block a purchase.
+  if (newsletterOptIn) {
+    supabase
+      .from("newsletter_subscribers")
+      .upsert({ email, full_name: name, source: "checkout" }, { onConflict: "email" })
+      .then(() => {});
   }
 
   // A coupon covered the full amount — nothing to actually charge, so

@@ -1,5 +1,7 @@
 import { createServiceClient } from "./supabase/service";
-import { createDownloadToken, PAID_TOKEN_CONFIG } from "./downloadTokens";
+import { createDownloadToken, FREE_TOKEN_CONFIG, PAID_TOKEN_CONFIG } from "./downloadTokens";
+import { sendEmail } from "./email";
+import { siteConfig } from "./siteConfig";
 
 interface OrderItem {
   productId: string;
@@ -17,7 +19,11 @@ interface OrderItem {
  * the tokens already issued, rather than minting duplicates.
  */
 export async function fulfillOrder(
-  paystackReference: string
+  paystackReference: string,
+  /** Genuinely free-tier items get the more generous, non-piracy-control
+      token lifetime — see downloadTokens.ts. Paid items (even ones a
+      coupon discounted to R0) keep the tighter paid config. */
+  isFreeOrder = false
 ): Promise<
   | { status: "paid"; downloads: { name: string; slug: string; downloadUrl: string }[] }
   | { status: "not_found" }
@@ -71,11 +77,28 @@ export async function fulfillOrder(
         downloadId: item.productId,
         email: order.customer_email,
         orderId: order.id,
-        ...PAID_TOKEN_CONFIG,
+        ...(isFreeOrder ? FREE_TOKEN_CONFIG : PAID_TOKEN_CONFIG),
       });
       return { name: item.name, slug: item.slug, downloadUrl: `/api/download/${token}` };
     })
   );
+
+  // Best-effort — the order is already fulfilled above regardless of
+  // whether this succeeds, so an unconfigured/failed send never blocks
+  // a customer's download.
+  sendEmail({
+    to: order.customer_email,
+    from: "Insights Orders <onboarding@resend.dev>",
+    subject: isFreeOrder ? "Your download is ready" : "Your order is complete",
+    html: `
+      <p>Hi ${order.customer_name || "there"},</p>
+      <p>${isFreeOrder ? "Your free download is ready" : "Thanks for your order — here's your download"}${downloads.length > 1 ? "s" : ""}:</p>
+      <ul>
+        ${downloads.map((d) => `<li><a href="${siteConfig.url}${d.downloadUrl}">${d.name}</a></li>`).join("")}
+      </ul>
+      <p style="color:#888;font-size:12px">Keep this email — each link can be reused a few times before it expires.</p>
+    `,
+  }).catch(() => {});
 
   return { status: "paid", downloads };
 }
