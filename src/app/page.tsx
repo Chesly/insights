@@ -72,14 +72,14 @@ export default async function HomePage() {
           {/* Hero heading — a stronger, more inviting headline than a
               plain tagline restate. Kept compact so it still doesn't
               push real content below the fold. */}
-          <section className="mb-8 pt-2 text-center">
-            <h1 className="mx-auto max-w-2xl text-xl font-bold leading-snug tracking-tight text-navy dark:text-white sm:text-2xl">
+          <section className="mb-5 pt-2 text-center sm:mb-6">
+            <h1 className="mx-auto max-w-2xl text-xl font-bold leading-snug tracking-tight text-navy dark:text-white sm:text-2xl lg:max-w-none lg:whitespace-nowrap">
               Practical ideas for building a better business and a better future.
             </h1>
           </section>
 
           {/* Featured Story + Most Read */}
-          <section className="mb-8 flex flex-col items-stretch gap-5 lg:flex-row">
+          <section className="mb-4 flex flex-col items-stretch gap-5 sm:mb-5 lg:flex-row">
             <div className="min-w-0 flex-1 lg:max-w-[830px]">
               <Carousel slides={carouselSlides} />
             </div>
@@ -109,10 +109,12 @@ export default async function HomePage() {
               </aside>
             )}
           </section>
-        </div>
 
-        <div className="container-page py-6 sm:py-8">
-          {/* No "Latest" heading — flows straight from hero into content */}
+          {/* No "Latest" heading — flows straight from hero into content.
+              Kept in the same container-page block as the hero/carousel
+              above (rather than a second wrapper with its own top padding)
+              so the grid below sits close enough to peek above the fold —
+              a visual cue that there's more to scroll to. */}
           <ArticleRow posts={latest} />
           <ArticleRow heading="Popular" posts={popular} />
         </div>
