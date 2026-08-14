@@ -21,7 +21,10 @@ export async function generateMetadata({
   return {
     title: `${name} Articles`,
     description: `All ${name} articles from ${siteConfig.shortName}.`,
-    alternates: { canonical: `${siteConfig.url}/category/${slug}` }
+    alternates: {
+      canonical: `${siteConfig.url}/category/${slug}`,
+      types: { "application/rss+xml": `${siteConfig.url}/category/${slug}/rss.xml` }
+    }
   };
 }
 
@@ -77,6 +80,14 @@ export default async function CategoryPage({
       />
 
       <div className="container-page py-12">
+        <div className="mb-6 flex justify-end">
+          <Link
+            href={`/category/${slug}/rss.xml`}
+            className="text-xs font-semibold uppercase tracking-wide text-gold hover:underline"
+          >
+            Subscribe via RSS
+          </Link>
+        </div>
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
             <Link

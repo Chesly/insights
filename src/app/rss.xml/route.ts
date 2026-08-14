@@ -1,43 +1,15 @@
 import { getAllPosts } from "@/lib/posts";
 import { siteConfig } from "@/lib/siteConfig";
+import { buildRssXml } from "@/lib/rss";
 
 export async function GET() {
   const posts = await getAllPosts(false, ["insights", "coffee"]);
 
-  const items = posts
-    .map(
-      (p) => `
-    <item>
-      <title><![CDATA[${p.title}]]></title>
-      <link>${siteConfig.url}/${p.section === "coffee" ? "coffee" : "insights"}/${p.slug}</link>
-      <guid isPermaLink="true">${siteConfig.url}/${p.section === "coffee" ? "coffee" : "insights"}/${p.slug}</guid>
-      <pubDate>${new Date(p.publishedDate).toUTCString()}</pubDate>
-      <dc:creator><![CDATA[${p.author || siteConfig.owner.name}]]></dc:creator>
-      <description><![CDATA[${p.description}]]></description>
-      <content:encoded><![CDATA[${p.aiSummary || p.description}]]></content:encoded>
-      <category><![CDATA[${p.category}]]></category>
-      ${p.tags.map((t) => `<category><![CDATA[${t}]]></category>`).join("")}
-      <enclosure url="${p.image}" type="image/png" />
-    </item>`
-    )
-    .join("");
-
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
-  <channel>
-    <title>${siteConfig.name}</title>
-    <link>${siteConfig.url}</link>
-    <description>${siteConfig.description}</description>
-    <language>${siteConfig.language}</language>
-    <image>
-      <url>${siteConfig.branding.logoHeader}</url>
-      <title>${siteConfig.name}</title>
-      <link>${siteConfig.url}</link>
-    </image>
-    <atom:link href="${siteConfig.url}/rss.xml" rel="self" type="application/rss+xml" />
-    ${items}
-  </channel>
-</rss>`;
+  const xml = buildRssXml(posts, {
+    title: siteConfig.name,
+    description: siteConfig.description,
+    selfUrl: `${siteConfig.url}/rss.xml`,
+  });
 
   return new Response(xml, {
     headers: {

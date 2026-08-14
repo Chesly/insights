@@ -1,0 +1,44 @@
+import { siteConfig } from "./siteConfig";
+import type { Post } from "./types";
+
+/** Shared RSS 2.0 builder — used by the site-wide feed and the
+    per-category feeds alike, so both stay in sync automatically. */
+export function buildRssXml(
+  posts: Post[],
+  { title, description, selfUrl }: { title: string; description: string; selfUrl: string }
+): string {
+  const items = posts
+    .map(
+      (p) => `
+    <item>
+      <title><![CDATA[${p.title}]]></title>
+      <link>${siteConfig.url}/${p.section === "coffee" ? "coffee" : "insights"}/${p.slug}</link>
+      <guid isPermaLink="true">${siteConfig.url}/${p.section === "coffee" ? "coffee" : "insights"}/${p.slug}</guid>
+      <pubDate>${new Date(p.publishedDate).toUTCString()}</pubDate>
+      <dc:creator><![CDATA[${p.author || siteConfig.owner.name}]]></dc:creator>
+      <description><![CDATA[${p.description}]]></description>
+      <content:encoded><![CDATA[${p.aiSummary || p.description}]]></content:encoded>
+      <category><![CDATA[${p.category}]]></category>
+      ${p.tags.map((t) => `<category><![CDATA[${t}]]></category>`).join("")}
+      <enclosure url="${p.image}" type="image/png" />
+    </item>`
+    )
+    .join("");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>${title}</title>
+    <link>${siteConfig.url}</link>
+    <description>${description}</description>
+    <language>${siteConfig.language}</language>
+    <image>
+      <url>${siteConfig.branding.logoHeader}</url>
+      <title>${title}</title>
+      <link>${siteConfig.url}</link>
+    </image>
+    <atom:link href="${selfUrl}" rel="self" type="application/rss+xml" />
+    ${items}
+  </channel>
+</rss>`;
+}
