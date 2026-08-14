@@ -13,6 +13,7 @@ import { getAllPosts } from "@/lib/posts";
 import { breadcrumbSchema, productSchema } from "@/lib/schema";
 
 const FILE_TYPE_ICONS: Record<string, string> = { pdf: "📄", zip: "🗜️", doc: "📝", other: "📦" };
+const BUNDLE_FILE_ICONS: Record<string, string> = { pdf: "📄", zip: "🗜️", doc: "📝", xlsx: "📊", audio: "🎧", other: "📦" };
 
 export async function generateStaticParams() {
   const downloads = await getAllDownloads();
@@ -136,6 +137,23 @@ export default async function DownloadDetailPage({
           <p className="max-w-3xl leading-relaxed text-navy/75 dark:text-white/75">
             {item.description}
           </p>
+        )}
+
+        {/* What's Included — only for bundle products (multiple files) */}
+        {item.bundleFiles.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-navy dark:text-white">
+              What&rsquo;s Included
+            </h2>
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+              {item.bundleFiles.map((f, i) => (
+                <li key={i} className="flex items-center gap-2 border border-gold/10 px-3 py-2 text-sm text-navy/75 dark:text-white/75">
+                  <span aria-hidden="true">{BUNDLE_FILE_ICONS[f.fileType] || "📦"}</span>
+                  {f.name}
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
 
         {/* Key Features */}

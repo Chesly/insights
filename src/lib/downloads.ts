@@ -39,6 +39,17 @@ export interface DownloadItem {
   /** SEO/long-tail terms — shown only on the single product page, never
       on the shop grid. */
   tags: string[];
+  /** When non-empty, this product IS a bundle — the single fileUrl above
+      is ignored for download purposes and the customer instead lands on
+      a page listing each of these, individually. Most sold products
+      (spreadsheet + how-to PDF + audio + Word doc) are bundles. */
+  bundleFiles: BundleFile[];
+}
+
+export interface BundleFile {
+  name: string;
+  url: string;
+  fileType: "pdf" | "zip" | "doc" | "xlsx" | "audio" | "other";
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,6 +80,7 @@ function rowToDownload(row: any): DownloadItem {
     howItHelps: row.how_it_helps || [],
     whyYouNeedIt: row.why_you_need_it || [],
     tags: row.tags || [],
+    bundleFiles: row.bundle_files || [],
   };
 }
 

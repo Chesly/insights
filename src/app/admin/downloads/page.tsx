@@ -6,6 +6,7 @@ import TagInput from '@/components/cms/TagInput'
 import FileUploadButton from '@/components/cms/FileUploadButton'
 import { Plus, Edit2, Trash2, Save, X, AlertCircle, Download as DownloadIcon, ExternalLink } from 'lucide-react'
 import type { Download, Category } from '@/types'
+import type { BundleFile } from '@/lib/downloads'
 import { slugify } from '@/lib/types'
 
 interface FormState {
@@ -32,9 +33,19 @@ interface FormState {
   how_it_helps: string[]
   why_you_need_it: string[]
   tags: string[]
+  bundle_files: BundleFile[]
 }
 
-const EMPTY: FormState = { name:'', slug:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', tier:'free', price:'', compare_at_price:'', is_published:false, target_audience:[], solves:[], seo_title:'', meta_description:'', store_url:'', gallery_images:[], key_features:[], how_it_helps:[], why_you_need_it:[], tags:[] }
+const EMPTY: FormState = { name:'', slug:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', tier:'free', price:'', compare_at_price:'', is_published:false, target_audience:[], solves:[], seo_title:'', meta_description:'', store_url:'', gallery_images:[], key_features:[], how_it_helps:[], why_you_need_it:[], tags:[], bundle_files:[] }
+
+const BUNDLE_FILE_TYPES: { value: BundleFile['fileType']; label: string }[] = [
+  { value:'xlsx', label:'📊 Spreadsheet' },
+  { value:'pdf', label:'📄 PDF' },
+  { value:'audio', label:'🎧 Audio' },
+  { value:'doc', label:'📝 Word Doc' },
+  { value:'zip', label:'🗜️ Zip' },
+  { value:'other', label:'📦 Other' },
+]
 
 // Only two choices in the UI now: Free, and Premium — Premium is the
 // paid version, backed by the same DB value ('paid') that already drives
@@ -84,7 +95,7 @@ export default function DownloadsPage() {
       store_url:(dl as unknown as FormState).store_url||'',
       gallery_images:(dl as unknown as FormState).gallery_images||[], key_features:(dl as unknown as FormState).key_features||[],
       how_it_helps:(dl as unknown as FormState).how_it_helps||[], why_you_need_it:(dl as unknown as FormState).why_you_need_it||[],
-      tags:(dl as unknown as FormState).tags||[],
+      tags:(dl as unknown as FormState).tags||[], bundle_files:(dl as unknown as FormState).bundle_files||[],
     })
     setShowForm(true); setError('')
   }
@@ -92,7 +103,12 @@ export default function DownloadsPage() {
   const reset = () => { setForm(EMPTY); setShowForm(false); setError('') }
 
   const save = async () => {
-    if (!form.name.trim() || !form.file_url.trim()) { setError('Name and File URL are required'); return }
+    if (!form.name.trim()) { setError('Name is required'); return }
+    const hasBundle = form.bundle_files.length > 0
+    if (!hasBundle && !form.file_url.trim()) { setError('Add a File URL, or add Bundle Files below, for the customer to actually download.'); return }
+    if (hasBundle && form.bundle_files.some(f => !f.name.trim() || !f.url.trim())) {
+      setError('Every bundle file needs both a label and an uploaded file.'); return
+    }
     setSaving(true); setError('')
     try {
       const payload = { ...form, category_id: form.category_id || null, price: form.price.trim() ? Number(form.price) : null, compare_at_price: form.compare_at_price.trim() ? Number(form.compare_at_price) : null }
@@ -201,9 +217,11 @@ export default function DownloadsPage() {
                 <textarea className="cms-input cms-textarea" value={form.description} onChange={set('description')} placeholder="Brief description of what this download contains…" rows={2}/>
               </div>
               <div>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>File URL * <span style={{ fontWeight:400, color:'#94a3b8' }}>(upload or paste a link)</span></label>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  File URL <span style={{ fontWeight:400, color:'#94a3b8' }}>(single-file products only — leave blank if using Bundle Files below)</span>
+                </label>
                 <div style={{ display:'flex', gap:8 }}>
-                  <input className="cms-input" value={form.file_url} onChange={set('file_url')} placeholder="https://ik.imagekit.io/mkvu8hdr5/downloads/file.pdf" style={{ fontFamily:'monospace', fontSize:12, flex:1 }}/>
+                  <input className="cms-input" value={form.file_url} onChange={set('file_url')} placeholder="https://ik.imagekit.io/mkvu8hdr5/downloads/file.pdf" style={{ fontFamily:'monospace', fontSize:12, flex:1 }} disabled={form.bundle_files.length > 0}/>
                   <FileUploadButton
                     accept=".pdf,.zip,.doc,.docx"
                     folder="/downloads"
@@ -211,6 +229,50 @@ export default function DownloadsPage() {
                     onUploaded={(row) => setForm(f => ({ ...f, file_url: row.url, file_type: (row.original_name.split('.').pop() || 'other').toLowerCase() as FormState['file_type'] }))}
                   />
                 </div>
+              </div>
+              <div style={{ gridColumn:'1/-1' }}>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  Bundle Files <span style={{ fontWeight:400, color:'#94a3b8' }}>(most products are this — e.g. Spreadsheet + How-to-Use PDF + Audio + Word Doc, each downloaded separately)</span>
+                </label>
+                <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                  {form.bundle_files.map((bf, i) => (
+                    <div key={i} style={{ display:'flex', gap:8, alignItems:'center', background:'#f8fafc', padding:8, borderRadius:8 }}>
+                      <select
+                        value={bf.fileType}
+                        onChange={e => setForm(f => ({ ...f, bundle_files: f.bundle_files.map((x,idx) => idx===i ? {...x, fileType: e.target.value as BundleFile['fileType']} : x) }))}
+                        className="cms-input cms-select"
+                        style={{ width:150, flexShrink:0 }}
+                      >
+                        {BUNDLE_FILE_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                      </select>
+                      <input
+                        className="cms-input"
+                        placeholder="Label, e.g. How-to-Use Guide"
+                        value={bf.name}
+                        onChange={e => setForm(f => ({ ...f, bundle_files: f.bundle_files.map((x,idx) => idx===i ? {...x, name: e.target.value} : x) }))}
+                        style={{ flex:1 }}
+                      />
+                      {bf.url ? (
+                        <span style={{ fontSize:12, color:'#16a34a', fontWeight:600, whiteSpace:'nowrap' }}>✓ Uploaded</span>
+                      ) : (
+                        <FileUploadButton
+                          accept=".pdf,.zip,.doc,.docx,.xlsx,.xls,.mp3,.wav,.m4a"
+                          folder="/downloads"
+                          label="Upload"
+                          onUploaded={(row) => setForm(f => ({ ...f, bundle_files: f.bundle_files.map((x,idx) => idx===i ? {...x, url: row.url} : x) }))}
+                        />
+                      )}
+                      <button type="button" onClick={() => setForm(f => ({ ...f, bundle_files: f.bundle_files.filter((_,idx) => idx!==i) }))}
+                        className="btn btn-ghost btn-sm" style={{ padding:5, color:'#ef4444', flexShrink:0 }}>
+                        <X size={13}/>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button type="button" onClick={() => setForm(f => ({ ...f, bundle_files: [...f.bundle_files, { name:'', url:'', fileType:'other' }] }))}
+                  className="btn btn-secondary btn-sm" style={{ marginTop:8 }}>
+                  <Plus size={13}/>Add File to Bundle
+                </button>
               </div>
               <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Thumbnail URL <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional)</span></label>
