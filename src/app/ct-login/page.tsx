@@ -17,9 +17,23 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true); setError('')
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) { setError(error.message); setLoading(false) }
-    else router.push('/admin/dashboard')
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+      const json = await res.json()
+      if (!res.ok) { setError(json.error || 'Something went wrong. Try again.'); setLoading(false); return }
+      // The route sets the session cookie server-side; refresh the client's
+      // in-memory session from it before navigating so /admin doesn't
+      // briefly bounce back to login.
+      await supabase.auth.getSession()
+      router.push('/admin/dashboard')
+    } catch {
+      setError('Something went wrong. Try again.')
+      setLoading(false)
+    }
   }
 
   return (
