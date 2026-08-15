@@ -2,12 +2,11 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { getPostBySlug, getRelatedPosts, getPostCategories } from "@/lib/posts";
+import { getPostBySlug, getRelatedPosts } from "@/lib/posts";
 import { getAuthorBySlug } from "@/lib/authors";
 import { siteConfig } from "@/lib/siteConfig";
 import { slugify } from "@/lib/types";
 import { articleSchema, breadcrumbSchema, faqSchema, howToSchema } from "@/lib/schema";
-import PageHero from "@/components/PageHero";
 import ProductsTeaser from "@/components/ProductsTeaser";
 import SocialShare from "@/components/SocialShare";
 import CommentSection from "@/components/CommentSection";
@@ -103,65 +102,58 @@ export default async function BlogPostPage({
         />
       )}
 
-      <PageHero
-        title={post.title}
-        subtitle={post.description}
-        breadcrumbs={[
-          { label: "Home", href: "/" },
-          { label: "Articles", href: "/insights" },
-          ...getPostCategories(post).map((cat) => ({ label: cat, href: `/category/${slugify(cat)}` })),
-        ]}
-      />
-
-    <article className="container-page py-12">
-      <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-3 text-center text-sm text-navy/50 dark:text-white/50">
-        <span>
-          By{" "}
-          <Link href={authorUrl} className="font-medium text-gold hover:underline">
-            {post.author || siteConfig.owner.name}
-          </Link>
-        </span>
-        <span aria-hidden="true">&middot;</span>
-        <time dateTime={post.publishedDate}>
-          {new Date(post.publishedDate).toLocaleDateString("en-ZA", {
-            year: "numeric",
-            month: "long",
-            day: "numeric"
-          })}
-        </time>
-        <span aria-hidden="true">&middot;</span>
-        <span>{post.readingTime}</span>
+      {/* Featured image with the headline overlaid directly on it, spanning
+          the full content width (matches the header's logo-to-cart width)
+          instead of a separate breadcrumb hero band. Height is ~62% of the
+          old aspect-video image (a ~38% reduction) since the headline no
+          longer needs a tall canvas to sit above. */}
+      <div className="container-page pt-6">
+        <div className="relative w-full overflow-hidden aspect-[290/100] sm:aspect-[350/100]">
+          <Image
+            src={post.image}
+            alt={post.title}
+            fill
+            priority
+            sizes="(min-width: 1024px) 1152px, 100vw"
+            className="object-cover"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent"
+          />
+          <div className="absolute inset-x-0 bottom-0 p-5 sm:p-8">
+            <span className="inline-block bg-gold px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+              {post.category}
+            </span>
+            <h1 className="mt-3 max-w-3xl text-xl font-bold leading-tight text-white sm:text-3xl">
+              {post.title}
+            </h1>
+          </div>
+        </div>
       </div>
 
-      <div className="relative mx-auto mt-7 aspect-video max-w-4xl overflow-hidden ">
-        <Image
-          src={post.image}
-          alt={post.title}
-          fill
-          priority
-          sizes="(min-width: 1024px) 896px, 100vw"
-          className="object-cover"
-        />
-      </div>
+    <article className="container-page py-10">
+      <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
+      <div className="min-w-0">
 
       <SeriesBanner post={post} />
 
       {/* AI Summary — a concise, self-contained answer AI search engines can quote/cite directly */}
       {post.aiSummary && (
-        <div className="mx-auto mt-7 max-w-3xl border-l-4 border-gold bg-gold/5 p-6">
+        <div className="mt-7 border-l-4 border-gold bg-gold/5 p-6">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-gold">AI Summary</h2>
           <p className="mt-2 text-navy dark:text-white">{post.aiSummary}</p>
         </div>
       )}
 
      <div
-        className="prose prose-lg mx-auto mt-7 max-w-3xl prose-headings:text-navy dark:prose-invert dark:prose-headings:text-white prose-headings:mt-8 prose-headings:mb-3 prose-h2:text-xl prose-h3:text-lg prose-p:my-3 prose-img:my-6 prose-blockquote:my-4 prose-ul:my-3 prose-ol:my-3 prose-li:my-1"
+        className="prose mt-2 max-w-none text-left prose-headings:text-navy dark:prose-invert dark:prose-headings:text-white prose-headings:mt-8 prose-headings:mb-3 prose-h2:text-xl prose-h3:text-lg prose-p:my-3 prose-img:my-6 prose-blockquote:my-4 prose-ul:my-3 prose-ol:my-3 prose-li:my-1"
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
 
       {/* Key Takeaways */}
       {post.keyTakeaways && post.keyTakeaways.length > 0 && (
-        <section className="mx-auto mt-7 max-w-3xl border border-gold/20 p-6">
+        <section className="mt-7 border border-gold/20 p-6">
           <h2 className="text-lg font-bold text-navy dark:text-white">Key Takeaways</h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-navy/80 dark:text-white/80">
             {post.keyTakeaways.map((point, i) => (
@@ -173,7 +165,7 @@ export default async function BlogPostPage({
 
       {/* Pros & Cons */}
       {(post.pros?.length || post.cons?.length) ? (
-        <section className="mx-auto mt-7 grid max-w-3xl gap-6 sm:grid-cols-2">
+        <section className="mt-7 grid gap-6 sm:grid-cols-2">
           {post.pros && post.pros.length > 0 && (
             <div className="border border-green-600/20 bg-green-600/5 p-5">
               <h3 className="font-semibold text-navy dark:text-white">Pros</h3>
@@ -199,7 +191,7 @@ export default async function BlogPostPage({
 
       {/* Comparison table */}
       {post.comparisonTable && post.comparisonTable.rows.length > 0 && (
-        <section className="mx-auto mt-7 max-w-3xl overflow-x-auto">
+        <section className="mt-7 overflow-x-auto">
           {post.comparisonTable.title && (
             <h2 className="mb-3 text-lg font-bold text-navy dark:text-white">
               {post.comparisonTable.title}
@@ -234,7 +226,7 @@ export default async function BlogPostPage({
 
       {/* Definitions — glossary-style entity definitions AI engines can lift directly */}
       {post.definitions && post.definitions.length > 0 && (
-        <section className="mx-auto mt-7 max-w-3xl">
+        <section className="mt-7">
           <h2 className="text-lg font-bold text-navy dark:text-white">Definitions</h2>
           <dl className="mt-3 space-y-4">
             {post.definitions.map((d, i) => (
@@ -249,7 +241,7 @@ export default async function BlogPostPage({
 
       {/* Expert Insight */}
       {post.expertInsight && (
-        <section className="mx-auto mt-7 max-w-3xl bg-navy p-6 text-white">
+        <section className="mt-7 bg-navy p-6 text-white">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-gold">
             Expert Insight
           </h2>
@@ -259,7 +251,7 @@ export default async function BlogPostPage({
 
       {/* FAQ */}
       {post.faq && post.faq.length > 0 && (
-        <section className="mx-auto mt-7 max-w-3xl">
+        <section className="mt-7">
           <h2 className="text-lg font-bold text-navy dark:text-white">
             Frequently Asked Questions
           </h2>
@@ -278,7 +270,7 @@ export default async function BlogPostPage({
 
       {/* Related Topics / semantic entities */}
       {post.relatedTopics && post.relatedTopics.length > 0 && (
-        <section className="mx-auto mt-7 max-w-3xl">
+        <section className="mt-7">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-navy/60 dark:text-white/60">
             Related Topics
           </h2>
@@ -295,21 +287,26 @@ export default async function BlogPostPage({
         </section>
       )}
 
-      {post.tags?.length > 0 && (
-        <div className="mx-auto mt-7 flex max-w-3xl flex-wrap gap-2">
-          {post.tags.map((tag) => (
-            <Link
-              key={tag}
-              href={`/tag/${slugify(tag)}`}
-              className="border border-gold/30 px-3 py-1 text-xs text-navy/70 hover:bg-gold/10 dark:text-white/70"
-            >
-              #{tag}
-            </Link>
-          ))}
-        </div>
-      )}
+      {/* Byline — moved to the end of the article, right before sharing/author */}
+      <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-gold/10 pt-6 text-sm text-navy/50 dark:text-white/50">
+        <span>
+          By{" "}
+          <Link href={authorUrl} className="font-medium text-gold hover:underline">
+            {post.author || siteConfig.owner.name}
+          </Link>
+        </span>
+        <span aria-hidden="true">&middot;</span>
+        <time dateTime={post.publishedDate}>
+          {new Date(post.publishedDate).toLocaleDateString("en-ZA", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+          })}
+        </time>
+        <span aria-hidden="true">&middot;</span>
+        <span>{post.readingTime}</span>
+      </div>
 
-      
       {/* Social Share */}
       <SocialShare
         title={post.title}
@@ -317,7 +314,7 @@ export default async function BlogPostPage({
         excerpt={post.description}
       />
 
-      <div className="mx-auto mt-6 flex max-w-3xl items-center gap-4 border border-gold/20 p-6">
+      <div className="mt-6 flex items-center gap-4 border border-gold/20 p-6">
         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full">
           <Image src={author.image} alt={author.name} fill className="object-cover" />
         </div>
@@ -328,34 +325,66 @@ export default async function BlogPostPage({
           <p className="mt-1 text-sm text-navy/60 dark:text-white/60">{author.role} at {siteConfig.shortName}.</p>
         </div>
       </div>
+      </div>
 
-      {related.length > 0 && (
-        <section className="mx-auto mt-12 max-w-5xl" aria-labelledby="related-articles-heading">
-          <h2 id="related-articles-heading" className="mb-6 text-2xl font-bold text-navy dark:text-white">
-            Related Articles
-          </h2>
-          <div className="grid gap-6 sm:grid-cols-3">
-            {related.map((r) => (
-              <Link key={r.slug} href={`/insights/${r.slug}`} className="group block">
-                <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-[285/200]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={r.image}
-                    alt={r.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-                <div className="pt-3">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-gold">{r.category}</span>
-                  <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-navy group-hover:text-gold dark:text-white">
-                    {r.title}
-                  </h3>
-                </div>
-              </Link>
-            ))}
+      {/* Sidebar — Tags, then Related Articles underneath. Treated as a
+          distinct rail (border + divider lines) rather than more inline
+          content, so the page reads less like a single long newspaper
+          column and more like something you can also browse sideways. */}
+      <aside className="space-y-8 lg:pt-2">
+        {post.tags?.length > 0 && (
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-wide text-navy/60 dark:text-white/50">
+              Tags
+            </h2>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {post.tags.map((tag) => (
+                <Link
+                  key={tag}
+                  href={`/tag/${slugify(tag)}`}
+                  className="border border-gold/30 px-3 py-1 text-xs text-navy/70 hover:bg-gold/10 dark:text-white/70"
+                >
+                  #{tag}
+                </Link>
+              ))}
+            </div>
           </div>
-        </section>
-      )}
+        )}
+
+        {related.length > 0 && (
+          <div aria-labelledby="related-articles-heading">
+            <h2 id="related-articles-heading" className="text-xs font-bold uppercase tracking-wide text-navy/60 dark:text-white/50">
+              Related Articles
+            </h2>
+            <div className="mt-3 divide-y divide-gold/10 border border-gold/10">
+              {related.map((r) => (
+                <Link key={r.slug} href={`/insights/${r.slug}`} className="group block p-3">
+                  <div className="relative w-full overflow-hidden aspect-[16/9]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={r.image}
+                      alt={r.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div
+                      aria-hidden="true"
+                      className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"
+                    />
+                    <h3 className="absolute inset-x-0 bottom-0 line-clamp-2 p-3 text-sm font-semibold leading-snug text-white">
+                      {r.title}
+                    </h3>
+                  </div>
+                  <p className="mt-2 line-clamp-2 text-xs text-navy/50 dark:text-white/40">
+                    {r.description}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </aside>
+      </div>
+
       {post.allowComments !== false && (
         <CommentSection postId={post.id} initialComments={await getApprovedComments(post.id)} />
       )}
