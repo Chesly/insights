@@ -226,7 +226,11 @@ export default function DownloadsPage() {
                     accept=".pdf,.zip,.doc,.docx"
                     folder="/downloads"
                     label="Upload"
-                    onUploaded={(row) => setForm(f => ({ ...f, file_url: row.url, file_type: (row.original_name.split('.').pop() || 'other').toLowerCase() as FormState['file_type'] }))}
+                    onUploaded={(row) => {
+                      const ext = (row.original_name.split('.').pop() || '').toLowerCase()
+                      const fileType: FormState['file_type'] = ext === 'docx' ? 'doc' : ['pdf', 'zip', 'doc'].includes(ext) ? ext : 'other'
+                      setForm(f => ({ ...f, file_url: row.url, file_type: fileType }))
+                    }}
                   />
                 </div>
               </div>
