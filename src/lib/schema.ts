@@ -86,7 +86,28 @@ export function productSchema(
       priceCurrency: "ZAR",
       price: p.state === "free" ? 0 : p.price ?? 0,
       availability: "https://schema.org/InStock",
-      seller: { "@id": `${siteConfig.url}/#organization` }
+      seller: { "@id": `${siteConfig.url}/#organization` },
+      // Instant digital delivery — no physical shipping, but Google's
+      // Merchant Listings validator requires this field regardless.
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingRate: { "@type": "MonetaryAmount", value: "0", currency: "ZAR" },
+        shippingDestination: { "@type": "DefinedRegion", addressCountry: "ZA" },
+        deliveryTime: {
+          "@type": "ShippingDeliveryTime",
+          handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 0, unitCode: "DAY" },
+          transitTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 0, unitCode: "DAY" }
+        }
+      },
+      // No refunds once a digital file has been downloaded — see /terms.
+      // Genuine technical-fault cases are still handled manually via
+      // contact, this just reflects the stated public policy.
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: "ZA",
+        returnPolicyCategory: "https://schema.org/MerchantReturnNotPermitted",
+        merchantReturnLink: `${siteConfig.url}/terms#refunds`
+      }
     },
     ...(avgRating !== undefined && {
       aggregateRating: {

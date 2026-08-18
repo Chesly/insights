@@ -13,6 +13,13 @@ export default function TermsPage() {
         informational purposes only and does not constitute professional, financial, or
         legal advice.
       </p>
+      <h2 id="refunds">Refunds &amp; Digital Products</h2>
+      <p>
+        All products sold on {siteConfig.shortName} are digital downloads delivered instantly.
+        Because of this, we do not offer refunds once a file has been downloaded. If a product
+        is genuinely faulty (a corrupted or broken file) or you were accidentally charged twice
+        for the same item, contact us and we&rsquo;ll sort it out on a case-by-case basis.
+      </p>
       <h2>Intellectual Property</h2>
       <p>
         All content is owned by {siteConfig.owner.name} / {siteConfig.shortName} unless
