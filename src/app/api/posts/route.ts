@@ -72,6 +72,7 @@ export async function POST(req: NextRequest) {
       published_at: body.status === 'published' ? new Date().toISOString() : null,
       scheduled_at: body.scheduled_at || null,
       read_time: readTime,
+      faq: body.faq || [],
     })
     .select()
     .single()

@@ -7,6 +7,7 @@ import Toggle from '@/components/ui/Toggle'
 import TagInput from '@/components/cms/TagInput'
 import ImagePicker from '@/components/cms/ImagePicker'
 import type { Post, Category } from '@/types'
+import type { FaqItem } from '@/lib/types'
 import {
   Save, Send, Eye, Trash2, AlertCircle, CheckCircle,
   Settings, Search, Share2, Image, ChevronDown, ChevronUp,
@@ -63,6 +64,7 @@ export default function PostForm({ post, categories }: Props) {
   const [metaDesc, setMetaDesc] = useState(post?.meta_description || '')
   const [ogImage, setOgImage] = useState(post?.og_image || '')
   const [canonical, setCanonical] = useState(post?.canonical_url || '')
+  const [faq, setFaq] = useState<FaqItem[]>((post as unknown as { faq?: FaqItem[] })?.faq || [])
   const [slugLocked, setSlugLocked] = useState(!isNew)
 
   // Auto-generate slug from title (new posts only)
@@ -99,10 +101,14 @@ export default function PostForm({ post, categories }: Props) {
     canonical_url: canonical,
     scheduled_at: scheduledAt || null,
     read_time: readTime,
-  }), [title,slug,excerpt,body,bodyJson,featuredImage,imageCaption,categoryIds,section,seriesId,seriesOrder,tags,status,featured,trending,popular,allowComments,seoTitle,metaDesc,ogImage,canonical,scheduledAt,readTime])
+    faq,
+  }), [title,slug,excerpt,body,bodyJson,featuredImage,imageCaption,categoryIds,section,seriesId,seriesOrder,tags,status,featured,trending,popular,allowComments,seoTitle,metaDesc,ogImage,canonical,scheduledAt,readTime,faq])
 
   const save = async (overrideStatus?: Post['status']) => {
     if (!title.trim()) { setError('Title is required'); return }
+    if (faq.some(f => !f.question.trim() || !f.answer.trim())) {
+      setError('Every FAQ needs both a question and an answer.'); return
+    }
     setSaving(true); setSaveStatus('saving'); setError('')
     try {
       const payload = buildPayload(overrideStatus)
@@ -290,6 +296,43 @@ export default function PostForm({ post, categories }: Props) {
             <Field>
               <Label sub="Leave blank to use the default URL">Canonical URL</Label>
               <input className="cms-input" value={canonical} onChange={e=>setCanonical(e.target.value)} placeholder="https://insights.chesly.tech/…"/>
+            </Field>
+
+            <Field>
+              <Label sub="Shown as an accordion at the end of the article, plus FAQ rich-result eligibility in Google and AI answer engines — no fixed count, 4-8 is a good range">FAQs</Label>
+              <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                {faq.map((item, i) => (
+                  <div key={i} style={{ background:'#f8fafc', borderRadius:8, padding:10 }}>
+                    <div style={{ display:'flex', gap:8, alignItems:'flex-start' }}>
+                      <div style={{ flex:1 }}>
+                        <input
+                          className="cms-input"
+                          placeholder="Question, e.g. Does this apply to freelancers too?"
+                          value={item.question}
+                          onChange={e=>setFaq(f=>f.map((x,idx)=> idx===i ? { ...x, question:e.target.value } : x))}
+                        />
+                        <div style={{ fontSize:11, color: item.question.length>80?'#ef4444':item.question.length>0&&item.question.length<40?'#d97706':'#94a3b8', textAlign:'right', marginTop:3 }}>{item.question.length}/80 chars — aim for 40–80</div>
+                        <textarea
+                          className="cms-input cms-textarea"
+                          placeholder="Answer — direct and self-contained, since AI answer engines often quote it verbatim…"
+                          value={item.answer}
+                          onChange={e=>setFaq(f=>f.map((x,idx)=> idx===i ? { ...x, answer:e.target.value } : x))}
+                          rows={2}
+                          style={{ marginTop:6 }}
+                        />
+                        <div style={{ fontSize:11, color: item.answer.length>300?'#ef4444':item.answer.length>0&&item.answer.length<150?'#d97706':'#94a3b8', textAlign:'right', marginTop:3 }}>{item.answer.length}/300 chars — aim for 150–300</div>
+                      </div>
+                      <button type="button" onClick={()=>setFaq(f=>f.filter((_,idx)=>idx!==i))}
+                        className="btn btn-ghost btn-sm" style={{ padding:5, color:'#ef4444', flexShrink:0 }}>
+                        <X size={13}/>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button type="button" onClick={()=>setFaq(f=>[...f, { question:'', answer:'' }])} className="btn btn-secondary btn-sm" style={{ marginTop:8 }}>
+                + Add FAQ
+              </button>
             </Field>
 
             {/* SEO preview */}

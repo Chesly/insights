@@ -93,10 +93,12 @@ export default async function DownloadDetailPage({
 
         {/* Sticky purchase panel */}
         <aside className="h-fit border border-gold/15 p-6 lg:sticky lg:top-24">
-          <h1 className="text-xl font-bold text-navy dark:text-white">{item.name}</h1>
-
+          {/* No h1 here — PageHero above already renders the product name
+              as the page's single h1; repeating it as a second heading
+              here was both a duplicate for the reader and a second h1 on
+              the page. */}
           {item.description && (
-            <p className="mt-3 text-sm leading-relaxed text-navy/70 dark:text-white/70">
+            <p className="text-sm leading-relaxed text-navy/70 dark:text-white/70">
               {item.description}
             </p>
           )}
