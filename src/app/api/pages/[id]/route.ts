@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { getSessionProfile, isAllowedElevatedAccess } from '@/lib/auth/session'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -44,6 +45,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     .select()
     .single()
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+  revalidatePath('/')
+  if (data?.slug) revalidatePath(`/${data.slug}`)
   return NextResponse.json({ data })
 }
 
@@ -55,7 +58,11 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const forbidden = await requireElevated()
   if (forbidden) return forbidden
 
+  const { data: existing } = await supabase.from('pages').select('slug').eq('id', id).single()
+
   const { error } = await supabase.from('pages').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+  revalidatePath('/')
+  if (existing?.slug) revalidatePath(`/${existing.slug}`)
   return NextResponse.json({ success: true })
 }

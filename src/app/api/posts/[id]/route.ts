@@ -1,7 +1,16 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { generateSlug, estimateReadTime } from '@/lib/utils'
 import { getSessionProfile, isAllowedElevatedAccess } from '@/lib/auth/session'
+
+function revalidatePost(post: { slug?: string | null; section?: string | null } | null) {
+  if (!post) return
+  const section = post.section === 'coffee' ? 'coffee' : 'insights'
+  revalidatePath('/')
+  revalidatePath(`/${section}`)
+  if (post.slug) revalidatePath(`/${section}/${post.slug}`)
+}
 
 // Authors (non-elevated role) may only edit/delete posts they wrote
 // themselves. Elevated roles (admin/super_admin) are unrestricted, and a
@@ -85,6 +94,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     await supabase.from('post_categories').upsert({ post_id: id, category_id: catId })
   }
 
+  revalidatePost(post)
+
   return NextResponse.json({ data: post })
 }
 
@@ -96,9 +107,14 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const forbidden = await assertCanModify(supabase, id, user.id)
   if (forbidden) return forbidden
 
+  const { data: existing } = await supabase.from('posts').select('slug, section').eq('id', id).single()
+
   // Delete tags junction first
   await supabase.from('post_tags').delete().eq('post_id', id)
   const { error } = await supabase.from('posts').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+
+  revalidatePost(existing)
+
   return NextResponse.json({ success: true })
 }

@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { generateSlug, estimateReadTime } from '@/lib/utils'
 
 export async function GET(req: NextRequest) {
@@ -97,6 +98,13 @@ export async function POST(req: NextRequest) {
     for (const catId of categoryIds) {
       await supabase.from('post_categories').upsert({ post_id: post.id, category_id: catId })
     }
+  }
+
+  if (post) {
+    const section = post.section === 'coffee' ? 'coffee' : 'insights'
+    revalidatePath('/')
+    revalidatePath(`/${section}`)
+    if (post.slug) revalidatePath(`/${section}/${post.slug}`)
   }
 
   return NextResponse.json({ data: post }, { status: 201 })
