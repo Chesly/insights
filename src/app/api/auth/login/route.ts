@@ -19,16 +19,34 @@ function getClientIp(req: NextRequest): string {
 // misconfigured, real admin logins must still work — a broken rate
 // limiter should never become a site-wide lockout.
 export async function POST(req: NextRequest) {
+  try {
+    return await handleLogin(req);
+  } catch (err) {
+    // Last-resort net — an opaque empty 500 here means an admin can't log
+    // in at all with no way to tell why, so surface whatever broke.
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+async function handleLogin(req: NextRequest) {
   const { email, password } = await req.json();
   if (!email || !password) {
     return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
   }
 
   const ip = getClientIp(req);
-  const service = createServiceClient();
   const since = new Date(Date.now() - WINDOW_MINUTES * 60 * 1000).toISOString();
 
+  // createServiceClient() itself throws synchronously if the service-role
+  // key is missing/misconfigured — that must not take the whole route
+  // down with it, so it's created inside the same try as the query that
+  // uses it. `service` stays null when unavailable, and every step below
+  // treats that as "rate limiting is temporarily unavailable", not as a
+  // reason to block a real login.
+  let service: ReturnType<typeof createServiceClient> | null = null;
   try {
+    service = createServiceClient();
     const { count } = await service
       .from("login_attempts")
       .select("id", { count: "exact", head: true })
@@ -51,7 +69,9 @@ export async function POST(req: NextRequest) {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   try {
-    await service.from("login_attempts").insert({ email, ip, success: !error });
+    if (service) {
+      await service.from("login_attempts").insert({ email, ip, success: !error });
+    }
   } catch {
     // Logging the attempt is best-effort too — never let it affect the
     // actual login outcome above.
