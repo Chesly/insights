@@ -89,6 +89,12 @@ export default async function DownloadDetailPage({
         <aside className="h-fit border border-gold/15 p-6 lg:sticky lg:top-24">
           <h1 className="text-xl font-bold text-navy dark:text-white">{item.name}</h1>
 
+          {item.description && (
+            <p className="mt-3 text-sm leading-relaxed text-navy/70 dark:text-white/70">
+              {item.description}
+            </p>
+          )}
+
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <span className="inline-block bg-gold/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-gold">
               {FILE_TYPE_ICONS[item.fileType]} {item.fileType}
@@ -132,13 +138,6 @@ export default async function DownloadDetailPage({
       </div>
 
       <div className="container-page pb-4">
-        {/* Description */}
-        {item.description && (
-          <p className="max-w-3xl leading-relaxed text-navy/75 dark:text-white/75">
-            {item.description}
-          </p>
-        )}
-
         {/* What's Included — only for bundle products (multiple files) */}
         {item.bundleFiles.length > 0 && (
           <div className="mt-8">

@@ -244,10 +244,10 @@ export default function DownloadsPage() {
               </div>
               <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
-                  Description <span style={{ fontWeight:400, color:'#94a3b8' }}>(also used as the meta description if that field is left blank)</span>
+                  Description <span style={{ fontWeight:400, color:'#94a3b8' }}>(shown at the top of the product page, right under the name — fill in Meta Description separately below for search snippets, it's longer than Google likes)</span>
                 </label>
-                <textarea className="cms-input cms-textarea" value={form.description} onChange={set('description')} placeholder="Brief description of what this download contains…" rows={2}/>
-                <CharHint value={form.description} min={150} max={300}/>
+                <textarea className="cms-input cms-textarea" value={form.description} onChange={set('description')} placeholder="What this product is, who it's for, and what it does for them…" rows={4}/>
+                <CharHint value={form.description} min={300} max={550}/>
               </div>
               <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
