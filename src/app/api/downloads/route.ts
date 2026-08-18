@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { getSessionProfile, isAllowedElevatedAccess } from '@/lib/auth/session'
 
 export async function GET() {
@@ -23,5 +24,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const { data, error } = await supabase.from('downloads').insert(body).select().single()
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+  revalidatePath('/tools')
+  if (data?.slug) revalidatePath(`/tools/${data.slug}`)
   return NextResponse.json({ data }, { status: 201 })
 }
