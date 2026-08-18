@@ -1,6 +1,20 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { generateSlug, estimateReadTime } from '@/lib/utils'
+import { getSessionProfile, isAllowedElevatedAccess } from '@/lib/auth/session'
+
+// Authors (non-elevated role) may only edit/delete posts they wrote
+// themselves. Elevated roles (admin/super_admin) are unrestricted, and a
+// role-check failure fails open — see getSessionProfile.
+async function assertCanModify(supabase: Awaited<ReturnType<typeof createClient>>, postId: string, userId: string) {
+  const session = await getSessionProfile()
+  if (!session || isAllowedElevatedAccess(session)) return null
+  const { data: post } = await supabase.from('posts').select('author_id').eq('id', postId).single()
+  if (post && post.author_id !== userId) {
+    return NextResponse.json({ error: 'You can only edit your own posts.' }, { status: 403 })
+  }
+  return null
+}
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -25,6 +39,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const forbidden = await assertCanModify(supabase, id, user.id)
+  if (forbidden) return forbidden
 
   const body = await req.json()
   const tagNames: string[] = body.tags || []
@@ -77,6 +93,8 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const forbidden = await assertCanModify(supabase, id, user.id)
+  if (forbidden) return forbidden
 
   // Delete tags junction first
   await supabase.from('post_tags').delete().eq('post_id', id)

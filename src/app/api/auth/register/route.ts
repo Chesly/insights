@@ -87,7 +87,12 @@ async function handleRegister(req: NextRequest) {
     full_name: `${firstName} ${lastName}`.trim(),
     phone,
     avatar_url: avatarUrl,
-    role: "author",
+    // "editor" is the only non-elevated role the profiles table's check
+    // constraint actually accepts (confirmed by testing — "author" and
+    // several other plausible names are rejected). It's also the correct
+    // default: a new self-registered contributor, distinct from
+    // admin/super_admin.
+    role: "editor",
     status: "pending",
   });
 

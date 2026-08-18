@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { getSessionProfile, isAllowedElevatedAccess } from '@/lib/auth/session'
 
 export async function GET() {
   const supabase = await createClient()
@@ -14,6 +15,11 @@ export async function PUT(req: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const session = await getSessionProfile()
+  if (!session || !isAllowedElevatedAccess(session)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
 
   const body = await req.json() as Record<string, string>
   const rows = Object.entries(body).map(([key, value]) => ({ key, value, updated_by: user.id }))
