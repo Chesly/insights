@@ -79,7 +79,12 @@ async function handleRegister(req: NextRequest) {
 
   const avatarUrl = avatarFile && avatarFile.size > 0 ? await uploadAvatar(avatarFile) : null;
 
-  const { error: profileError } = await service.from("profiles").insert({
+  // A database trigger auto-creates a stub profiles row the moment the
+  // auth user exists (confirmed by testing — a plain insert here 400s on
+  // a duplicate primary key), so this has to upsert rather than insert,
+  // filling in what the trigger doesn't: name, phone, avatar, role, and
+  // the pending approval status.
+  const { error: profileError } = await service.from("profiles").upsert({
     id: created.user.id,
     email,
     first_name: firstName,
@@ -94,7 +99,7 @@ async function handleRegister(req: NextRequest) {
     // admin/super_admin.
     role: "editor",
     status: "pending",
-  });
+  }, { onConflict: "id" });
 
   if (profileError) {
     // Don't leave an orphaned auth user with no profile behind.
