@@ -1,23 +1,23 @@
+import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { siteConfig } from "@/lib/siteConfig";
+import { getPageBySlug } from "@/lib/pages";
 
-export const metadata: Metadata = { title: "Disclaimer" };
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug("disclaimer");
+  return {
+    title: page?.seo_title || page?.title || "Disclaimer",
+    description: page?.meta_description,
+  };
+}
 
-export default function DisclaimerPage() {
+export default async function DisclaimerPage() {
+  const page = await getPageBySlug("disclaimer");
+  if (!page) notFound();
+
   return (
     <div className="container-page prose prose-lg mx-auto max-w-3xl py-16 dark:prose-invert">
-      <h1>Disclaimer</h1>
-      <p>
-        The information on {siteConfig.name} is provided in good faith, for general
-        informational purposes only. {siteConfig.shortName} makes no warranty regarding the
-        accuracy, adequacy, or completeness of any content, including AI-related, financial,
-        or business commentary.
-      </p>
-      <p>
-        Any action you take based on information found on this site is strictly at your own
-        risk. {siteConfig.shortName} will not be liable for any losses or damages related to
-        the use of this website.
-      </p>
+      <h1>{page.title}</h1>
+      <div dangerouslySetInnerHTML={{ __html: page.body || "" }} />
     </div>
   );
 }

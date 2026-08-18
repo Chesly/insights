@@ -82,6 +82,22 @@ export interface Post {
   updated_at: string
 }
 
+export type PageStatus = 'draft' | 'published'
+
+export interface Page {
+  id: string
+  title: string
+  slug: string
+  body?: string
+  body_json?: Record<string, unknown>
+  status: PageStatus
+  seo_title?: string
+  meta_description?: string
+  og_image?: string
+  created_at: string
+  updated_at: string
+}
+
 export interface Download {
   id: string
   name: string
