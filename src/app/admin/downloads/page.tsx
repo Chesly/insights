@@ -7,7 +7,7 @@ import FileUploadButton from '@/components/cms/FileUploadButton'
 import { Plus, Edit2, Trash2, Save, X, AlertCircle, Download as DownloadIcon, ExternalLink, GripVertical } from 'lucide-react'
 import type { Download, Category } from '@/types'
 import type { BundleFile } from '@/lib/downloads'
-import { slugify } from '@/lib/types'
+import { slugify, type FaqItem } from '@/lib/types'
 
 interface FormState {
   id?: string
@@ -34,9 +34,10 @@ interface FormState {
   why_you_need_it: string[]
   tags: string[]
   bundle_files: BundleFile[]
+  faq: FaqItem[]
 }
 
-const EMPTY: FormState = { name:'', slug:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', tier:'free', price:'', compare_at_price:'', is_published:false, target_audience:[], solves:[], seo_title:'', meta_description:'', store_url:'', gallery_images:[], key_features:[], how_it_helps:[], why_you_need_it:[], tags:[], bundle_files:[] }
+const EMPTY: FormState = { name:'', slug:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', tier:'free', price:'', compare_at_price:'', is_published:false, target_audience:[], solves:[], seo_title:'', meta_description:'', store_url:'', gallery_images:[], key_features:[], how_it_helps:[], why_you_need_it:[], tags:[], bundle_files:[], faq:[] }
 
 const BUNDLE_FILE_TYPES: { value: BundleFile['fileType']; label: string }[] = [
   { value:'xlsx', label:'📊 Spreadsheet' },
@@ -112,6 +113,7 @@ export default function DownloadsPage() {
       gallery_images:(dl as unknown as FormState).gallery_images||[], key_features:(dl as unknown as FormState).key_features||[],
       how_it_helps:(dl as unknown as FormState).how_it_helps||[], why_you_need_it:(dl as unknown as FormState).why_you_need_it||[],
       tags:(dl as unknown as FormState).tags||[], bundle_files:(dl as unknown as FormState).bundle_files||[],
+      faq:(dl as unknown as FormState).faq||[],
     })
     setShowForm(true); setError('')
   }
@@ -128,6 +130,11 @@ export default function DownloadsPage() {
     })
   }
 
+  const addFaq = () => setForm(f => ({ ...f, faq: [...f.faq, { question:'', answer:'' }] }))
+  const removeFaq = (i: number) => setForm(f => ({ ...f, faq: f.faq.filter((_,idx)=>idx!==i) }))
+  const setFaqItem = (i: number, patch: Partial<FaqItem>) =>
+    setForm(f => ({ ...f, faq: f.faq.map((item,idx)=> idx===i ? { ...item, ...patch } : item) }))
+
   const save = async () => {
     if (!form.name.trim()) { setError('Name is required'); return }
     const hasBundle = form.bundle_files.length > 0
@@ -135,9 +142,17 @@ export default function DownloadsPage() {
     if (hasBundle && form.bundle_files.some(f => !f.name.trim() || !f.url.trim())) {
       setError('Every bundle file needs both a label and an uploaded file.'); return
     }
+    if (form.faq.some(f => !f.question.trim() || !f.answer.trim())) {
+      setError('Every FAQ needs both a question and an answer.'); return
+    }
     setSaving(true); setError('')
     try {
-      const payload = { ...form, category_id: form.category_id || null, price: form.price.trim() ? Number(form.price) : null, compare_at_price: form.compare_at_price.trim() ? Number(form.compare_at_price) : null }
+      // `faq` is only sent when non-empty, so saving a product before the
+      // `downloads.faq` column exists in the database doesn't break every
+      // other field on the form — see the FAQ section below for the
+      // migration this depends on.
+      const { faq, ...formRest } = form
+      const payload = { ...formRest, category_id: form.category_id || null, price: form.price.trim() ? Number(form.price) : null, compare_at_price: form.compare_at_price.trim() ? Number(form.compare_at_price) : null, ...(faq.length > 0 ? { faq } : {}) }
       const url = form.id ? `/api/downloads/${form.id}` : '/api/downloads'
       const method = form.id ? 'PATCH' : 'POST'
       const res = await fetch(url, { method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })
@@ -398,6 +413,44 @@ export default function DownloadsPage() {
                   Tags <span style={{ fontWeight:400, color:'#94a3b8' }}>(SEO — shown only on the single product page; 1–3 words each, 5–10 tags total)</span>
                 </label>
                 <TagInput tags={form.tags} onChange={v=>setForm(f=>({...f,tags:v}))} placeholder="Add a tag…"/>
+              </div>
+              <div style={{ gridColumn:'1/-1' }}>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  FAQs <span style={{ fontWeight:400, color:'#94a3b8' }}>(shown as an accordion on the product page, plus FAQ rich-result eligibility in Google and AI answer engines — no fixed number, 4–8 is a good range for most products)</span>
+                </label>
+                <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                  {form.faq.map((item, i) => (
+                    <div key={i} style={{ background:'#f8fafc', borderRadius:8, padding:10 }}>
+                      <div style={{ display:'flex', gap:8, alignItems:'flex-start' }}>
+                        <div style={{ flex:1 }}>
+                          <input
+                            className="cms-input"
+                            placeholder="Question, e.g. Does this cover crypto or capital gains tax?"
+                            value={item.question}
+                            onChange={e=>setFaqItem(i, { question:e.target.value })}
+                          />
+                          <CharHint value={item.question} min={40} max={80}/>
+                          <textarea
+                            className="cms-input cms-textarea"
+                            placeholder="Answer — direct and self-contained, since AI answer engines often quote it verbatim…"
+                            value={item.answer}
+                            onChange={e=>setFaqItem(i, { answer:e.target.value })}
+                            rows={2}
+                            style={{ marginTop:6 }}
+                          />
+                          <CharHint value={item.answer} min={150} max={300}/>
+                        </div>
+                        <button type="button" onClick={()=>removeFaq(i)}
+                          className="btn btn-ghost btn-sm" style={{ padding:5, color:'#ef4444', flexShrink:0 }}>
+                          <X size={13}/>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button type="button" onClick={addFaq} className="btn btn-secondary btn-sm" style={{ marginTop:8 }}>
+                  <Plus size={13}/>Add FAQ
+                </button>
               </div>
               <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>

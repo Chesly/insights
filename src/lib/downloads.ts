@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { createPublicClient } from "./supabase/public";
-import { slugify } from "./types";
+import { slugify, type FaqItem } from "./types";
 
 export interface DownloadItem {
   id: string;
@@ -44,6 +44,10 @@ export interface DownloadItem {
       a page listing each of these, individually. Most sold products
       (spreadsheet + how-to PDF + audio + Word doc) are bundles. */
   bundleFiles: BundleFile[];
+  /** Shown as an on-page FAQ accordion and emitted as FAQPage JSON-LD —
+      same shape/purpose as the (currently admin-inaccessible) `faq` field
+      already used on posts. */
+  faq: FaqItem[];
 }
 
 export interface BundleFile {
@@ -81,6 +85,7 @@ function rowToDownload(row: any): DownloadItem {
     whyYouNeedIt: row.why_you_need_it || [],
     tags: row.tags || [],
     bundleFiles: row.bundle_files || [],
+    faq: row.faq || [],
   };
 }
 

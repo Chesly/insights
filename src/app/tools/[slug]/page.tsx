@@ -10,7 +10,7 @@ import ProductReviews from "@/components/ProductReviews";
 import { getAllDownloads, getDownloadBySlug, getRelatedDownloads, pricing } from "@/lib/downloads";
 import { getApprovedReviews } from "@/lib/reviews";
 import { getAllPosts } from "@/lib/posts";
-import { breadcrumbSchema, productSchema } from "@/lib/schema";
+import { breadcrumbSchema, faqSchema, productSchema } from "@/lib/schema";
 
 const FILE_TYPE_ICONS: Record<string, string> = { pdf: "📄", zip: "🗜️", doc: "📝", other: "📦" };
 const BUNDLE_FILE_ICONS: Record<string, string> = { pdf: "📄", zip: "🗜️", doc: "📝", xlsx: "📊", audio: "🎧", other: "📦" };
@@ -68,6 +68,12 @@ export default async function DownloadDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema(item, reviews)) }}
       />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }} />
+      {item.faq.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(item.faq)) }}
+        />
+      )}
 
       <PageHero
         title={item.name}
@@ -247,6 +253,25 @@ export default async function DownloadDetailPage({
                 #{tag}
               </Link>
             ))}
+          </div>
+        )}
+
+        {/* FAQ */}
+        {item.faq.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-navy dark:text-white">
+              Frequently Asked Questions
+            </h2>
+            <div className="mt-3 divide-y divide-gold/10 border border-gold/20">
+              {item.faq.map((f, i) => (
+                <details key={i} className="group p-4">
+                  <summary className="cursor-pointer list-none font-medium text-navy marker:content-none dark:text-white">
+                    {f.question}
+                  </summary>
+                  <p className="mt-2 text-sm text-navy/70 dark:text-white/70">{f.answer}</p>
+                </details>
+              ))}
+            </div>
           </div>
         )}
 
