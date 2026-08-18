@@ -51,6 +51,53 @@ const SECTIONS = [
     ]
   },
   {
+    id: 'contact_page', label: 'Contact Page — Header',
+    fields: [
+      { key: 'contact_page_title', label: 'Page Title', type: 'text', placeholder: 'Contact Us' },
+      { key: 'contact_page_subtitle', label: 'Page Subtitle', type: 'textarea', placeholder: 'Shown under the title in the breadcrumb banner.' },
+      { key: 'contact_page_hero_image', label: 'Header Background Image URL', type: 'url', placeholder: 'https://ik.imagekit.io/mkvu8hdr5/...' },
+    ]
+  },
+  {
+    id: 'about_page', label: 'About Page',
+    fields: [
+      { key: 'about_hero_title', label: 'Header Title', type: 'text', placeholder: 'About Insights' },
+      { key: 'about_hero_subtitle', label: 'Header Subtitle', type: 'textarea', placeholder: 'Shown under the title in the breadcrumb banner.' },
+      { key: 'about_hero_image', label: 'Header Background Image URL', type: 'url' },
+      { key: 'about_background_heading', label: '"Background" Section — Heading', type: 'text', placeholder: 'Background' },
+      { key: 'about_background_text1', label: '"Background" Section — Paragraph 1', type: 'textarea' },
+      { key: 'about_background_text2', label: '"Background" Section — Paragraph 2', type: 'textarea' },
+      { key: 'about_background_image', label: '"Background" Section — Image URL', type: 'url' },
+      { key: 'about_goal_heading', label: '"Our Goal" Section — Heading', type: 'text', placeholder: 'Practical clarity, not hype' },
+      { key: 'about_goal_text', label: '"Our Goal" Section — Paragraph', type: 'textarea' },
+      { key: 'about_goal_image', label: '"Our Goal" Section — Image URL', type: 'url' },
+      { key: 'about_mission_text', label: 'Mission statement', type: 'textarea' },
+      { key: 'about_vision_text', label: 'Vision statement', type: 'textarea' },
+      { key: 'about_values_text', label: 'Values statement', type: 'textarea' },
+      { key: 'about_promise_text', label: 'Promise statement', type: 'textarea' },
+      { key: 'about_whoweare_heading', label: '"Who We Are" Section — Heading', type: 'text', placeholder: 'Why we write this' },
+      { key: 'about_whoweare_text1', label: '"Who We Are" Section — Paragraph 1', type: 'textarea' },
+      { key: 'about_whoweare_text2', label: '"Who We Are" Section — Paragraph 2', type: 'textarea' },
+      { key: 'about_whoweare_image', label: '"Who We Are" Section — Image URL', type: 'url' },
+      { key: 'about_bbbee_heading', label: '"BBBEE & Compliance" Section — Heading', type: 'text', placeholder: 'BBBEE & Compliance' },
+      { key: 'about_bbbee_text', label: '"BBBEE & Compliance" Section — Paragraph', type: 'textarea' },
+      { key: 'about_bbbee_image', label: '"BBBEE & Compliance" Section — Image URL', type: 'url' },
+    ]
+  },
+  {
+    id: 'spaza_page', label: 'Spaza Support Page',
+    fields: [
+      { key: 'spaza_hero_title', label: 'Header Title', type: 'text', placeholder: 'Spaza Support' },
+      { key: 'spaza_hero_subtitle', label: 'Header Subtitle', type: 'textarea' },
+      { key: 'spaza_card1_heading', label: 'Card 1 — Heading', type: 'text', placeholder: 'Business Basics' },
+      { key: 'spaza_card1_text', label: 'Card 1 — Text', type: 'textarea' },
+      { key: 'spaza_card2_heading', label: 'Card 2 — Heading', type: 'text', placeholder: 'AI Tools for Retail' },
+      { key: 'spaza_card2_text', label: 'Card 2 — Text', type: 'textarea' },
+      { key: 'spaza_card3_heading', label: 'Card 3 — Heading', type: 'text', placeholder: 'Growth & Funding' },
+      { key: 'spaza_card3_text', label: 'Card 3 — Text', type: 'textarea' },
+    ]
+  },
+  {
     id: 'tracking', label: 'Tracking & Analytics',
     fields: [
       { key: 'google_tag_manager', label: 'Google Tag Manager Container ID', type: 'text', placeholder: 'GTM-XXXXXXX',

@@ -1,17 +1,24 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/siteConfig";
+import { getAllSiteSettings } from "@/lib/settings";
 import PageHero from "@/components/PageHero";
 import Newsletter from "@/components/Newsletter";
 
-export const metadata: Metadata = {
-  title: siteConfig.pages.about.title,
-  description: `About ${siteConfig.name} — a South African business built on AI, technology and SEO insight, from Chesly.Tech Creative Studio.`
-};
+export const revalidate = 3600;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getAllSiteSettings();
+  return {
+    title: settings.about_hero_title || siteConfig.pages.about.title,
+    description: `About ${siteConfig.name} — a South African business built on AI, technology and SEO insight, from Chesly.Tech Creative Studio.`
+  };
+}
 
 // Real photography — square corners, natural aspect ratio (frame fits the
-// image, not the other way around). Swap the one still-missing spot
-// (whoWeAre) whenever you have a shot for it.
-const IMAGES = {
+// image, not the other way around). Every field on this page (headings,
+// paragraphs, images) is editable from Admin → Settings → About Page —
+// these are just the defaults shown until someone overrides them there.
+const DEFAULT_IMAGES = {
   breadcrumb: "https://ik.imagekit.io/mkvu8hdr5/insights/chesly-tech-about.jpg",
   background: "https://ik.imagekit.io/mkvu8hdr5/insights/AI-powered%20knowledge%20hub.jpg",
   goal: "https://ik.imagekit.io/mkvu8hdr5/insights/our-goal.jpg",
@@ -19,14 +26,16 @@ const IMAGES = {
   compliance: "https://ik.imagekit.io/mkvu8hdr5/insights/compliance.jpg",
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const s = await getAllSiteSettings();
+
   return (
     <div>
       <PageHero
-        title={siteConfig.pages.about.title}
-        subtitle={siteConfig.pages.about.intro}
+        title={s.about_hero_title || siteConfig.pages.about.title}
+        subtitle={s.about_hero_subtitle || siteConfig.pages.about.intro}
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "About Chesly.Tech Insights" }]}
-        backgroundImage={IMAGES.breadcrumb}
+        backgroundImage={s.about_hero_image || DEFAULT_IMAGES.breadcrumb}
       />
 
       {/* ── Background ─────────────────────────────────────────────── */}
@@ -34,24 +43,21 @@ export default function AboutPage() {
         <div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={IMAGES.background}
+            src={s.about_background_image || DEFAULT_IMAGES.background}
             alt="Chesly.Tech background"
             className="w-full"
           />
         </div>
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold">Our Story</p>
-          <h2 className="mt-2 text-2xl font-bold text-navy dark:text-white sm:text-3xl">Background</h2>
+          <h2 className="mt-2 text-2xl font-bold text-navy dark:text-white sm:text-3xl">
+            {s.about_background_heading || "Background"}
+          </h2>
           <p className="mt-4 leading-relaxed text-navy/75 dark:text-white/75">
-            {siteConfig.name} grew out of Chesly.Tech Creative Studio&rsquo;s day-to-day work building
-            AI-assisted websites, brands and digital tools for South African businesses. Every week
-            we were fielding the same questions from clients and founders about AI, SEO and modern
-            web technology — so we started writing the answers down, in plain language, for anyone
-            trying to make sense of it.
+            {s.about_background_text1 || `${siteConfig.name} grew out of Chesly.Tech Creative Studio's day-to-day work building AI-assisted websites, brands and digital tools for South African businesses. Every week we were fielding the same questions from clients and founders about AI, SEO and modern web technology — so we started writing the answers down, in plain language, for anyone trying to make sense of it.`}
           </p>
           <p className="mt-4 leading-relaxed text-navy/75 dark:text-white/75">
-            What began as internal notes became a publication in its own right — still rooted in
-            real client work, not theory.
+            {s.about_background_text2 || "What began as internal notes became a publication in its own right — still rooted in real client work, not theory."}
           </p>
         </div>
       </section>
@@ -62,19 +68,16 @@ export default function AboutPage() {
           <div className="order-2 lg:order-1">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold">Our Goal</p>
             <h2 className="mt-2 text-2xl font-bold text-navy dark:text-white sm:text-3xl">
-              Practical clarity, not hype
+              {s.about_goal_heading || "Practical clarity, not hype"}
             </h2>
             <p className="mt-4 leading-relaxed text-navy/75 dark:text-white/75">
-              AI and technology coverage is often written to impress, not to help. Our goal is the
-              opposite: give South African founders, marketers and professionals insight they can
-              actually use — grounded, tested, and written from experience building real websites
-              and tools, not from press releases.
+              {s.about_goal_text || "AI and technology coverage is often written to impress, not to help. Our goal is the opposite: give South African founders, marketers and professionals insight they can actually use — grounded, tested, and written from experience building real websites and tools, not from press releases."}
             </p>
           </div>
           <div className="order-1 lg:order-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={IMAGES.goal}
+              src={s.about_goal_image || DEFAULT_IMAGES.goal}
               alt="Our goal"
               className="w-full"
             />
@@ -95,33 +98,28 @@ export default function AboutPage() {
             <span className="text-3xl" aria-hidden="true">🎯</span>
             <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">Our Mission</h3>
             <p className="mt-2 leading-relaxed text-navy/70 dark:text-white/70">
-              To give South African founders, marketers and technologists practical,
-              well-researched insight into how AI and modern web technology are reshaping
-              business — written from a South Africa-first perspective, for a global audience.
+              {s.about_mission_text || "To give South African founders, marketers and technologists practical, well-researched insight into how AI and modern web technology are reshaping business — written from a South Africa-first perspective, for a global audience."}
             </p>
           </div>
           <div className="border border-navy/10 p-8 dark:border-white/10">
             <span className="text-3xl" aria-hidden="true">🌟</span>
             <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">Our Vision</h3>
             <p className="mt-2 leading-relaxed text-navy/70 dark:text-white/70">
-              To be the clearest, most trusted source of AI, technology and SEO insight for
-              South African business — the place people turn to before they turn to hype.
+              {s.about_vision_text || "To be the clearest, most trusted source of AI, technology and SEO insight for South African business — the place people turn to before they turn to hype."}
             </p>
           </div>
           <div className="border border-navy/10 p-8 dark:border-white/10">
             <span className="text-3xl" aria-hidden="true">⚖️</span>
             <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">Our Values</h3>
             <p className="mt-2 leading-relaxed text-navy/70 dark:text-white/70">
-              Clarity over jargon, evidence over hype, and a South Africa-first perspective in
-              everything we publish — because trust is earned one honest article at a time.
+              {s.about_values_text || "Clarity over jargon, evidence over hype, and a South Africa-first perspective in everything we publish — because trust is earned one honest article at a time."}
             </p>
           </div>
           <div className="border border-navy/10 p-8 dark:border-white/10">
             <span className="text-3xl" aria-hidden="true">🤍</span>
             <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">Our Promise</h3>
             <p className="mt-2 leading-relaxed text-navy/70 dark:text-white/70">
-              We simplify life by quietly turning uncertainty into clarity — the same philosophy
-              behind every Chesly.Tech product, applied here to how we write and what we publish.
+              {s.about_promise_text || "We simplify life by quietly turning uncertainty into clarity — the same philosophy behind every Chesly.Tech product, applied here to how we write and what we publish."}
             </p>
           </div>
         </div>
@@ -133,7 +131,7 @@ export default function AboutPage() {
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={IMAGES.whoWeAre}
+              src={s.about_whoweare_image || DEFAULT_IMAGES.whoWeAre}
               alt="Who we are"
               className="w-full"
             />
@@ -141,18 +139,13 @@ export default function AboutPage() {
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold">Who We Are</p>
             <h2 className="mt-2 text-2xl font-bold text-navy dark:text-white sm:text-3xl">
-              Why we write this
+              {s.about_whoweare_heading || "Why we write this"}
             </h2>
             <p className="mt-4 leading-relaxed text-navy/75 dark:text-white/75">
-              {siteConfig.name} is published by <strong>{siteConfig.owner.name}</strong>, an AI
-              Creative Strategist and Digital Brand Specialist based in {siteConfig.contact.location},
-              and founder of Chesly.Tech Creative Studio and Digitalized Art (Pty) Ltd.
+              {s.about_whoweare_text1 || `${siteConfig.name} is published by ${siteConfig.owner.name}, an AI Creative Strategist and Digital Brand Specialist based in ${siteConfig.contact.location}, and founder of Chesly.Tech Creative Studio and Digitalized Art (Pty) Ltd.`}
             </p>
             <p className="mt-4 leading-relaxed text-navy/75 dark:text-white/75">
-              We assist because most AI and technology content assumes a starting point most
-              readers don&rsquo;t have. Every article, guide and tool here comes from the same
-              place: a real question asked by a real business, answered honestly, without the
-              jargon. If it helps one founder make a clearer decision, it&rsquo;s done its job.
+              {s.about_whoweare_text2 || "We assist because most AI and technology content assumes a starting point most readers don't have. Every article, guide and tool here comes from the same place: a real question asked by a real business, answered honestly, without the jargon. If it helps one founder make a clearer decision, it's done its job."}
             </p>
           </div>
         </div>
@@ -163,14 +156,10 @@ export default function AboutPage() {
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold">Compliance &amp; Transformation</p>
           <h2 className="mt-2 text-2xl font-bold text-navy dark:text-white sm:text-3xl">
-            BBBEE &amp; Compliance
+            {s.about_bbbee_heading || "BBBEE & Compliance"}
           </h2>
           <p className="mt-4 leading-relaxed text-navy/75 dark:text-white/75">
-            {siteConfig.name} is published under <strong>Digitalized Art (Pty) Ltd</strong> and its
-            community initiative, <strong>Yinhla Cares</strong> — both 100% South African-owned and
-            independently operated, and both rated <strong>BBBEE Level 1</strong>. The formal
-            affidavit will be issued once the current tax return has been filed, and can be
-            supplied on request from that point.
+            {s.about_bbbee_text || `${siteConfig.name} is published under Digitalized Art (Pty) Ltd and its community initiative, Yinhla Cares — both 100% South African-owned and independently operated, and both rated BBBEE Level 1. The formal affidavit will be issued once the current tax return has been filed, and can be supplied on request from that point.`}
           </p>
           <div className="mt-6 flex gap-8">
             <div>
@@ -186,7 +175,7 @@ export default function AboutPage() {
         <div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={IMAGES.compliance}
+            src={s.about_bbbee_image || DEFAULT_IMAGES.compliance}
             alt="BBBEE and compliance"
             className="w-full"
           />

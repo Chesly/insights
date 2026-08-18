@@ -5,10 +5,13 @@ import PageHero from "@/components/PageHero";
 import SocialLinks from "@/components/SocialLinks";
 import ContactForm from "@/components/ContactForm";
 
-export const metadata: Metadata = {
-  title: siteConfig.pages.contact.title,
-  description: `Get in touch with ${siteConfig.name}.`
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getAllSiteSettings();
+  return {
+    title: settings.contact_page_title || siteConfig.pages.contact.title,
+    description: `Get in touch with ${siteConfig.name}.`
+  };
+}
 
 export const revalidate = 3600;
 
@@ -22,10 +25,10 @@ export default async function ContactPage() {
   return (
     <div>
       <PageHero
-        title={siteConfig.pages.contact.title}
-        subtitle={siteConfig.pages.contact.intro}
+        title={settings.contact_page_title || siteConfig.pages.contact.title}
+        subtitle={settings.contact_page_subtitle || siteConfig.pages.contact.intro}
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Contact" }]}
-        backgroundImage="https://ik.imagekit.io/mkvu8hdr5/contact_page_image.jpg"
+        backgroundImage={settings.contact_page_hero_image || "https://ik.imagekit.io/mkvu8hdr5/contact_page_image.jpg"}
       />
       <div className="container-page grid gap-12 py-16 lg:grid-cols-3">
         <ContactForm />

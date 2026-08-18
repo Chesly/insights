@@ -2,43 +2,52 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/siteConfig";
 import { getPostsByTag } from "@/lib/posts";
+import { getAllSiteSettings } from "@/lib/settings";
 import PageHero from "@/components/PageHero";
 
-export const metadata: Metadata = {
-  title: siteConfig.pages.spazaSupport.title,
-  description: siteConfig.pages.spazaSupport.intro,
-  alternates: { canonical: `${siteConfig.url}/spaza-support` }
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await getAllSiteSettings();
+  return {
+    title: s.spaza_hero_title || siteConfig.pages.spazaSupport.title,
+    description: s.spaza_hero_subtitle || siteConfig.pages.spazaSupport.intro,
+    alternates: { canonical: `${siteConfig.url}/spaza-support` }
+  };
+}
+
+export const revalidate = 3600;
 
 export default async function SpazaSupportPage() {
-  const relatedPosts = await getPostsByTag("township economy");
+  const [relatedPosts, s] = await Promise.all([
+    getPostsByTag("township economy"),
+    getAllSiteSettings(),
+  ]);
 
   return (
     <div>
       <PageHero
-        title={siteConfig.pages.spazaSupport.title}
-        subtitle={siteConfig.pages.spazaSupport.intro}
+        title={s.spaza_hero_title || siteConfig.pages.spazaSupport.title}
+        subtitle={s.spaza_hero_subtitle || siteConfig.pages.spazaSupport.intro}
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Spaza Support" }]}
       />
 
       <div className="container-page py-12">
         <div className="grid gap-6 sm:grid-cols-3">
           <div className="border border-gold/15 p-6">
-            <h2 className="font-semibold text-navy dark:text-white">Business Basics</h2>
+            <h2 className="font-semibold text-navy dark:text-white">{s.spaza_card1_heading || "Business Basics"}</h2>
             <p className="mt-2 text-sm text-navy/60 dark:text-white/60">
-              Pricing, stock management, and record-keeping guidance built for township retail.
+              {s.spaza_card1_text || "Pricing, stock management, and record-keeping guidance built for township retail."}
             </p>
           </div>
           <div className="border border-gold/15 p-6">
-            <h2 className="font-semibold text-navy dark:text-white">AI Tools for Retail</h2>
+            <h2 className="font-semibold text-navy dark:text-white">{s.spaza_card2_heading || "AI Tools for Retail"}</h2>
             <p className="mt-2 text-sm text-navy/60 dark:text-white/60">
-              Simple AI tools to help with stock forecasting, customer service, and marketing.
+              {s.spaza_card2_text || "Simple AI tools to help with stock forecasting, customer service, and marketing."}
             </p>
           </div>
           <div className="border border-gold/15 p-6">
-            <h2 className="font-semibold text-navy dark:text-white">Growth & Funding</h2>
+            <h2 className="font-semibold text-navy dark:text-white">{s.spaza_card3_heading || "Growth & Funding"}</h2>
             <p className="mt-2 text-sm text-navy/60 dark:text-white/60">
-              Understanding grants, supplier deals, and paths to expand beyond one store.
+              {s.spaza_card3_text || "Understanding grants, supplier deals, and paths to expand beyond one store."}
             </p>
           </div>
         </div>
