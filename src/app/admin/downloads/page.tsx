@@ -4,7 +4,7 @@ import Topbar from '@/components/layout/Topbar'
 import Toggle from '@/components/ui/Toggle'
 import TagInput from '@/components/cms/TagInput'
 import FileUploadButton from '@/components/cms/FileUploadButton'
-import { Plus, Edit2, Trash2, Save, X, AlertCircle, Download as DownloadIcon, ExternalLink } from 'lucide-react'
+import { Plus, Edit2, Trash2, Save, X, AlertCircle, Download as DownloadIcon, ExternalLink, GripVertical } from 'lucide-react'
 import type { Download, Category } from '@/types'
 import type { BundleFile } from '@/lib/downloads'
 import { slugify } from '@/lib/types'
@@ -83,6 +83,7 @@ export default function DownloadsPage() {
   const [form, setForm] = useState<FormState>(EMPTY)
   const [showForm, setShowForm] = useState(false)
   const [deleteId, setDeleteId] = useState<string|null>(null)
+  const [draggedGalleryIdx, setDraggedGalleryIdx] = useState<number|null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -116,6 +117,16 @@ export default function DownloadsPage() {
   }
 
   const reset = () => { setForm(EMPTY); setShowForm(false); setError('') }
+
+  const moveGalleryImage = (from: number, to: number) => {
+    if (to < 0 || from === to) return
+    setForm(f => {
+      const next = [...f.gallery_images]
+      const [moved] = next.splice(from, 1)
+      next.splice(to, 0, moved)
+      return { ...f, gallery_images: next }
+    })
+  }
 
   const save = async () => {
     if (!form.name.trim()) { setError('Name is required'); return }
@@ -314,12 +325,23 @@ export default function DownloadsPage() {
               </div>
               <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
-                  Gallery Photos <span style={{ fontWeight:400, color:'#94a3b8' }}>(extra images shown on the single product page, beyond the thumbnail above)</span>
+                  Gallery Photos <span style={{ fontWeight:400, color:'#94a3b8' }}>(extra images shown on the single product page, beyond the thumbnail above — drag to reorder)</span>
                 </label>
                 <div style={{ display:'flex', flexWrap:'wrap', gap:10, marginBottom:8 }}>
                   {form.gallery_images.map((url, i) => (
-                    <div key={url+i} style={{ position:'relative', width:64, height:64 }}>
-                      <img src={url+'?tr=w-64,h-64,fo-auto'} alt="" style={{ width:64, height:64, objectFit:'cover', borderRadius:8, border:'1px solid #e2e8f0' }}/>
+                    <div key={url+i}
+                      draggable
+                      onDragStart={()=>setDraggedGalleryIdx(i)}
+                      onDragEnd={()=>setDraggedGalleryIdx(null)}
+                      onDragOver={e=>e.preventDefault()}
+                      onDrop={e=>{ e.preventDefault(); if(draggedGalleryIdx!=null) moveGalleryImage(draggedGalleryIdx, i); setDraggedGalleryIdx(null) }}
+                      style={{ position:'relative', width:64, height:64, cursor:'grab', opacity: draggedGalleryIdx===i ? 0.4 : 1 }}>
+                      <img src={url+'?tr=w-64,h-64,fo-auto'} alt="" draggable={false}
+                        style={{ width:64, height:64, objectFit:'cover', borderRadius:8, border:'1px solid #e2e8f0', pointerEvents:'none' }}/>
+                      <div style={{ position:'absolute', top:2, left:2, width:16, height:16, borderRadius:4, background:'rgba(0,0,0,0.55)', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                        <GripVertical size={11}/>
+                      </div>
+                      <span style={{ position:'absolute', bottom:2, left:2, fontSize:10, fontWeight:700, color:'#fff', background:'rgba(0,0,0,0.55)', borderRadius:4, padding:'0 4px' }}>{i+1}</span>
                       <button type="button" onClick={()=>setForm(f=>({...f, gallery_images: f.gallery_images.filter((_,idx)=>idx!==i)}))}
                         style={{ position:'absolute', top:-6, right:-6, width:20, height:20, borderRadius:'50%', background:'#ef4444', color:'#fff', border:'2px solid #fff', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, lineHeight:1 }}>
                         ×
