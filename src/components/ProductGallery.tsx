@@ -7,7 +7,7 @@ export default function ProductGallery({ name, images }: { name: string; images:
 
   if (images.length === 0) {
     return (
-      <div className="flex aspect-square w-full items-center justify-center bg-gold/5 text-4xl">
+      <div className="flex aspect-[680/350] w-full items-center justify-center bg-gold/5 text-4xl">
         📄
       </div>
     );
@@ -15,7 +15,7 @@ export default function ProductGallery({ name, images }: { name: string; images:
 
   return (
     <div>
-      <div className="aspect-square w-full overflow-hidden bg-gold/5">
+      <div className="aspect-[680/350] w-full overflow-hidden bg-gold/5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={images[active]} alt={name} className="h-full w-full object-cover" />
       </div>

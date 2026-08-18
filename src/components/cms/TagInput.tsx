@@ -20,6 +20,20 @@ export default function TagInput({ tags, onChange, placeholder='Add tag…', sug
     setInput(''); setShowSuggestions(false)
   }
 
+  // Adds every comma/semicolon/newline-separated piece as its own tag —
+  // needed because a paste event (e.g. dropping in AI-generated text)
+  // never fires the per-keystroke Enter/comma handling below, so without
+  // this the whole pasted string just sits as unsubmitted input text and
+  // silently never becomes part of the saved tags array.
+  const addMany = (raw: string) => {
+    const pieces = raw.split(/[,;\n]+/).map(p => p.trim().toLowerCase()).filter(Boolean)
+    if (pieces.length === 0) return
+    const merged = [...tags]
+    for (const p of pieces) if (!merged.includes(p)) merged.push(p)
+    onChange(merged)
+    setInput(''); setShowSuggestions(false)
+  }
+
   const remove = (t: string) => onChange(tags.filter(x=>x!==t))
 
   const filtered = suggestions.filter(s => s.toLowerCase().includes(input.toLowerCase()) && !tags.includes(s)).slice(0,6)
@@ -38,7 +52,11 @@ export default function TagInput({ tags, onChange, placeholder='Add tag…', sug
         ))}
         <input ref={ref} value={input} onChange={e=>{ setInput(e.target.value); setShowSuggestions(true) }}
           onKeyDown={e=>{ if(e.key==='Enter'||e.key===','){ e.preventDefault(); add(input) } if(e.key==='Backspace'&&!input){ remove(tags[tags.length-1]) } }}
-          onBlur={()=>setTimeout(()=>setShowSuggestions(false),150)}
+          onPaste={e=>{
+            const text = e.clipboardData.getData('text')
+            if (/[,;\n]/.test(text)) { e.preventDefault(); addMany(text) }
+          }}
+          onBlur={()=>{ if(input.trim()) add(input); setTimeout(()=>setShowSuggestions(false),150) }}
           placeholder={tags.length===0?placeholder:''}
           style={{ border:'none', outline:'none', fontSize:13, color:'#374151', minWidth:80, flex:1, background:'transparent' }}/>
       </div>

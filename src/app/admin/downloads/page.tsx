@@ -59,6 +59,21 @@ const AUDIENCE_OPTIONS = ['Small Businesses (SMEs)','Contractors','Suppliers','M
 
 const FILE_TYPE_ICONS: Record<string,string> = { pdf:'📄', zip:'🗜️', doc:'📝', other:'📦' }
 
+// Live length feedback for SEO-facing text fields — keeps copy long enough
+// to be useful to search/AI crawlers but short enough not to get truncated
+// or read as padding. `min` triggers an amber "too short" warning; the
+// field turns red past `max`.
+function CharHint({ value, min, max }: { value: string; min?: number; max: number }) {
+  const len = value.length
+  const over = len > max
+  const short = min != null && len > 0 && len < min
+  return (
+    <div style={{ fontSize:11, textAlign:'right', marginTop:3, color: over ? '#ef4444' : short ? '#d97706' : '#94a3b8' }}>
+      {len}/{max} chars{min != null ? ` — aim for ${min}–${max}` : ''}
+    </div>
+  )
+}
+
 export default function DownloadsPage() {
   const [downloads, setDownloads] = useState<Download[]>([])
   const [categories, setCategories] = useState<Category[]>([])
@@ -189,8 +204,11 @@ export default function DownloadsPage() {
 
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
               <div>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Name *</label>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  Name * <span style={{ fontWeight:400, color:'#94a3b8' }}>(used as the page title if SEO Title is left blank)</span>
+                </label>
                 <input className="cms-input" value={form.name} onChange={set('name')} placeholder="50 AI Prompts for SA Entrepreneurs"/>
+                <CharHint value={form.name} min={30} max={60}/>
               </div>
               <div>
                 <label style={{ display:'flex', alignItems:'center', justifyContent:'space-between', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
@@ -205,6 +223,7 @@ export default function DownloadsPage() {
               <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Subtitle</label>
                 <input className="cms-input" value={form.subtitle} onChange={set('subtitle')} placeholder="A short tagline under the title"/>
+                <CharHint value={form.subtitle} min={40} max={100}/>
               </div>
               <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>File Type</label>
@@ -213,8 +232,11 @@ export default function DownloadsPage() {
                 </select>
               </div>
               <div style={{ gridColumn:'1/-1' }}>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Description</label>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  Description <span style={{ fontWeight:400, color:'#94a3b8' }}>(also used as the meta description if that field is left blank)</span>
+                </label>
                 <textarea className="cms-input cms-textarea" value={form.description} onChange={set('description')} placeholder="Brief description of what this download contains…" rows={2}/>
+                <CharHint value={form.description} min={150} max={300}/>
               </div>
               <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
@@ -320,40 +342,54 @@ export default function DownloadsPage() {
                 </select>
               </div>
               <div style={{ gridColumn:'1/-1' }}>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Target Audience</label>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  Target Audience <span style={{ fontWeight:400, color:'#94a3b8' }}>(short phrases, ~15–40 chars each — press Enter, or paste a comma-separated list)</span>
+                </label>
                 <TagInput tags={form.target_audience} onChange={v=>setForm(f=>({...f,target_audience:v}))} placeholder="Add audience…" suggestions={AUDIENCE_OPTIONS}/>
               </div>
               <div style={{ gridColumn:'1/-1' }}>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Problems It Solves</label>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  Problems It Solves <span style={{ fontWeight:400, color:'#94a3b8' }}>(one problem per item, ~25–60 chars — press Enter, or paste a comma-separated list)</span>
+                </label>
                 <TagInput tags={form.solves} onChange={v=>setForm(f=>({...f,solves:v}))} placeholder="e.g. Cuts costs, Saves time…"/>
               </div>
               <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
-                  Key Features <span style={{ fontWeight:400, color:'#94a3b8' }}>(what's actually in it — distinct from the problems it solves)</span>
+                  Key Features <span style={{ fontWeight:400, color:'#94a3b8' }}>(what's actually in it — distinct from the problems it solves; ~25–60 chars each)</span>
                 </label>
                 <TagInput tags={form.key_features} onChange={v=>setForm(f=>({...f,key_features:v}))} placeholder="e.g. 12 pre-built formulas, Editable in Excel…"/>
               </div>
               <div style={{ gridColumn:'1/-1' }}>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>How It Helps You</label>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  How It Helps You <span style={{ fontWeight:400, color:'#94a3b8' }}>(~25–60 chars each)</span>
+                </label>
                 <TagInput tags={form.how_it_helps} onChange={v=>setForm(f=>({...f,how_it_helps:v}))} placeholder="e.g. See your real numbers in minutes…"/>
               </div>
               <div style={{ gridColumn:'1/-1' }}>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Why You Need It</label>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  Why You Need It <span style={{ fontWeight:400, color:'#94a3b8' }}>(~25–60 chars each)</span>
+                </label>
                 <TagInput tags={form.why_you_need_it} onChange={v=>setForm(f=>({...f,why_you_need_it:v}))} placeholder="e.g. Avoid costly funding mistakes…"/>
               </div>
               <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
-                  Tags <span style={{ fontWeight:400, color:'#94a3b8' }}>(SEO — shown only on the single product page)</span>
+                  Tags <span style={{ fontWeight:400, color:'#94a3b8' }}>(SEO — shown only on the single product page; 1–3 words each, 5–10 tags total)</span>
                 </label>
                 <TagInput tags={form.tags} onChange={v=>setForm(f=>({...f,tags:v}))} placeholder="Add a tag…"/>
               </div>
               <div>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>SEO Title <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional)</span></label>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  SEO Title <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional — appears in Google & the browser tab)</span>
+                </label>
                 <input className="cms-input" value={form.seo_title} onChange={set('seo_title')} placeholder="Defaults to Name if left blank"/>
+                <CharHint value={form.seo_title} min={50} max={60}/>
               </div>
               <div>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Meta Description <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional)</span></label>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  Meta Description <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional — shown below the title in Google results)</span>
+                </label>
                 <input className="cms-input" value={form.meta_description} onChange={set('meta_description')} placeholder="Defaults to Description if left blank"/>
+                <CharHint value={form.meta_description} min={145} max={160}/>
               </div>
               <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
