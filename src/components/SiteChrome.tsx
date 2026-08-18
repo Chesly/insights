@@ -7,7 +7,7 @@ import { CartProvider } from "@/lib/cart/CartContext"
 
 // The admin panel and login page have their own chrome (sidebar, footer)
 // and should never show the public site's nav/footer around them.
-const HIDDEN_PREFIXES = ["/admin", "/ct-login"]
+const HIDDEN_PREFIXES = ["/admin", "/ct-login", "/register"]
 
 export default function SiteChrome({
   children,

@@ -66,7 +66,7 @@ async function handleLogin(req: NextRequest) {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password });
 
   try {
     if (service) {
@@ -80,5 +80,33 @@ async function handleLogin(req: NextRequest) {
   if (error) {
     return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
   }
+
+  // Multi-author approval gate. Only blocks when the check *succeeds* and
+  // explicitly returns a non-approved status — same fail-open principle
+  // as the rate limiter above: if the profiles table or service key is
+  // unavailable, a real, credentialed login must still work. The session
+  // cookie signInWithPassword just set has to be torn down explicitly
+  // before returning an error, or the browser would hold a valid session
+  // for an account we're telling the user isn't approved yet.
+  if (service && signInData.user) {
+    try {
+      const { data: profile } = await service
+        .from("profiles")
+        .select("status")
+        .eq("id", signInData.user.id)
+        .single();
+      if (profile && profile.status !== "approved") {
+        await supabase.auth.signOut();
+        const message =
+          profile.status === "rejected"
+            ? "This account's registration was not approved."
+            : "Your account is pending admin approval.";
+        return NextResponse.json({ error: message }, { status: 403 });
+      }
+    } catch {
+      // Status check failed — proceed rather than lock out a real login.
+    }
+  }
+
   return NextResponse.json({ ok: true });
 }
