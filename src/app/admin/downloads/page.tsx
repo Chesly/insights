@@ -416,7 +416,7 @@ export default function DownloadsPage() {
               </div>
               <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
-                  FAQs <span style={{ fontWeight:400, color:'#94a3b8' }}>(shown as an accordion on the product page, plus FAQ rich-result eligibility in Google and AI answer engines — no fixed number, 4–8 is a good range for most products)</span>
+                  FAQs <span style={{ fontWeight:400, color:'#94a3b8' }}>(shown as an accordion on the product page, plus FAQ rich-result eligibility in Google and AI answer engines — no fixed number, 4–8 is a good range for most products. Links work in answers: paste a URL directly, or use [link text](https://url) for custom wording — handy for pointing to the download itself.)</span>
                 </label>
                 <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                   {form.faq.map((item, i) => (

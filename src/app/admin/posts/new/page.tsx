@@ -9,7 +9,7 @@ export default async function NewPostPage() {
   const { data: categories } = await supabase.from('categories').select('*').order('name')
   return (
     <>
-      <Topbar title="New Post"/>
+      <Topbar title="New Post" action={{ label:'New Post', href:'/admin/posts/new' }}/>
       <PostForm categories={categories || []}/>
     </>
   )

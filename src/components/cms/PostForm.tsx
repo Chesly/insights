@@ -25,6 +25,36 @@ interface Props {
 
 type Section = 'main' | 'seo' | 'settings'
 
+// Declared at module scope, not inside PostForm — a component defined
+// inside a render function is a *new* component type on every render, so
+// React would unmount and remount every field (including RichEditor, and
+// with it the whole Tiptap instance) on every keystroke, dropping focus
+// and losing your place. See git history for the bug this fixed.
+function SectionBtn({ id, label, icon: Icon, active, onSelect }: { id: Section; label: string; icon: React.ElementType; active: boolean; onSelect: (id: Section) => void }) {
+  return (
+    <button type="button" onClick={() => onSelect(id)}
+      style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', borderRadius:8, fontSize:13, fontWeight:600, cursor:'pointer', border:'none',
+        background: active ? '#fff' : 'transparent',
+        color: active ? '#1B2A4A' : '#64748b',
+        boxShadow: active ? '0 1px 4px rgba(0,0,0,0.08)' : 'none' }}>
+      <Icon size={14}/>{label}
+    </button>
+  )
+}
+
+function Label({ children, sub }: { children: React.ReactNode; sub?: string }) {
+  return (
+    <div style={{ marginBottom:'0.4rem' }}>
+      <label style={{ display:'block', fontSize:13, fontWeight:600, color:'#374151' }}>{children}</label>
+      {sub && <p style={{ fontSize:11.5, color:'#94a3b8', marginTop:2 }}>{sub}</p>}
+    </div>
+  )
+}
+
+function Field({ children }: { children: React.ReactNode }) {
+  return <div style={{ marginBottom:18 }}>{children}</div>
+}
+
 export default function PostForm({ post, categories }: Props) {
   const router = useRouter()
   const isNew = !post?.id
@@ -141,27 +171,6 @@ export default function PostForm({ post, categories }: Props) {
     }
   }
 
-  const SectionBtn = ({ id, label, icon: Icon }: { id: Section; label: string; icon: React.ElementType }) => (
-    <button type="button" onClick={() => setActiveSection(id)}
-      style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', borderRadius:8, fontSize:13, fontWeight:600, cursor:'pointer', border:'none',
-        background: activeSection===id ? '#fff' : 'transparent',
-        color: activeSection===id ? '#1B2A4A' : '#64748b',
-        boxShadow: activeSection===id ? '0 1px 4px rgba(0,0,0,0.08)' : 'none' }}>
-      <Icon size={14}/>{label}
-    </button>
-  )
-
-  const Label = ({ children, sub }: { children: React.ReactNode; sub?: string }) => (
-    <div style={{ marginBottom:'0.4rem' }}>
-      <label style={{ display:'block', fontSize:13, fontWeight:600, color:'#374151' }}>{children}</label>
-      {sub && <p style={{ fontSize:11.5, color:'#94a3b8', marginTop:2 }}>{sub}</p>}
-    </div>
-  )
-
-  const Field = ({ children }: { children: React.ReactNode }) => (
-    <div style={{ marginBottom:18 }}>{children}</div>
-  )
-
   return (
     <div style={{ display:'grid', gridTemplateColumns:'1fr 300px', gap:20, padding:24, alignItems:'start' }} className="post-editor-grid">
 
@@ -177,9 +186,9 @@ export default function PostForm({ post, categories }: Props) {
 
         {/* Section tabs */}
         <div style={{ display:'flex', gap:4, marginBottom:20, background:'#f1f5f9', borderRadius:10, padding:4, width:'fit-content' }}>
-          <SectionBtn id="main" label="Content" icon={Eye}/>
-          <SectionBtn id="seo" label="SEO" icon={Search}/>
-          <SectionBtn id="settings" label="Settings" icon={Settings}/>
+          <SectionBtn id="main" label="Content" icon={Eye} active={activeSection==='main'} onSelect={setActiveSection}/>
+          <SectionBtn id="seo" label="SEO" icon={Search} active={activeSection==='seo'} onSelect={setActiveSection}/>
+          <SectionBtn id="settings" label="Settings" icon={Settings} active={activeSection==='settings'} onSelect={setActiveSection}/>
         </div>
 
         {/* ── MAIN SECTION ── */}
@@ -299,7 +308,7 @@ export default function PostForm({ post, categories }: Props) {
             </Field>
 
             <Field>
-              <Label sub="Shown as an accordion at the end of the article, plus FAQ rich-result eligibility in Google and AI answer engines — no fixed count, 4-8 is a good range">FAQs</Label>
+              <Label sub="Shown as an accordion at the end of the article, plus FAQ rich-result eligibility in Google and AI answer engines — no fixed count, 4-8 is a good range. Links work in answers: paste a URL directly, or use [link text](https://url) for custom wording.">FAQs</Label>
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 {faq.map((item, i) => (
                   <div key={i} style={{ background:'#f8fafc', borderRadius:8, padding:10 }}>

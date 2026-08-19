@@ -19,6 +19,34 @@ interface Props {
 
 type Section = 'main' | 'seo'
 
+// Declared at module scope, not inside PageForm — see PostForm.tsx for why
+// (a component defined inside a render function remounts its whole subtree,
+// including RichEditor's Tiptap instance, on every keystroke).
+function SectionBtn({ id, label, icon: Icon, active, onSelect }: { id: Section; label: string; icon: React.ElementType; active: boolean; onSelect: (id: Section) => void }) {
+  return (
+    <button type="button" onClick={() => onSelect(id)}
+      style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', borderRadius:8, fontSize:13, fontWeight:600, cursor:'pointer', border:'none',
+        background: active ? '#fff' : 'transparent',
+        color: active ? '#1B2A4A' : '#64748b',
+        boxShadow: active ? '0 1px 4px rgba(0,0,0,0.08)' : 'none' }}>
+      <Icon size={14}/>{label}
+    </button>
+  )
+}
+
+function Label({ children, sub }: { children: React.ReactNode; sub?: string }) {
+  return (
+    <div style={{ marginBottom:'0.4rem' }}>
+      <label style={{ display:'block', fontSize:13, fontWeight:600, color:'#374151' }}>{children}</label>
+      {sub && <p style={{ fontSize:11.5, color:'#94a3b8', marginTop:2 }}>{sub}</p>}
+    </div>
+  )
+}
+
+function Field({ children }: { children: React.ReactNode }) {
+  return <div style={{ marginBottom:18 }}>{children}</div>
+}
+
 export default function PageForm({ page }: Props) {
   const router = useRouter()
   const isNew = !page?.id
@@ -90,27 +118,6 @@ export default function PageForm({ page }: Props) {
     }
   }
 
-  const SectionBtn = ({ id, label, icon: Icon }: { id: Section; label: string; icon: React.ElementType }) => (
-    <button type="button" onClick={() => setActiveSection(id)}
-      style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', borderRadius:8, fontSize:13, fontWeight:600, cursor:'pointer', border:'none',
-        background: activeSection===id ? '#fff' : 'transparent',
-        color: activeSection===id ? '#1B2A4A' : '#64748b',
-        boxShadow: activeSection===id ? '0 1px 4px rgba(0,0,0,0.08)' : 'none' }}>
-      <Icon size={14}/>{label}
-    </button>
-  )
-
-  const Label = ({ children, sub }: { children: React.ReactNode; sub?: string }) => (
-    <div style={{ marginBottom:'0.4rem' }}>
-      <label style={{ display:'block', fontSize:13, fontWeight:600, color:'#374151' }}>{children}</label>
-      {sub && <p style={{ fontSize:11.5, color:'#94a3b8', marginTop:2 }}>{sub}</p>}
-    </div>
-  )
-
-  const Field = ({ children }: { children: React.ReactNode }) => (
-    <div style={{ marginBottom:18 }}>{children}</div>
-  )
-
   return (
     <div style={{ display:'grid', gridTemplateColumns:'1fr 280px', gap:20, padding:24, alignItems:'start' }} className="page-editor-grid">
 
@@ -124,8 +131,8 @@ export default function PageForm({ page }: Props) {
         )}
 
         <div style={{ display:'flex', gap:4, marginBottom:20, background:'#f1f5f9', borderRadius:10, padding:4, width:'fit-content' }}>
-          <SectionBtn id="main" label="Content" icon={Eye}/>
-          <SectionBtn id="seo" label="SEO" icon={Search}/>
+          <SectionBtn id="main" label="Content" icon={Eye} active={activeSection==='main'} onSelect={setActiveSection}/>
+          <SectionBtn id="seo" label="SEO" icon={Search} active={activeSection==='seo'} onSelect={setActiveSection}/>
         </div>
 
         {activeSection === 'main' && (

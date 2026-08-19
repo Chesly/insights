@@ -22,6 +22,24 @@ interface Props {
   placeholder?: string
 }
 
+// Declared at module scope — defining these inside RichEditor would make
+// React treat them as new component types on every keystroke (RichEditor
+// re-renders whenever the parent's content state updates via onChange),
+// remounting the toolbar and, more importantly, the whole Tiptap editor
+// instance underneath it, dropping cursor focus after every character.
+function ToolBtn({ onClick, active, title, children }: { onClick: () => void; active?: boolean; title: string; children: React.ReactNode }) {
+  return (
+    <button type="button" onClick={onClick} title={title}
+      style={{ width:30, height:30, display:'flex', alignItems:'center', justifyContent:'center', borderRadius:6, border:'none', cursor:'pointer', background:active?'rgba(139,105,20,0.15)':'transparent', color:active?'#8B6914':'#475569', transition:'all 0.1s' }}>
+      {children}
+    </button>
+  )
+}
+
+function Divider() {
+  return <div style={{ width:1, height:22, background:'#e2e8f0', margin:'0 4px' }}/>
+}
+
 export default function RichEditor({ content, contentJson, onChange, placeholder }: Props) {
   const editor = useEditor({
     extensions: [
@@ -59,15 +77,6 @@ export default function RichEditor({ content, contentJson, onChange, placeholder
   }, [editor])
 
   if (!editor) return null
-
-  const ToolBtn = ({ onClick, active, title, children }: { onClick: ()=>void; active?: boolean; title: string; children: React.ReactNode }) => (
-    <button type="button" onClick={onClick} title={title}
-      style={{ width:30, height:30, display:'flex', alignItems:'center', justifyContent:'center', borderRadius:6, border:'none', cursor:'pointer', background:active?'rgba(139,105,20,0.15)':'transparent', color:active?'#8B6914':'#475569', transition:'all 0.1s' }}>
-      {children}
-    </button>
-  )
-
-  const Divider = () => <div style={{ width:1, height:22, background:'#e2e8f0', margin:'0 4px' }}/>
 
   const words = editor.storage.characterCount?.words() || 0
   const chars = editor.storage.characterCount?.characters() || 0

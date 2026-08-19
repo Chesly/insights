@@ -11,6 +11,7 @@ import ProductsTeaser from "@/components/ProductsTeaser";
 import SocialShare from "@/components/SocialShare";
 import CommentSection from "@/components/CommentSection";
 import SeriesBanner from "@/components/SeriesBanner";
+import FaqAnswer from "@/components/FaqAnswer";
 import { getApprovedComments } from "@/lib/comments";
 
 export const revalidate = 3600;
@@ -259,7 +260,7 @@ export default async function BlogPostPage({
                 <summary className="cursor-pointer list-none font-medium text-navy marker:content-none dark:text-white">
                   {item.question}
                 </summary>
-                <p className="mt-2 text-sm text-navy/70 dark:text-white/70">{item.answer}</p>
+                <p className="mt-2 text-sm text-navy/70 dark:text-white/70"><FaqAnswer text={item.answer} /></p>
               </details>
             ))}
           </div>

@@ -7,6 +7,7 @@ import PageHero from "@/components/PageHero";
 import DownloadButton from "@/components/DownloadButton";
 import ProductGallery from "@/components/ProductGallery";
 import ProductReviews from "@/components/ProductReviews";
+import FaqAnswer from "@/components/FaqAnswer";
 import { getAllDownloads, getDownloadBySlug, getRelatedDownloads, pricing } from "@/lib/downloads";
 import { getApprovedReviews } from "@/lib/reviews";
 import { getAllPosts } from "@/lib/posts";
@@ -270,7 +271,7 @@ export default async function DownloadDetailPage({
                   <summary className="cursor-pointer list-none font-medium text-navy marker:content-none dark:text-white">
                     {f.question}
                   </summary>
-                  <p className="mt-2 text-sm text-navy/70 dark:text-white/70">{f.answer}</p>
+                  <p className="mt-2 text-sm text-navy/70 dark:text-white/70"><FaqAnswer text={f.answer} /></p>
                 </details>
               ))}
             </div>

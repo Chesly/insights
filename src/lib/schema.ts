@@ -2,6 +2,7 @@ import { siteConfig } from "./siteConfig";
 import type { Post, Author, HowToStep } from "./types";
 import type { DownloadItem } from "./downloads";
 import { pricing } from "./downloads";
+import { faqAnswerToPlainText } from "@/components/FaqAnswer";
 
 export function organizationSchema() {
   return {
@@ -169,7 +170,7 @@ export function faqSchema(faqs: { question: string; answer: string }[]) {
     mainEntity: faqs.map((f) => ({
       "@type": "Question",
       name: f.question,
-      acceptedAnswer: { "@type": "Answer", text: f.answer }
+      acceptedAnswer: { "@type": "Answer", text: faqAnswerToPlainText(f.answer) }
     }))
   };
 }

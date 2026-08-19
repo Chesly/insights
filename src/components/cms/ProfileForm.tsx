@@ -27,6 +27,19 @@ interface Profile {
   show_author_page?: boolean
 }
 
+// Declared at module scope, not inside ProfileForm — see PostForm.tsx for
+// why (a component defined inside a render function remounts on every
+// keystroke, dropping input focus).
+function Field({ label, help, children }: { label: string; help?: string; children: React.ReactNode }) {
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 4 }}>{label}</label>
+      {children}
+      {help && <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 4 }}>{help}</p>}
+    </div>
+  )
+}
+
 export default function ProfileForm({ profile, email }: { profile: Profile | null; email: string }) {
   const [firstName, setFirstName] = useState(profile?.first_name || '')
   const [lastName, setLastName] = useState(profile?.last_name || '')
@@ -85,14 +98,6 @@ export default function ProfileForm({ profile, email }: { profile: Profile | nul
     setSaved(true)
     setTimeout(() => setSaved(false), 3000)
   }
-
-  const Field = ({ label, help, children }: { label: string; help?: string; children: React.ReactNode }) => (
-    <div style={{ marginBottom: 14 }}>
-      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 4 }}>{label}</label>
-      {children}
-      {help && <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 4 }}>{help}</p>}
-    </div>
-  )
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>

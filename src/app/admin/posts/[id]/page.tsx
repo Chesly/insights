@@ -27,7 +27,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
 
   return (
     <>
-      <Topbar title={`Edit: ${post.title.length > 40 ? post.title.slice(0,40)+'…' : post.title}`}/>
+      <Topbar title={`Edit: ${post.title.length > 40 ? post.title.slice(0,40)+'…' : post.title}`} action={{ label:'New Post', href:'/admin/posts/new' }}/>
       <PostForm post={flatPost} categories={categories || []}/>
     </>
   )
