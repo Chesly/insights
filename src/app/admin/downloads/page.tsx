@@ -88,6 +88,12 @@ export default function DownloadsPage() {
   const [showForm, setShowForm] = useState(false)
   const [deleteId, setDeleteId] = useState<string|null>(null)
   const [draggedGalleryIdx, setDraggedGalleryIdx] = useState<number|null>(null)
+  // Tracks whether the item being edited already had a schedule set when
+  // loaded, so save() only sends scheduled_at:null when actually clearing
+  // one — not on every edit to a product that was never scheduled. Without
+  // this, every save to an existing product fails until the scheduled_at
+  // column exists, since it'd unconditionally try to write to it.
+  const [originalScheduledAt, setOriginalScheduledAt] = useState('')
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -119,10 +125,11 @@ export default function DownloadsPage() {
       tags:(dl as unknown as FormState).tags||[], bundle_files:(dl as unknown as FormState).bundle_files||[],
       faq:(dl as unknown as FormState).faq||[],
     })
+    setOriginalScheduledAt(toDatetimeLocalInput((dl as unknown as { scheduled_at?: string | null }).scheduled_at))
     setShowForm(true); setError('')
   }
 
-  const reset = () => { setForm(EMPTY); setShowForm(false); setError('') }
+  const reset = () => { setForm(EMPTY); setOriginalScheduledAt(''); setShowForm(false); setError('') }
 
   const moveGalleryImage = (from: number, to: number) => {
     if (to < 0 || from === to) return
@@ -186,9 +193,12 @@ export default function DownloadsPage() {
     setSaving(true); setError('')
     try {
       // `faq` and `scheduled_at` are only sent when there's something to
-      // write (or, for scheduled_at, when clearing an existing schedule on
-      // an existing row) — so saving a product before those columns exist
-      // in the database doesn't break every other field on the form.
+      // write (or, for scheduled_at, when clearing a schedule that was
+      // actually there before — checked against originalScheduledAt, not
+      // just "editing an existing row") — so saving a product before those
+      // columns exist in the database doesn't break every other field on
+      // the form, and a normal edit to a never-scheduled product doesn't
+      // try to touch the column either.
       const { faq, scheduled_at: scheduledLocal, ...formRest } = form
       const scheduledIso = fromDatetimeLocalInput(scheduledLocal)
       // A future schedule always overrides the Published toggle — no need
@@ -200,7 +210,7 @@ export default function DownloadsPage() {
         price: form.price.trim() ? Number(form.price) : null,
         compare_at_price: form.compare_at_price.trim() ? Number(form.compare_at_price) : null,
         ...(faq.length > 0 ? { faq } : {}),
-        ...(scheduledLocal ? { scheduled_at: scheduledIso } : form.id ? { scheduled_at: null } : {}),
+        ...(scheduledLocal ? { scheduled_at: scheduledIso } : originalScheduledAt ? { scheduled_at: null } : {}),
       }
       const url = form.id ? `/api/downloads/${form.id}` : '/api/downloads'
       const method = form.id ? 'PATCH' : 'POST'
