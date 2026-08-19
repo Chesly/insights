@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { generateSlug, estimateReadTime, toDatetimeLocalInput, fromDatetimeLocalInput } from '@/lib/utils'
@@ -95,6 +95,29 @@ export default function PostForm({ post, categories }: Props) {
   const [ogImage, setOgImage] = useState(post?.og_image || '')
   const [canonical, setCanonical] = useState(post?.canonical_url || '')
   const [faq, setFaq] = useState<FaqItem[]>((post as unknown as { faq?: FaqItem[] })?.faq || [])
+  const faqAnswerRefs = useRef<Record<number, HTMLTextAreaElement | null>>({})
+
+  // Inserts a real link into an FAQ answer at the cursor — nobody should
+  // have to hand-type [text](url) markdown to link to a download or
+  // another article, so this is the actual UI for it.
+  const insertFaqLink = (i: number) => {
+    const el = faqAnswerRefs.current[i]
+    if (!el) return
+    const url = window.prompt('Link to (e.g. https://insights.chesly.tech/tools/your-product-slug):')
+    if (!url) return
+    const start = el.selectionStart ?? el.value.length
+    const end = el.selectionEnd ?? el.value.length
+    const selected = el.value.slice(start, end)
+    const label = selected || window.prompt('Text to show for this link:', 'here') || 'here'
+    const insertion = `[${label}](${url})`
+    const newValue = el.value.slice(0, start) + insertion + el.value.slice(end)
+    setFaq(f => f.map((x, idx) => (idx === i ? { ...x, answer: newValue } : x)))
+    requestAnimationFrame(() => {
+      el.focus()
+      const pos = start + insertion.length
+      el.setSelectionRange(pos, pos)
+    })
+  }
   const [slugLocked, setSlugLocked] = useState(!isNew)
 
   // Auto-generate slug from title (new posts only)
@@ -322,6 +345,7 @@ export default function PostForm({ post, categories }: Props) {
                         />
                         <div style={{ fontSize:11, color: item.question.length>80?'#ef4444':item.question.length>0&&item.question.length<40?'#d97706':'#94a3b8', textAlign:'right', marginTop:3 }}>{item.question.length}/80 chars — aim for 40–80</div>
                         <textarea
+                          ref={el => { faqAnswerRefs.current[i] = el }}
                           className="cms-input cms-textarea"
                           placeholder="Answer — direct and self-contained, since AI answer engines often quote it verbatim…"
                           value={item.answer}
@@ -329,7 +353,12 @@ export default function PostForm({ post, categories }: Props) {
                           rows={2}
                           style={{ marginTop:6 }}
                         />
-                        <div style={{ fontSize:11, color: item.answer.length>300?'#ef4444':item.answer.length>0&&item.answer.length<150?'#d97706':'#94a3b8', textAlign:'right', marginTop:3 }}>{item.answer.length}/300 chars — aim for 150–300</div>
+                        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:3 }}>
+                          <button type="button" onClick={()=>insertFaqLink(i)} className="btn btn-ghost btn-sm" style={{ padding:'2px 6px', fontSize:11.5, color:'#8B6914' }}>
+                            🔗 Insert Link
+                          </button>
+                          <div style={{ fontSize:11, color: item.answer.length>300?'#ef4444':item.answer.length>0&&item.answer.length<150?'#d97706':'#94a3b8' }}>{item.answer.length}/300 chars — aim for 150–300</div>
+                        </div>
                       </div>
                       <button type="button" onClick={()=>setFaq(f=>f.filter((_,idx)=>idx!==i))}
                         className="btn btn-ghost btn-sm" style={{ padding:5, color:'#ef4444', flexShrink:0 }}>

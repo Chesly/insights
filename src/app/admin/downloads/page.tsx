@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Topbar from '@/components/layout/Topbar'
 import Toggle from '@/components/ui/Toggle'
 import TagInput from '@/components/cms/TagInput'
@@ -137,6 +137,40 @@ export default function DownloadsPage() {
   const removeFaq = (i: number) => setForm(f => ({ ...f, faq: f.faq.filter((_,idx)=>idx!==i) }))
   const setFaqItem = (i: number, patch: Partial<FaqItem>) =>
     setForm(f => ({ ...f, faq: f.faq.map((item,idx)=> idx===i ? { ...item, ...patch } : item) }))
+
+  const faqAnswerRefs = useRef<Record<number, HTMLTextAreaElement | null>>({})
+
+  const insertFaqTextAt = (i: number, insertion: string) => {
+    const el = faqAnswerRefs.current[i]
+    const current = form.faq[i]?.answer || ''
+    const start = el ? (el.selectionStart ?? current.length) : current.length
+    const end = el ? (el.selectionEnd ?? current.length) : current.length
+    const newValue = current.slice(0, start) + insertion + current.slice(end)
+    setFaqItem(i, { answer: newValue })
+    if (el) requestAnimationFrame(() => {
+      el.focus()
+      const pos = start + insertion.length
+      el.setSelectionRange(pos, pos)
+    })
+  }
+
+  // Nobody should have to hand-type [text](url) markdown to link an FAQ
+  // answer to a download or another page — this is the actual UI for it.
+  const insertFaqLink = (i: number) => {
+    const url = window.prompt('Link to (e.g. another product or article URL):')
+    if (!url) return
+    const el = faqAnswerRefs.current[i]
+    const selected = el ? el.value.slice(el.selectionStart ?? 0, el.selectionEnd ?? 0) : ''
+    const label = selected || window.prompt('Text to show for this link:', 'here') || 'here'
+    insertFaqTextAt(i, `[${label}](${url})`)
+  }
+
+  // One-click shortcut for the most common case: linking an FAQ answer
+  // straight to this product's own page (e.g. "Download it here").
+  const insertLinkToThisProduct = (i: number) => {
+    if (!form.slug.trim()) { setError('Set a Slug first so this product has a URL to link to.'); return }
+    insertFaqTextAt(i, `[Download it here](https://insights.chesly.tech/tools/${form.slug})`)
+  }
 
   const save = async () => {
     if (!form.name.trim()) { setError('Name is required'); return }
@@ -445,6 +479,7 @@ export default function DownloadsPage() {
                           />
                           <CharHint value={item.question} min={40} max={80}/>
                           <textarea
+                            ref={el => { faqAnswerRefs.current[i] = el }}
                             className="cms-input cms-textarea"
                             placeholder="Answer — direct and self-contained, since AI answer engines often quote it verbatim…"
                             value={item.answer}
@@ -452,7 +487,17 @@ export default function DownloadsPage() {
                             rows={2}
                             style={{ marginTop:6 }}
                           />
-                          <CharHint value={item.answer} min={150} max={300}/>
+                          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:3 }}>
+                            <div style={{ display:'flex', gap:10 }}>
+                              <button type="button" onClick={()=>insertFaqLink(i)} className="btn btn-ghost btn-sm" style={{ padding:'2px 6px', fontSize:11.5, color:'#8B6914' }}>
+                                🔗 Insert Link
+                              </button>
+                              <button type="button" onClick={()=>insertLinkToThisProduct(i)} className="btn btn-ghost btn-sm" style={{ padding:'2px 6px', fontSize:11.5, color:'#8B6914' }}>
+                                📦 Link to This Product
+                              </button>
+                            </div>
+                            <CharHint value={item.answer} min={150} max={300}/>
+                          </div>
                         </div>
                         <button type="button" onClick={()=>removeFaq(i)}
                           className="btn btn-ghost btn-sm" style={{ padding:5, color:'#ef4444', flexShrink:0 }}>
