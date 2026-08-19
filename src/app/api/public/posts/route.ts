@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { siteConfig } from '@/lib/siteConfig'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
@@ -8,6 +9,7 @@ export async function GET(req: NextRequest) {
   const page = parseInt(searchParams.get('page') || '1')
   const category = searchParams.get('category')
   const featured = searchParams.get('featured')
+  const section = searchParams.get('section') // "insights" | "coffee"
   const from = (page - 1) * limit
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -15,7 +17,7 @@ export async function GET(req: NextRequest) {
     .from('posts')
     .select(`
       id, title, slug, excerpt, featured_image, read_time, view_count,
-      featured, trending, popular, published_at,
+      featured, trending, popular, published_at, section,
       category:categories!category_id(name, slug, color, icon),
       author:profiles!author_id(full_name, avatar_url),
       tags:post_tags(tag:tags(name, slug))
@@ -26,11 +28,18 @@ export async function GET(req: NextRequest) {
 
   if (category) query = query.eq('categories.slug', category)
   if (featured === 'true') query = query.eq('featured', true)
+  if (section === 'insights' || section === 'coffee') query = query.eq('section', section)
 
   const { data, error, count } = await query
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 
-  return NextResponse.json({ data, count }, {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const withUrl = (data || []).map((post: any) => ({
+    ...post,
+    url: `${siteConfig.url}/${post.section === 'coffee' ? 'coffee' : 'insights'}/${post.slug}`,
+  }))
+
+  return NextResponse.json({ data: withUrl, count }, {
     headers: {
       'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
       'Access-Control-Allow-Origin': process.env.INSIGHTS_SITE_URL || '*',
