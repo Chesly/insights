@@ -1,12 +1,17 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
+import { getSessionProfile, isAllowedElevatedAccess } from '@/lib/auth/session'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const session = await getSessionProfile()
+  if (!session || !isAllowedElevatedAccess(session)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
 
   const body = await req.json()
   const { status } = body
@@ -37,6 +42,10 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const session = await getSessionProfile()
+  if (!session || !isAllowedElevatedAccess(session)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
 
   const { error } = await supabase.from('comments').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
