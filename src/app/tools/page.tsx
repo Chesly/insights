@@ -52,7 +52,7 @@ export default async function DownloadsPage() {
                   </h2>
 
                   {/* Standardized featured photo with the price/tier badge overlaid */}
-                  <div className="relative mt-3 aspect-square overflow-hidden bg-gold/5">
+                  <div className="relative mt-3 aspect-[68/35] overflow-hidden bg-gold/5">
                     {item.thumbnailUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img

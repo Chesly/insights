@@ -304,7 +304,7 @@ export default async function DownloadDetailPage({
                 return (
                   <div key={rp.id} className="group flex flex-col">
                     <Link href={`/tools/${rp.slug}`} className="block">
-                      <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-square">
+                      <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-[68/35]">
                         {rp.thumbnailUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
