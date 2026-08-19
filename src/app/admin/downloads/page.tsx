@@ -9,6 +9,7 @@ import type { Download, Category } from '@/types'
 import type { BundleFile } from '@/lib/downloads'
 import { slugify, type FaqItem } from '@/lib/types'
 import { toDatetimeLocalInput, fromDatetimeLocalInput } from '@/lib/utils'
+import { adminFetch } from '@/lib/adminFetch'
 
 interface FormState {
   id?: string
@@ -203,7 +204,7 @@ export default function DownloadsPage() {
       }
       const url = form.id ? `/api/downloads/${form.id}` : '/api/downloads'
       const method = form.id ? 'PATCH' : 'POST'
-      const res = await fetch(url, { method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })
+      const res = await adminFetch(url, { method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })
       const json = await res.json()
       if (!res.ok) throw new Error(json.error)
       await load(); reset()
@@ -212,13 +213,13 @@ export default function DownloadsPage() {
   }
 
   const togglePublish = async (dl: Download) => {
-    await fetch(`/api/downloads/${dl.id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ is_published:!dl.is_published }) })
+    await adminFetch(`/api/downloads/${dl.id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ is_published:!dl.is_published }) })
     await load()
   }
 
   const del = async (id: string) => {
     setSaving(true)
-    try { await fetch(`/api/downloads/${id}`, { method:'DELETE' }); await load(); setDeleteId(null) }
+    try { await adminFetch(`/api/downloads/${id}`, { method:'DELETE' }); await load(); setDeleteId(null) }
     catch (e: any) { setError(e.message) }
     finally { setSaving(false) }
   }

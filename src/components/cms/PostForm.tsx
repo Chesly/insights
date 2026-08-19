@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { generateSlug, estimateReadTime, toDatetimeLocalInput, fromDatetimeLocalInput } from '@/lib/utils'
+import { adminFetch } from '@/lib/adminFetch'
 import Toggle from '@/components/ui/Toggle'
 import TagInput from '@/components/cms/TagInput'
 import ImagePicker from '@/components/cms/ImagePicker'
@@ -167,7 +168,7 @@ export default function PostForm({ post, categories }: Props) {
       const payload = buildPayload(overrideStatus)
       const url = isNew ? '/api/posts' : `/api/posts/${post!.id}`
       const method = isNew ? 'POST' : 'PATCH'
-      const res = await fetch(url, { method, headers: { 'Content-Type':'application/json' }, body: JSON.stringify(payload) })
+      const res = await adminFetch(url, { method, headers: { 'Content-Type':'application/json' }, body: JSON.stringify(payload) })
       const json = await res.json()
       if (!res.ok) throw new Error(json.error || 'Save failed')
       setSaveStatus('saved')
@@ -185,7 +186,7 @@ export default function PostForm({ post, categories }: Props) {
     if (!post?.id) return
     setSaving(true)
     try {
-      const res = await fetch(`/api/posts/${post.id}`, { method: 'DELETE' })
+      const res = await adminFetch(`/api/posts/${post.id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error('Delete failed')
       router.push('/admin/posts')
     } catch (e: unknown) {
@@ -253,7 +254,7 @@ export default function PostForm({ post, categories }: Props) {
               <div style={{ display:'flex', gap:8 }}>
                 <input className="cms-input" placeholder="Or create a new series…" value={newSeriesName} onChange={e=>setNewSeriesName(e.target.value)} style={{ flex:2 }}/>
                 <button type="button" className="btn btn-secondary btn-sm" style={{ flex:1 }} disabled={!newSeriesName.trim()} onClick={async ()=>{
-                  const res = await fetch('/api/series', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name:newSeriesName }) })
+                  const res = await adminFetch('/api/series', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name:newSeriesName }) })
                   const json = await res.json()
                   if (res.ok) { setSeriesList(prev=>[...prev, json.data]); setSeriesId(json.data.id); setNewSeriesName('') }
                 }}>+ Create</button>

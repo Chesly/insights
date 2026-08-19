@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { generateSlug } from '@/lib/utils'
+import { adminFetch } from '@/lib/adminFetch'
 import type { Page } from '@/types'
 import {
   Save, Send, Eye, Trash2, AlertCircle, CheckCircle,
@@ -91,7 +92,7 @@ export default function PageForm({ page }: Props) {
       const payload = buildPayload(overrideStatus)
       const url = isNew ? '/api/pages' : `/api/pages/${page!.id}`
       const method = isNew ? 'POST' : 'PATCH'
-      const res = await fetch(url, { method, headers: { 'Content-Type':'application/json' }, body: JSON.stringify(payload) })
+      const res = await adminFetch(url, { method, headers: { 'Content-Type':'application/json' }, body: JSON.stringify(payload) })
       const json = await res.json()
       if (!res.ok) throw new Error(json.error || 'Save failed')
       setSaveStatus('saved')
@@ -109,7 +110,7 @@ export default function PageForm({ page }: Props) {
     if (!page?.id) return
     setSaving(true)
     try {
-      const res = await fetch(`/api/pages/${page.id}`, { method: 'DELETE' })
+      const res = await adminFetch(`/api/pages/${page.id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error('Delete failed')
       router.push('/admin/pages')
     } catch (e: unknown) {
