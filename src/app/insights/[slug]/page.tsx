@@ -136,8 +136,6 @@ export default async function BlogPostPage({
       <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
       <div className="min-w-0">
 
-      <SeriesBanner post={post} />
-
       {/* AI Summary — a concise, self-contained answer AI search engines can quote/cite directly */}
       {post.aiSummary && (
         <div className="mt-7 border-l-4 border-gold bg-gold/5 p-6">
@@ -286,6 +284,8 @@ export default async function BlogPostPage({
           </div>
         </section>
       )}
+
+      <SeriesBanner post={post} />
 
       {/* Byline — moved to the end of the article, right before sharing/author */}
       <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-gold/10 pt-6 text-sm text-navy/50 dark:text-white/50">

@@ -61,6 +61,11 @@ function rowToPost(row: any): Post {
     semanticKeywords: row.semantic_keywords || undefined,
     howToSteps: row.how_to_steps || undefined,
 
+    seriesId: row.series_id || undefined,
+    seriesName: row.series_name || undefined,
+    seriesSlug: row.series_slug || undefined,
+    seriesOrder: row.series_order ?? undefined,
+
     slug: row.slug,
     content,
     readingTime: readingTime(stripHtml(content)).text,
@@ -183,4 +188,20 @@ export async function getEditorsPicks(limit = 4): Promise<Post[]> {
 export async function getPostsByAuthor(authorSlug: string): Promise<Post[]> {
   const posts = await getAllPosts(false, ["insights", "coffee"]);
   return posts.filter((p) => p.authorSlug === authorSlug);
+}
+
+/** All published posts in a series, ordered by their part number (posts
+    sharing the same number — a data-entry gap — fall back to publish date
+    so the order is at least stable). */
+export async function getSeriesPosts(seriesId: string): Promise<Post[]> {
+  const supabase = createPublicClient();
+  const { data, error } = await supabase
+    .from("posts_with_categories")
+    .select("*")
+    .eq("series_id", seriesId)
+    .eq("status", "published")
+    .order("series_order", { ascending: true })
+    .order("published_at", { ascending: true });
+  if (error || !data) return [];
+  return data.map(rowToPost);
 }

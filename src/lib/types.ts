@@ -62,6 +62,13 @@ export interface PostFrontmatter {
   suggestedQuestions?: string[];
   semanticKeywords?: string[];
   howToSteps?: HowToStep[];
+
+  /** Groups this post into a numbered series (e.g. a 3-part conversation) —
+      all optional since most posts don't belong to one. */
+  seriesId?: string;
+  seriesName?: string;
+  seriesSlug?: string;
+  seriesOrder?: number;
 }
 
 export interface Post extends PostFrontmatter {
