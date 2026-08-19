@@ -14,6 +14,30 @@ export function estimateReadTime(html: string): number {
   return Math.max(1, Math.ceil(words / 200))
 }
 
+/** Converts a stored UTC timestamp into the "YYYY-MM-DDTHH:mm" shape a
+    `<input type="datetime-local">` needs, in the browser's own timezone —
+    without this, editing an already-scheduled item shows a blank/invalid
+    date field since the raw ISO string (with its trailing offset) doesn't
+    match what the input expects. */
+export function toDatetimeLocalInput(iso?: string | null): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return ''
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+/** Converts a `<input type="datetime-local">` value (interpreted by the
+    browser as local wall-clock time) into a proper UTC ISO string for
+    storage — sending the raw local-looking string straight to a
+    `timestamptz` column would have Postgres read it as UTC, skewing every
+    scheduled time by the admin's timezone offset. */
+export function fromDatetimeLocalInput(value: string): string | null {
+  if (!value) return null
+  const d = new Date(value)
+  return isNaN(d.getTime()) ? null : d.toISOString()
+}
+
 export function formatDate(date: string | Date, format: 'short'|'medium'|'time' = 'medium'): string {
   const d = new Date(date)
   if (format === 'short') return d.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })

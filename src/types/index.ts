@@ -109,6 +109,7 @@ export interface Download {
   category?: Category
   is_premium: boolean
   is_published: boolean
+  scheduled_at?: string | null
   download_count: number
   created_at: string
   updated_at: string

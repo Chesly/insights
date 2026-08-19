@@ -239,21 +239,12 @@ export default function SettingsPage() {
               </div>
             ))}
 
-            {/* Vercel cron setup */}
+            {/* Scheduling status */}
             <div className="cms-card" style={{ padding: 24, marginBottom: 20 }}>
-              <h3 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, fontSize: 15, color: '#1e293b', marginBottom: 12 }}>Scheduling (Vercel Cron)</h3>
-              <p style={{ fontSize: 13, color: '#64748b', marginBottom: 14, lineHeight: 1.7 }}>
-                Add this to your <code style={{ fontFamily: 'monospace', fontSize: 12, background: '#f1f5f9', padding: '1px 6px', borderRadius: 4 }}>vercel.json</code> to auto-publish scheduled posts every 5 minutes:
+              <h3 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, fontSize: 15, color: '#1e293b', marginBottom: 12 }}>Scheduling</h3>
+              <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.7 }}>
+                Posts and products set to a future <strong>Schedule</strong> date go live automatically, checked every 5 minutes via a GitHub Actions workflow (<code style={{ fontFamily: 'monospace', fontSize: 11.5, background: '#f1f5f9', padding: '1px 6px', borderRadius: 4 }}>.github/workflows/publish-scheduled.yml</code>), with a once-daily Vercel Cron as a backstop. No manual setup needed — this runs on its own.
               </p>
-              <pre style={{ background: '#0f172a', color: '#e2e8f0', padding: '14px 16px', borderRadius: 10, fontSize: 12, fontFamily: 'JetBrains Mono,monospace', overflow: 'auto' }}>{`{
-  "crons": [
-    {
-      "path": "/api/cron/publish",
-      "schedule": "*/5 * * * *"
-    }
-  ]
-}`}</pre>
-              <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 10 }}>Set <code style={{ fontFamily: 'monospace', fontSize: 11 }}>CRON_SECRET</code> in Vercel environment variables for security.</p>
             </div>
 
             <button onClick={handleSave} disabled={saving} className="btn btn-primary" style={{ minWidth: 160, justifyContent: 'center' }}>

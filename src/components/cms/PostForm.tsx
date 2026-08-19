@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
-import { generateSlug, estimateReadTime } from '@/lib/utils'
+import { generateSlug, estimateReadTime, toDatetimeLocalInput, fromDatetimeLocalInput } from '@/lib/utils'
 import Toggle from '@/components/ui/Toggle'
 import TagInput from '@/components/cms/TagInput'
 import ImagePicker from '@/components/cms/ImagePicker'
@@ -88,7 +88,7 @@ export default function PostForm({ post, categories }: Props) {
   const [trending, setTrending] = useState(post?.trending || false)
   const [popular, setPopular] = useState(post?.popular || false)
   const [allowComments, setAllowComments] = useState((post as { allow_comments?: boolean })?.allow_comments ?? true)
-  const [scheduledAt, setScheduledAt] = useState(post?.scheduled_at || '')
+  const [scheduledAt, setScheduledAt] = useState(toDatetimeLocalInput(post?.scheduled_at))
   // SEO
   const [seoTitle, setSeoTitle] = useState(post?.seo_title || '')
   const [metaDesc, setMetaDesc] = useState(post?.meta_description || '')
@@ -129,7 +129,7 @@ export default function PostForm({ post, categories }: Props) {
     meta_description: metaDesc,
     og_image: ogImage || featuredImage,
     canonical_url: canonical,
-    scheduled_at: scheduledAt || null,
+    scheduled_at: fromDatetimeLocalInput(scheduledAt),
     read_time: readTime,
     faq,
   }), [title,slug,excerpt,body,bodyJson,featuredImage,imageCaption,categoryIds,section,seriesId,seriesOrder,tags,status,featured,trending,popular,allowComments,seoTitle,metaDesc,ogImage,canonical,scheduledAt,readTime,faq])

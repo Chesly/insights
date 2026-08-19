@@ -1,0 +1,20 @@
+name: Publish scheduled posts and products
+
+# Vercel's Hobby plan only allows cron jobs to run once per day (and even
+# then, only within a broad ~1-hour window) — not precise enough for
+# scheduling posts/products at a specific time. Running this trigger from
+# GitHub Actions instead isn't subject to that limit, so scheduled content
+# actually goes live close to the time picked in the admin.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call /api/cron/publish
+        run: |
+          curl -sf -X GET "https://insights.chesly.tech/api/cron/publish" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

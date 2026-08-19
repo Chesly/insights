@@ -8,6 +8,7 @@ import { Plus, Edit2, Trash2, Save, X, AlertCircle, Download as DownloadIcon, Ex
 import type { Download, Category } from '@/types'
 import type { BundleFile } from '@/lib/downloads'
 import { slugify, type FaqItem } from '@/lib/types'
+import { toDatetimeLocalInput, fromDatetimeLocalInput } from '@/lib/utils'
 
 interface FormState {
   id?: string
@@ -23,6 +24,7 @@ interface FormState {
   price: string
   compare_at_price: string
   is_published: boolean
+  scheduled_at: string
   target_audience: string[]
   solves: string[]
   seo_title: string
@@ -37,7 +39,7 @@ interface FormState {
   faq: FaqItem[]
 }
 
-const EMPTY: FormState = { name:'', slug:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', tier:'free', price:'', compare_at_price:'', is_published:false, target_audience:[], solves:[], seo_title:'', meta_description:'', store_url:'', gallery_images:[], key_features:[], how_it_helps:[], why_you_need_it:[], tags:[], bundle_files:[], faq:[] }
+const EMPTY: FormState = { name:'', slug:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', tier:'free', price:'', compare_at_price:'', is_published:false, scheduled_at:'', target_audience:[], solves:[], seo_title:'', meta_description:'', store_url:'', gallery_images:[], key_features:[], how_it_helps:[], why_you_need_it:[], tags:[], bundle_files:[], faq:[] }
 
 const BUNDLE_FILE_TYPES: { value: BundleFile['fileType']; label: string }[] = [
   { value:'xlsx', label:'📊 Spreadsheet' },
@@ -105,6 +107,7 @@ export default function DownloadsPage() {
       id:dl.id, name:dl.name, slug:(dl as unknown as FormState).slug||'', subtitle:(dl as unknown as FormState).subtitle||'', description:dl.description||'',
       thumbnail_url:dl.thumbnail_url||'', file_url:dl.file_url, file_type:dl.file_type, category_id:dl.category_id||'',
       tier:(dl as unknown as FormState).tier || 'free', is_published:dl.is_published,
+      scheduled_at: toDatetimeLocalInput((dl as unknown as { scheduled_at?: string | null }).scheduled_at),
       price: (dl as unknown as { price?: number }).price != null ? String((dl as unknown as { price?: number }).price) : '',
       compare_at_price: (dl as unknown as { compare_at_price?: number }).compare_at_price != null ? String((dl as unknown as { compare_at_price?: number }).compare_at_price) : '',
       target_audience:(dl as unknown as FormState).target_audience||[], solves:(dl as unknown as FormState).solves||[],
@@ -147,12 +150,23 @@ export default function DownloadsPage() {
     }
     setSaving(true); setError('')
     try {
-      // `faq` is only sent when non-empty, so saving a product before the
-      // `downloads.faq` column exists in the database doesn't break every
-      // other field on the form — see the FAQ section below for the
-      // migration this depends on.
-      const { faq, ...formRest } = form
-      const payload = { ...formRest, category_id: form.category_id || null, price: form.price.trim() ? Number(form.price) : null, compare_at_price: form.compare_at_price.trim() ? Number(form.compare_at_price) : null, ...(faq.length > 0 ? { faq } : {}) }
+      // `faq` and `scheduled_at` are only sent when there's something to
+      // write (or, for scheduled_at, when clearing an existing schedule on
+      // an existing row) — so saving a product before those columns exist
+      // in the database doesn't break every other field on the form.
+      const { faq, scheduled_at: scheduledLocal, ...formRest } = form
+      const scheduledIso = fromDatetimeLocalInput(scheduledLocal)
+      // A future schedule always overrides the Published toggle — no need
+      // to remember to leave it off when scheduling something ahead.
+      const isPublished = scheduledIso && new Date(scheduledIso) > new Date() ? false : form.is_published
+      const payload = {
+        ...formRest, is_published: isPublished,
+        category_id: form.category_id || null,
+        price: form.price.trim() ? Number(form.price) : null,
+        compare_at_price: form.compare_at_price.trim() ? Number(form.compare_at_price) : null,
+        ...(faq.length > 0 ? { faq } : {}),
+        ...(scheduledLocal ? { scheduled_at: scheduledIso } : form.id ? { scheduled_at: null } : {}),
+      }
       const url = form.id ? `/api/downloads/${form.id}` : '/api/downloads'
       const method = form.id ? 'PATCH' : 'POST'
       const res = await fetch(url, { method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })
@@ -512,6 +526,17 @@ export default function DownloadsPage() {
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:12, justifyContent:'center' }}>
                 <Toggle checked={form.is_published} onChange={v=>setForm(f=>({...f,is_published:v}))} label="Published (visible on site)"/>
+                <div>
+                  <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                    Schedule for later <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional — overrides Published above until this time)</span>
+                  </label>
+                  <div style={{ display:'flex', gap:8 }}>
+                    <input className="cms-input" type="datetime-local" value={form.scheduled_at} onChange={set('scheduled_at')} style={{ flex:1 }}/>
+                    {form.scheduled_at && (
+                      <button type="button" className="btn btn-secondary btn-sm" onClick={()=>setForm(f=>({...f,scheduled_at:''}))}>Clear</button>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -562,7 +587,14 @@ export default function DownloadsPage() {
                         </span>
                       )}
                     </td>
-                    <td><Toggle checked={dl.is_published} onChange={()=>togglePublish(dl)} size="sm"/></td>
+                    <td>
+                      <Toggle checked={dl.is_published} onChange={()=>togglePublish(dl)} size="sm"/>
+                      {!dl.is_published && dl.scheduled_at && new Date(dl.scheduled_at) > new Date() && (
+                        <div style={{ fontSize:10.5, color:'#8B6914', marginTop:4, whiteSpace:'nowrap' }}>
+                          ⏰ {new Date(dl.scheduled_at).toLocaleString('en-ZA', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}
+                        </div>
+                      )}
+                    </td>
                     <td>
                       {(() => {
                         const t = (dl as unknown as FormState).tier || 'free'
