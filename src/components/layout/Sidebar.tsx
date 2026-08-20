@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import {
   LayoutDashboard, FileText, FolderOpen, Image, Download,
   Mail, MessageSquare, Search, Settings, Users, LogOut,
-  ChevronRight, Globe, Tag, UserCircle, Star, Link2Off, Receipt
+  ChevronRight, Globe, Tag, UserCircle, Star, Link2Off, Receipt, Lightbulb
 } from 'lucide-react'
 
 const NAV = [
@@ -14,6 +14,7 @@ const NAV = [
     { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { label: 'Posts', href: '/admin/posts', icon: FileText, badge: 'new' },
     { label: 'Pages', href: '/admin/pages', icon: Globe },
+    { label: 'Did You Know?', href: '/admin/facts', icon: Lightbulb },
     { label: 'Categories', href: '/admin/categories', icon: FolderOpen },
     { label: 'Tags', href: '/admin/tags', icon: Tag },
   ]},

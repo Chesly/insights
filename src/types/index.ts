@@ -84,6 +84,21 @@ export interface Post {
 
 export type PageStatus = 'draft' | 'published'
 
+export interface Fact {
+  id: string
+  slug: string
+  headline: string
+  fact_text: string
+  context: string
+  source_name?: string
+  source_url?: string
+  category?: string
+  faq: { question: string; answer: string }[]
+  status: 'draft' | 'published'
+  created_at: string
+  updated_at: string
+}
+
 export interface Page {
   id: string
   title: string

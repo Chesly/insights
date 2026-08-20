@@ -9,6 +9,8 @@ import Carousel from "@/components/Carousel";
 import ArticleRow from "@/components/ArticleRow";
 import Newsletter from "@/components/Newsletter";
 import ProductsTeaser from "@/components/ProductsTeaser";
+import DidYouKnowCard from "@/components/DidYouKnowCard";
+import { getTodaysFact } from "@/lib/facts";
 
 export const revalidate = 3600;
 
@@ -18,9 +20,10 @@ export default async function HomePage() {
   // thing to read") rather than two separate silos. Every row below is
   // derived from this one array instead of separate DB calls, keeping the
   // whole homepage consistent and fast.
-  const [posts, featuredPosts] = await Promise.all([
+  const [posts, featuredPosts, todaysFact] = await Promise.all([
     getAllPosts(false, ["insights", "coffee"]),
     getFeaturedPosts(),
+    getTodaysFact(),
   ]);
 
   const carouselSource = featuredPosts.length > 0 ? featuredPosts : posts;
@@ -115,7 +118,7 @@ export default async function HomePage() {
               above (rather than a second wrapper with its own top padding)
               so the grid below sits close enough to peek above the fold —
               a visual cue that there's more to scroll to. */}
-          <ArticleRow posts={latest} />
+          <ArticleRow posts={latest} extraCard={todaysFact ? <DidYouKnowCard fact={todaysFact} /> : undefined} />
           <ArticleRow heading="Popular" posts={popular} />
         </div>
       </div>

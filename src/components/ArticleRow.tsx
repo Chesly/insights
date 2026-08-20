@@ -4,12 +4,17 @@ import type { Post } from "@/lib/types";
 
 export default function ArticleRow({
   heading,
-  posts
+  posts,
+  extraCard
 }: {
   heading?: string;
   posts: Post[];
+  /** Rendered as the grid's last cell, e.g. a "Did You Know?" card on the
+      homepage — takes one of the 4 slots, so only the first 3 posts show
+      alongside it. */
+  extraCard?: React.ReactNode;
 }) {
-  if (posts.length === 0) return null;
+  if (posts.length === 0 && !extraCard) return null;
 
   return (
     <section className="mb-14" aria-labelledby={heading ? `${heading}-heading` : undefined}>
@@ -22,7 +27,7 @@ export default function ArticleRow({
         </h2>
       )}
       <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
-        {posts.slice(0, 4).map((post) => {
+        {posts.slice(0, extraCard ? 3 : 4).map((post) => {
           const basePath = post.section === "coffee" ? "coffee" : "insights";
           return (
             <Link key={post.slug} href={`/${basePath}/${post.slug}`} className="group block">
@@ -52,6 +57,7 @@ export default function ArticleRow({
             </Link>
           );
         })}
+        {extraCard}
       </div>
     </section>
   );
