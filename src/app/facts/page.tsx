@@ -22,7 +22,7 @@ export default async function FactsIndexPage() {
       <div className="relative overflow-hidden bg-gradient-to-br from-navy to-navy-dark">
         {heroImage && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={heroImage} alt="" className="absolute inset-0 h-full w-full object-cover opacity-25" />
+          <img src={heroImage} alt="" className="absolute inset-0 h-full w-full object-cover opacity-50" />
         )}
         <div className="container-page relative py-14 sm:py-20">
           <h1 className="text-2xl font-bold text-white sm:text-3xl">Did You Know?</h1>
