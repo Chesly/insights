@@ -11,6 +11,7 @@ import Newsletter from "@/components/Newsletter";
 import ProductsTeaser from "@/components/ProductsTeaser";
 import DidYouKnowCard from "@/components/DidYouKnowCard";
 import { getTodaysFact } from "@/lib/facts";
+import { getAllSiteSettings } from "@/lib/settings";
 
 export const revalidate = 3600;
 
@@ -20,10 +21,11 @@ export default async function HomePage() {
   // thing to read") rather than two separate silos. Every row below is
   // derived from this one array instead of separate DB calls, keeping the
   // whole homepage consistent and fast.
-  const [posts, featuredPosts, todaysFact] = await Promise.all([
+  const [posts, featuredPosts, todaysFact, settings] = await Promise.all([
     getAllPosts(false, ["insights", "coffee"]),
     getFeaturedPosts(),
     getTodaysFact(),
+    getAllSiteSettings(),
   ]);
 
   const carouselSource = featuredPosts.length > 0 ? featuredPosts : posts;
@@ -113,12 +115,20 @@ export default async function HomePage() {
             )}
           </section>
 
+          {/* Did You Know — its own full-width banner, not squeezed into
+              the post grid below. Tried it as one of the 4 "Latest" grid
+              cells first; on mobile (2-column grid) that fought the other
+              3 posts for space and got cramped. Full-width, same spot on
+              mobile and desktop, is simpler to reason about going
+              forward than swapping positions per breakpoint. */}
+          {todaysFact && <DidYouKnowCard fact={todaysFact} backgroundImage={settings.facts_widget_bg_image} />}
+
           {/* No "Latest" heading — flows straight from hero into content.
               Kept in the same container-page block as the hero/carousel
               above (rather than a second wrapper with its own top padding)
               so the grid below sits close enough to peek above the fold —
               a visual cue that there's more to scroll to. */}
-          <ArticleRow posts={latest} extraCard={todaysFact ? <DidYouKnowCard fact={todaysFact} /> : undefined} />
+          <ArticleRow posts={latest} />
           <ArticleRow heading="Popular" posts={popular} />
         </div>
       </div>

@@ -54,6 +54,12 @@ export default function FactsPage() {
   const [deleteId, setDeleteId] = useState<string|null>(null)
   const [showImagePicker, setShowImagePicker] = useState(false)
   const faqAnswerRefs = useRef<Record<number, HTMLTextAreaElement | null>>({})
+  // Tracks whether the fact being edited already had these set when
+  // loaded, so save() only touches image_url/special_date when there's
+  // actually something to write or clear — not on every save — since
+  // those columns may not exist yet until a pending migration runs. Same
+  // pattern as the downloads scheduled_at fix.
+  const [original, setOriginal] = useState({ image_url: '', special_date: '' })
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -78,10 +84,11 @@ export default function FactsPage() {
       image_url: f.image_url || '', special_date: f.special_date || '',
       status: f.status, faq: f.faq || [],
     })
+    setOriginal({ image_url: f.image_url || '', special_date: f.special_date || '' })
     setShowForm(true); setError('')
   }
 
-  const reset = () => { setForm(EMPTY); setShowForm(false); setError('') }
+  const reset = () => { setForm(EMPTY); setOriginal({ image_url:'', special_date:'' }); setShowForm(false); setError('') }
 
   const insertFaqLink = (i: number) => {
     const el = faqAnswerRefs.current[i]
@@ -110,7 +117,16 @@ export default function FactsPage() {
     }
     setSaving(true); setError('')
     try {
-      const payload = { ...form, slug: form.slug.trim() || slugify(form.headline) }
+      // image_url/special_date are only included when there's actually
+      // something to set or clear — never on a save that never touched
+      // them — since those columns may not exist yet until a pending
+      // migration runs. See the API route for the other half of this.
+      const { image_url, special_date, ...formRest } = form
+      const payload = {
+        ...formRest, slug: form.slug.trim() || slugify(form.headline),
+        ...(image_url || original.image_url ? { image_url } : {}),
+        ...(special_date || original.special_date ? { special_date } : {}),
+      }
       const url = form.id ? `/api/facts/${form.id}` : '/api/facts'
       const method = form.id ? 'PATCH' : 'POST'
       const res = await adminFetch(url, { method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })

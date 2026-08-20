@@ -36,10 +36,13 @@ export async function POST(req: NextRequest) {
       source_name: body.source_name || null,
       source_url: body.source_url || null,
       category: body.category || null,
-      image_url: body.image_url || null,
-      special_date: body.special_date || null,
       faq: body.faq || [],
       status: body.status || 'draft',
+      // image_url/special_date only sent when actually set, so creating a
+      // fact before that migration runs doesn't fail on a column that
+      // doesn't exist yet — same fix as the downloads scheduled_at bug.
+      ...(body.image_url ? { image_url: body.image_url } : {}),
+      ...(body.special_date ? { special_date: body.special_date } : {}),
     })
     .select()
     .single()

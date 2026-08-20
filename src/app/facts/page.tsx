@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getAllFacts } from "@/lib/facts";
 import { siteConfig } from "@/lib/siteConfig";
+import { getAllSiteSettings } from "@/lib/settings";
 
 export const revalidate = 3600;
 
@@ -13,12 +14,17 @@ export const metadata: Metadata = {
 };
 
 export default async function FactsIndexPage() {
-  const facts = await getAllFacts();
+  const [facts, settings] = await Promise.all([getAllFacts(), getAllSiteSettings()]);
+  const heroImage = settings.facts_hero_image;
 
   return (
     <div>
-      <div className="bg-gradient-to-br from-navy to-navy-dark">
-        <div className="container-page py-14 sm:py-20">
+      <div className="relative overflow-hidden bg-gradient-to-br from-navy to-navy-dark">
+        {heroImage && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={heroImage} alt="" className="absolute inset-0 h-full w-full object-cover opacity-25" />
+        )}
+        <div className="container-page relative py-14 sm:py-20">
           <h1 className="text-2xl font-bold text-white sm:text-3xl">Did You Know?</h1>
           <p className="mt-3 max-w-xl text-white/80">
             True, sourced facts about South Africa and Southern Africa — history, wildlife, business and the

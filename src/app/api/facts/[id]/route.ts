@@ -38,11 +38,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       source_name: body.source_name || null,
       source_url: body.source_url || null,
       category: body.category || null,
-      image_url: body.image_url || null,
-      special_date: body.special_date || null,
       faq: body.faq || [],
       status: body.status,
       updated_at: new Date().toISOString(),
+      // Only touched when the client explicitly includes the key (see
+      // admin/facts save()) — so editing a fact before that migration
+      // runs doesn't fail on a column that doesn't exist yet, same fix
+      // as the downloads scheduled_at bug.
+      ...('image_url' in body ? { image_url: body.image_url || null } : {}),
+      ...('special_date' in body ? { special_date: body.special_date || null } : {}),
     })
     .eq('id', id)
     .select()
