@@ -101,7 +101,15 @@ function CheckoutSuccessContent() {
                   ))}
                 </ul>
               )}
-              <Link href="/tools" className="mt-6 inline-block text-sm font-semibold text-gold hover:underline">
+              {reference && (
+                <Link
+                  href={`/invoice/${encodeURIComponent(reference)}`}
+                  className="mt-6 block text-sm font-semibold text-gold hover:underline"
+                >
+                  View / Download Invoice →
+                </Link>
+              )}
+              <Link href="/tools" className="mt-4 inline-block text-sm font-semibold text-gold hover:underline">
                 ← Back to Business Tools
               </Link>
             </>

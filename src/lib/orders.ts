@@ -2,6 +2,7 @@ import { createServiceClient } from "./supabase/service";
 import { createDownloadToken, FREE_TOKEN_CONFIG, PAID_TOKEN_CONFIG } from "./downloadTokens";
 import { sendEmail } from "./email";
 import { siteConfig } from "./siteConfig";
+import { invoiceNumber } from "./invoice";
 
 interface OrderItem {
   productId: string;
@@ -86,6 +87,7 @@ export async function fulfillOrder(
   // Best-effort — the order is already fulfilled above regardless of
   // whether this succeeds, so an unconfigured/failed send never blocks
   // a customer's download.
+  const invoiceUrl = `${siteConfig.url}/invoice/${order.paystack_reference}`;
   sendEmail({
     to: order.customer_email,
     from: "Insights Orders <onboarding@resend.dev>",
@@ -97,6 +99,7 @@ export async function fulfillOrder(
         ${downloads.map((d) => `<li><a href="${siteConfig.url}${d.downloadUrl}">${d.name}</a></li>`).join("")}
       </ul>
       <p style="color:#888;font-size:12px">Keep this email — each link can be reused a few times before it expires.</p>
+      <p style="margin-top:16px"><a href="${invoiceUrl}">View / download your ${isFreeOrder ? "receipt" : "invoice"} (${invoiceNumber({ id: order.id, createdAt: order.created_at })})</a></p>
     `,
   }).catch(() => {});
 
