@@ -1,7 +1,8 @@
 "use client"
 import { useState, useEffect, useCallback, useRef } from 'react'
 import Topbar from '@/components/layout/Topbar'
-import { Plus, Edit2, Trash2, Save, X, AlertCircle, ExternalLink } from 'lucide-react'
+import ImagePicker from '@/components/cms/ImagePicker'
+import { Plus, Edit2, Trash2, Save, X, AlertCircle, ExternalLink, Image as ImageIcon } from 'lucide-react'
 import type { Fact } from '@/types'
 import type { FaqItem } from '@/lib/types'
 import { slugify } from '@/lib/types'
@@ -16,11 +17,13 @@ interface FormState {
   source_name: string
   source_url: string
   category: string
+  image_url: string
+  special_date: string
   status: 'draft' | 'published'
   faq: FaqItem[]
 }
 
-const EMPTY: FormState = { slug:'', headline:'', fact_text:'', context:'', source_name:'', source_url:'', category:'', status:'draft', faq:[] }
+const EMPTY: FormState = { slug:'', headline:'', fact_text:'', context:'', source_name:'', source_url:'', category:'', image_url:'', special_date:'', status:'draft', faq:[] }
 
 const CATEGORIES = ['History', 'Geography', 'Wildlife', 'Business & Economy', 'Infrastructure', 'Culture', 'Science']
 
@@ -49,6 +52,7 @@ export default function FactsPage() {
   const [form, setForm] = useState<FormState>(EMPTY)
   const [showForm, setShowForm] = useState(false)
   const [deleteId, setDeleteId] = useState<string|null>(null)
+  const [showImagePicker, setShowImagePicker] = useState(false)
   const faqAnswerRefs = useRef<Record<number, HTMLTextAreaElement | null>>({})
 
   const load = useCallback(async () => {
@@ -71,6 +75,7 @@ export default function FactsPage() {
     setForm({
       id: f.id, slug: f.slug, headline: f.headline, fact_text: f.fact_text, context: f.context,
       source_name: f.source_name || '', source_url: f.source_url || '', category: f.category || '',
+      image_url: f.image_url || '', special_date: f.special_date || '',
       status: f.status, faq: f.faq || [],
     })
     setShowForm(true); setError('')
@@ -99,6 +104,9 @@ export default function FactsPage() {
     if (!form.context.trim()) { setError('Context/explanation is required'); return }
     if (form.faq.some(f => !f.question.trim() || !f.answer.trim())) {
       setError('Every FAQ needs both a question and an answer.'); return
+    }
+    if (form.special_date.trim() && !/^\d{2}-\d{2}$/.test(form.special_date.trim())) {
+      setError('Special Date must be in MM-DD format, e.g. 07-18'); return
     }
     setSaving(true); setError('')
     try {
@@ -188,6 +196,27 @@ export default function FactsPage() {
                     <option value="">— None —</option>
                     {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
+                </div>
+              </div>
+
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+                <div>
+                  <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                    Background Image <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional — shows faintly behind the navy on the card & hero)</span>
+                  </label>
+                  <div style={{ display:'flex', gap:8 }}>
+                    <input className="cms-input" value={form.image_url} onChange={set('image_url')} placeholder="https://ik.imagekit.io/…" style={{ flex:1, fontSize:12 }}/>
+                    <button type="button" onClick={()=>setShowImagePicker(true)} className="btn btn-secondary btn-sm">
+                      <ImageIcon size={13}/>
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                    Special Date <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional — e.g. 05-01 for Workers' Day, overrides rotation on that date every year)</span>
+                  </label>
+                  <input className="cms-input" value={form.special_date} onChange={set('special_date')} placeholder="MM-DD, e.g. 07-18"
+                    pattern="\d{2}-\d{2}" maxLength={5}/>
                 </div>
               </div>
 
@@ -310,6 +339,13 @@ export default function FactsPage() {
           </div>
         )}
       </div>
+
+      <ImagePicker
+        open={showImagePicker}
+        onClose={()=>setShowImagePicker(false)}
+        onSelect={url=>setForm(f=>({...f, image_url:url}))}
+        currentUrl={form.image_url}
+      />
     </>
   )
 }

@@ -52,11 +52,18 @@ export default async function FactPage({
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(fact.faq)) }} />
       )}
 
-      {/* No per-fact photo library to draw on, so the hero is a brand
-          gradient rather than an image — keeps every fact page visually
-          distinct from regular articles at a glance. */}
-      <div className="bg-gradient-to-br from-navy to-navy-dark">
-        <div className="container-page py-14 sm:py-20">
+      {/* "Fact Hero" — a custom block, not the shared PageHero/breadcrumb
+          component used everywhere else on the site. Deliberately bigger
+          and richer than the universal breadcrumb band; keep it that way.
+          The navy gradient always carries it — an optional photo sits
+          behind it at low opacity so the brand color still dominates,
+          whether or not a fact has an image set. */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-navy to-navy-dark">
+        {fact.image_url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={fact.image_url} alt="" className="absolute inset-0 h-full w-full object-cover opacity-20" />
+        )}
+        <div className="container-page relative py-14 sm:py-20">
           <nav className="flex flex-wrap items-center gap-2 text-xs text-white/50">
             <Link href="/" className="hover:text-white">Home</Link>
             <span aria-hidden="true">/</span>

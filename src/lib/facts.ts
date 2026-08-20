@@ -25,16 +25,24 @@ export const getFactBySlug = cache(async (slug: string): Promise<Fact | null> =>
   return data as Fact;
 });
 
-/** Deterministic "fact of the day" — a day-of-year index into the
-    published set, so it rotates daily with zero scheduling/admin upkeep
-    and cycles back through the whole pool once a year. Same fact for
-    everyone on a given day, and stable across repeat requests/ISR
-    revalidation within that day. */
+const ROTATION_HOURS = 6; // 24 / 4 — a fresh fact roughly every 6 hours
+
+/** Picks the fact currently in rotation. A fact with `special_date` set
+    (e.g. "05-01" for Workers' Day) takes over on that exact calendar date
+    every year, overriding the normal rotation for the day. Otherwise it's
+    a deterministic index into the published set based on the current
+    6-hour slot, so it rotates through the whole pool with zero
+    scheduling/admin upkeep, and is stable for everyone within that same
+    slot (matches the homepage's hourly ISR revalidation). */
 export async function getTodaysFact(): Promise<Fact | null> {
   const facts = await getAllFacts();
   if (facts.length === 0) return null;
-  const dayOfYear = Math.floor(
-    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000
-  );
-  return facts[dayOfYear % facts.length];
+
+  const now = new Date();
+  const monthDay = `${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const special = facts.find((f) => f.special_date === monthDay);
+  if (special) return special;
+
+  const slot = Math.floor(Date.now() / (ROTATION_HOURS * 3600000));
+  return facts[slot % facts.length];
 }

@@ -93,6 +93,11 @@ export interface Fact {
   source_name?: string
   source_url?: string
   category?: string
+  image_url?: string
+  /** "MM-DD" — when set, this fact takes over the daily rotation on that
+      exact calendar date every year (e.g. "05-01" for Workers' Day),
+      overriding the normal rotation for that day only. */
+  special_date?: string
   faq: { question: string; answer: string }[]
   status: 'draft' | 'published'
   created_at: string

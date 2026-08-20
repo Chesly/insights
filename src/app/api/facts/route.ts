@@ -36,6 +36,8 @@ export async function POST(req: NextRequest) {
       source_name: body.source_name || null,
       source_url: body.source_url || null,
       category: body.category || null,
+      image_url: body.image_url || null,
+      special_date: body.special_date || null,
       faq: body.faq || [],
       status: body.status || 'draft',
     })
