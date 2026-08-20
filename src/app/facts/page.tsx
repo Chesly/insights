@@ -4,7 +4,12 @@ import { getAllFacts } from "@/lib/facts";
 import { siteConfig } from "@/lib/siteConfig";
 import { getAllSiteSettings } from "@/lib/settings";
 
-export const revalidate = 3600;
+// Random selection on every request (not cached like most pages) — the
+// pool is meant to grow toward 250+, and showing the same fixed order
+// every visit would make repeat visitors see nothing new. getAllFacts()
+// itself is still cached, so this doesn't add extra database load, only
+// a fresh shuffle per request.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Did You Know? South African Facts",
@@ -13,16 +18,34 @@ export const metadata: Metadata = {
   alternates: { canonical: `${siteConfig.url}/facts` },
 };
 
+const FACTS_SHOWN = 23;
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 export default async function FactsIndexPage() {
-  const [facts, settings] = await Promise.all([getAllFacts(), getAllSiteSettings()]);
+  const [allFacts, settings] = await Promise.all([getAllFacts(), getAllSiteSettings()]);
+  const facts = shuffle(allFacts).slice(0, FACTS_SHOWN);
   const heroImage = settings.facts_hero_image;
 
   return (
     <div>
-      <div className="relative overflow-hidden bg-gradient-to-br from-navy to-navy-dark">
+      {/* Full-strength photo with a navy tint on top (not faded into the
+          background) — same treatment as the fact detail page hero,
+          deliberately kept identical between the two. */}
+      <div className="relative overflow-hidden bg-navy">
         {heroImage && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={heroImage} alt="" className="absolute inset-0 h-full w-full object-cover opacity-50" />
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={heroImage} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-navy/40" />
+          </>
         )}
         <div className="container-page relative py-14 sm:py-20">
           <h1 className="text-2xl font-bold text-white sm:text-3xl">Did You Know?</h1>

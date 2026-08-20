@@ -62,7 +62,7 @@ export default function SearchBar({ variant = "header" }: { variant?: "header" |
   const isHeader = variant === "header";
 
   return (
-    <div ref={containerRef} className={`relative ${isHeader ? "w-[260px]" : "w-full max-w-sm"}`}>
+    <div ref={containerRef} className={`relative ${isHeader ? "w-[130px]" : "w-full max-w-sm"}`}>
       <form role="search" onSubmit={handleSubmit}>
         <label htmlFor={`${listboxId}-input`} className="sr-only">
           Search articles
@@ -87,7 +87,7 @@ export default function SearchBar({ variant = "header" }: { variant?: "header" |
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => results.length > 0 && setOpen(true)}
-            placeholder="Search articles..."
+            placeholder={isHeader ? "Search..." : "Search articles..."}
             role="combobox"
             aria-expanded={open}
             aria-controls={listboxId}
@@ -95,7 +95,7 @@ export default function SearchBar({ variant = "header" }: { variant?: "header" |
             autoComplete="off"
             className={
               isHeader
-                ? "w-[260px] border border-white/15 bg-white/5 py-2 pl-9 pr-3 text-sm text-white placeholder-white/40 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                ? "w-[130px] border border-white/15 bg-white/5 py-2 pl-9 pr-2 text-sm text-white placeholder-white/40 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
                 : "w-full border border-gold/30 py-3 pl-9 pr-3 text-navy focus:outline-none focus:ring-2 focus:ring-gold dark:bg-navy-dark/40 dark:text-white"
             }
           />
@@ -106,7 +106,9 @@ export default function SearchBar({ variant = "header" }: { variant?: "header" |
         <ul
           id={listboxId}
           role="listbox"
-          className="absolute z-50 mt-2 w-full border border-gold/20 bg-white shadow-lg dark:bg-navy"
+          className={`absolute z-50 mt-2 border border-gold/20 bg-white shadow-lg dark:bg-navy ${
+            isHeader ? "right-0 w-[280px]" : "w-full"
+          }`}
         >
           {loading && (
             <li className="px-4 py-3 text-sm text-navy/50 dark:text-white/50">Searching…</li>

@@ -5,6 +5,7 @@ import { getFactBySlug, getAllFacts } from "@/lib/facts";
 import { siteConfig } from "@/lib/siteConfig";
 import { breadcrumbSchema, faqSchema } from "@/lib/schema";
 import FaqAnswer from "@/components/FaqAnswer";
+import { getAllSiteSettings } from "@/lib/settings";
 
 export const revalidate = 3600;
 
@@ -36,8 +37,9 @@ export default async function FactPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const fact = await getFactBySlug(slug);
+  const [fact, settings] = await Promise.all([getFactBySlug(slug), getAllSiteSettings()]);
   if (!fact) notFound();
+  const heroImage = settings.facts_hero_image;
 
   const crumbs = breadcrumbSchema([
     { name: "Home", url: siteConfig.url },
@@ -55,13 +57,16 @@ export default async function FactPage({
       {/* "Fact Hero" — a custom block, not the shared PageHero/breadcrumb
           component used everywhere else on the site. Deliberately bigger
           and richer than the universal breadcrumb band; keep it that way.
-          The navy gradient always carries it — an optional photo sits
-          behind it at low opacity so the brand color still dominates,
-          whether or not a fact has an image set. */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-navy to-navy-dark">
-        {fact.image_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={fact.image_url} alt="" className="absolute inset-0 h-full w-full object-cover opacity-20" />
+          Same site-wide image and treatment as the /facts index hero,
+          deliberately kept identical between the two — full-strength
+          photo with a navy tint on top, not faded into the background. */}
+      <div className="relative overflow-hidden bg-navy">
+        {heroImage && (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={heroImage} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-navy/40" />
+          </>
         )}
         <div className="container-page relative py-14 sm:py-20">
           <nav className="flex flex-wrap items-center gap-2 text-xs text-white/50">

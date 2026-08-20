@@ -115,20 +115,19 @@ export default async function HomePage() {
             )}
           </section>
 
-          {/* Did You Know — its own full-width banner, not squeezed into
-              the post grid below. Tried it as one of the 4 "Latest" grid
-              cells first; on mobile (2-column grid) that fought the other
-              3 posts for space and got cramped. Full-width, same spot on
-              mobile and desktop, is simpler to reason about going
-              forward than swapping positions per breakpoint. */}
-          {todaysFact && <DidYouKnowCard fact={todaysFact} backgroundImage={settings.facts_widget_bg_image} />}
-
           {/* No "Latest" heading — flows straight from hero into content.
               Kept in the same container-page block as the hero/carousel
               above (rather than a second wrapper with its own top padding)
               so the grid below sits close enough to peek above the fold —
               a visual cue that there's more to scroll to. */}
           <ArticleRow posts={latest} />
+
+          {/* Did You Know — its own full-width banner, not squeezed into
+              a post grid cell (broke on mobile — see DidYouKnowCard).
+              Sits between "Latest" and "Popular" per explicit placement
+              request, not above the grid. */}
+          {todaysFact && <DidYouKnowCard fact={todaysFact} backgroundImage={settings.facts_widget_bg_image} />}
+
           <ArticleRow heading="Popular" posts={popular} />
         </div>
       </div>
