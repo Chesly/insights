@@ -32,6 +32,7 @@ export async function GET(req: Request) {
     revalidatePath('/insights');
     revalidatePath('/coffee');
     revalidatePath('/tools');
+    revalidatePath('/sitemap.xml');
     for (const p of posts || []) revalidatePath(`/${p.section === 'coffee' ? 'coffee' : 'insights'}/${p.slug}`);
     for (const d of downloads || []) if (d.slug) revalidatePath(`/tools/${d.slug}`);
   }
