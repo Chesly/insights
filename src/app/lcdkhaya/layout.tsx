@@ -40,6 +40,13 @@ function drivingSchoolSchema() {
     foundingDate: String(lcdKhayaConfig.foundedYear),
     areaServed: lcdKhayaConfig.branches.map((b) => b.name),
     sameAs: lcdKhayaConfig.social.map((s) => s.href),
+    // Office hours — actual lesson availability is broader (see
+    // lessonScheduleNote), but openingHoursSpecification is meant to
+    // describe when the business can be reached, which is the office.
+    openingHoursSpecification: [
+      { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "08:00", closes: "17:00" },
+      { "@type": "OpeningHoursSpecification", dayOfWeek: "Saturday", opens: "08:00", closes: "14:00" }
+    ],
     department: lcdKhayaConfig.branches.map((b) => ({
       "@type": "DrivingSchool",
       name: `${lcdKhayaConfig.name} — ${b.name}`,

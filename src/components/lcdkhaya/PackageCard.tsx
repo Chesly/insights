@@ -6,7 +6,7 @@ export default function PackageCard({ pkg }: { pkg: DrivingPackage }) {
   return (
     <div className="group flex flex-col border border-[#B8860B]/20 bg-white p-6 transition-shadow hover:shadow-lg hover:shadow-[#B8860B]/10">
       <span className="w-fit bg-[#8B6E46]/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-[#8B6E46]">
-        {pkg.code}
+        {pkg.code}{pkg.licenceCode ? ` · Licence Code ${pkg.licenceCode}` : ""}
       </span>
       <h3 className="mt-3 text-lg font-bold text-[#1A1A1A]">{pkg.name}</h3>
       <p className="mt-2 text-sm text-[#1A1A1A]/70">{pkg.description}</p>

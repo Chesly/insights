@@ -7,6 +7,7 @@ import PlaceholderImage from "@/components/lcdkhaya/PlaceholderImage";
 import PackageCard from "@/components/lcdkhaya/PackageCard";
 import Testimonials from "@/components/lcdkhaya/Testimonials";
 import NewsletterSignup from "@/components/lcdkhaya/NewsletterSignup";
+import CallbackForm from "@/components/lcdkhaya/CallbackForm";
 
 export const metadata: Metadata = { title: { absolute: lcdKhayaConfig.seo.defaultTitle } };
 export const revalidate = 3600;
@@ -109,6 +110,13 @@ export default async function LcdKhayaHomePage() {
         <h2 className="text-2xl font-bold text-[#1A1A1A]">What Learners Say</h2>
         <div className="mt-8">
           <Testimonials />
+        </div>
+      </section>
+
+      {/* Request a callback */}
+      <section className="container-page py-14">
+        <div className="mx-auto max-w-xl">
+          <CallbackForm />
         </div>
       </section>
 
