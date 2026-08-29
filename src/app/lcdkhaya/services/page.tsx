@@ -19,9 +19,7 @@ export default function ServicesPage() {
             <PackageCard key={pkg.id} pkg={pkg} />
           ))}
         </div>
-        <p className="mt-8 text-center text-sm text-[#1A1A1A]/50">
-          Pricing is being finalised — book a package below and we'll confirm your quote before any payment is taken.
-        </p>
+        <p className="mt-8 text-center text-sm text-[#1A1A1A]/50">{lcdKhayaConfig.depositNote}</p>
       </div>
     </div>
   );

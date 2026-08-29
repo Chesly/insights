@@ -23,6 +23,10 @@ export const metadata: Metadata = {
   }
 };
 
+// Three branches, one business — each branch is modeled as a `department`
+// (a LocalBusiness in its own right, per schema.org's multi-location
+// pattern) rather than jamming multiple addresses onto a single `address`
+// field, which only accepts one PostalAddress.
 function drivingSchoolSchema() {
   return {
     "@context": "https://schema.org",
@@ -33,13 +37,22 @@ function drivingSchoolSchema() {
     url: lcdKhayaConfig.url,
     telephone: lcdKhayaConfig.contact.phone,
     email: lcdKhayaConfig.contact.email,
-    areaServed: lcdKhayaConfig.contact.serviceAreas,
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Benoni",
-      addressRegion: "Gauteng",
-      addressCountry: "ZA"
-    }
+    foundingDate: String(lcdKhayaConfig.foundedYear),
+    areaServed: lcdKhayaConfig.branches.map((b) => b.name),
+    sameAs: lcdKhayaConfig.social.map((s) => s.href),
+    department: lcdKhayaConfig.branches.map((b) => ({
+      "@type": "DrivingSchool",
+      name: `${lcdKhayaConfig.name} — ${b.name}`,
+      telephone: b.phone,
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: b.addressLines.join(", "),
+        addressLocality: b.name,
+        postalCode: b.postalCode,
+        addressRegion: "Gauteng",
+        addressCountry: "ZA"
+      }
+    }))
   };
 }
 

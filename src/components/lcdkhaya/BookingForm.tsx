@@ -75,14 +75,14 @@ export default function BookingForm() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="preferredArea" className="mb-1 block text-sm font-semibold text-[#1A1A1A]">Preferred Area</label>
+          <label htmlFor="preferredArea" className="mb-1 block text-sm font-semibold text-[#1A1A1A]">Preferred Branch</label>
           <select
             id="preferredArea"
             name="preferredArea"
             className="w-full border border-[#B8860B]/30 bg-white px-4 py-3 text-sm focus:border-[#B8860B] focus:outline-none"
           >
-            {lcdKhayaConfig.contact.serviceAreas.map((a) => (
-              <option key={a} value={a}>{a}</option>
+            {lcdKhayaConfig.branches.map((b) => (
+              <option key={b.name} value={b.name}>{b.name}</option>
             ))}
           </select>
         </div>

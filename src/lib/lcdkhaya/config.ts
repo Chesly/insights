@@ -7,8 +7,9 @@
  * checkout — under its own /lcdkhaya branding). Mirrors the pattern of
  * src/lib/siteConfig.ts, scoped to this one client.
  *
- * Everything marked TBD/placeholder below is intentional: real pricing,
- * contact details, photography and social links haven't been supplied yet.
+ * Pricing, branches, phone numbers and social handles below come from
+ * LCD Khaya's real promotional flyer. Only the logo file, real photos and
+ * testimonials remain placeholders — see LCDKHAYA-SETUP.md.
  * Edit THIS FILE ONLY to update branding, copy, packages or contact info.
  * ============================================================================
  */
@@ -19,10 +20,17 @@ export interface DrivingPackage {
   code: string;
   description: string;
   features: string[];
-  /** null until Chesly supplies real pricing — UI must render a
+  /** null while a package's price is still unconfirmed — UI must render a
       "contact us" fallback rather than ever showing a fabricated price. */
   price: number | null;
   priceUnit?: string;
+}
+
+export interface Branch {
+  name: string;
+  addressLines: string[];
+  postalCode: string;
+  phone: string;
 }
 
 export const lcdKhayaConfig = {
@@ -30,7 +38,8 @@ export const lcdKhayaConfig = {
   shortName: "LCD Khaya",
   tagline: "Drive With Confidence. Pass With Pride.",
   description:
-    "Professional, patient K53 driving lessons and licence training based in Daveyton and Benoni, serving Gauteng's East Rand.",
+    "K53 driving lessons and licence training since 2014, based in Daveyton, Mayfield and Benoni, serving Gauteng's East Rand.",
+  foundedYear: 2014,
   url: "https://lcdkhaya.co.za",
   locale: "en_ZA",
   language: "en-ZA",
@@ -50,18 +59,39 @@ export const lcdKhayaConfig = {
   },
 
   contact: {
-    // TBD — Chesly to confirm real number/email before launch.
-    phone: "+27 00 000 0000",
-    whatsapp: "27000000000",
+    // Main number from the flyer — doubles as the WhatsApp number.
+    phone: "073 536 0733",
+    whatsapp: "27735360733",
     email: "info@lcdkhaya.co.za",
     hours: "Mon–Sat, 07:00–18:00",
-    primaryArea: "Daveyton & Benoni, Gauteng",
-    serviceAreas: ["Daveyton", "Benoni", "Etwatwa", "Actonville", "Northmead", "Wattville"]
+    primaryArea: "Daveyton, Mayfield & Benoni, Gauteng"
   },
 
-  // Left empty on purpose — do not invent handles. Fill in once Chesly
-  // has real social profiles for the school.
-  social: [] as { label: string; href: string }[],
+  branches: [
+    {
+      name: "Daveyton",
+      addressLines: ["5393 Dungeni & Bomvana Str", "Daveyton"],
+      postalCode: "1520",
+      phone: "081 045 5081"
+    },
+    {
+      name: "Mayfield",
+      addressLines: ["9498 Brazil & Brown Str", "Opp Mayfield Park"],
+      postalCode: "1520",
+      phone: "078 342 8887"
+    },
+    {
+      name: "Chief A Luthuli Park",
+      addressLines: ["2242 Harry Gwala Str", "Opp Clinic", "Benoni"],
+      postalCode: "1513",
+      phone: "068 533 2777"
+    }
+  ] as Branch[],
+
+  social: [
+    { label: "Facebook", handle: "@lcd.khayadriving", href: "https://www.facebook.com/lcd.khayadriving" },
+    { label: "Instagram", handle: "@lcd.khayadrive", href: "https://www.instagram.com/lcd.khayadrive" }
+  ],
 
   nav: [
     { label: "Home", href: "/lcdkhaya" },
@@ -75,7 +105,7 @@ export const lcdKhayaConfig = {
 
   footer: {
     about:
-      "LCD Khaya Driving School offers professional K53 driving lessons and licence training in Daveyton, Benoni and the surrounding East Rand — patient instructors, flexible scheduling, and a focus on getting you road-ready with confidence.",
+      "LCD Khaya Driving School has offered professional K53 driving lessons and licence training since 2014, with branches in Daveyton, Mayfield and Benoni — patient instructors, flexible scheduling, and a focus on getting you road-ready with confidence.",
     legal: [
       { label: "Privacy Policy", href: "/lcdkhaya/privacy" },
       { label: "Terms of Use", href: "/lcdkhaya/terms" },
@@ -85,7 +115,7 @@ export const lcdKhayaConfig = {
 
   newsletter: {
     title: "Get Road-Ready Tips",
-    description: "K53 tips, booking reminders and driving-school news for Daveyton & Benoni learners.",
+    description: "K53 tips, booking reminders and driving-school news for Daveyton, Mayfield & Benoni learners.",
     successMessage: "You're subscribed! Watch your inbox for tips and updates.",
     source: "lcdkhaya"
   },
@@ -94,13 +124,17 @@ export const lcdKhayaConfig = {
     defaultTitle: "LCD Khaya Driving School | K53 Driving Lessons in Daveyton & Benoni",
     titleTemplate: "%s | LCD Khaya Driving School",
     defaultDescription:
-      "K53 driving lessons and licence training in Daveyton, Benoni and the East Rand, Gauteng. Book your driving lesson online with LCD Khaya Driving School.",
+      "K53 driving lessons and licence training since 2014 in Daveyton, Mayfield, Benoni and the East Rand, Gauteng. Book your driving lesson online with LCD Khaya Driving School.",
     defaultKeywords: [
       "driving school Daveyton",
       "driving school Benoni",
+      "driving school Mayfield",
       "K53 lessons Gauteng",
       "learners licence Benoni",
       "code 8 driving lessons",
+      "code 10 driving lessons",
+      "code 14 driving lessons",
+      "PrDP East Rand",
       "driving instructor East Rand"
     ]
   },
@@ -111,38 +145,74 @@ export const lcdKhayaConfig = {
   blogTag: "lcdkhaya",
   factsCategory: "Driving",
 
+  // Real pricing from LCD Khaya's flyer. All packages include lessons and
+  // tests; a 50% deposit is accepted per segment or on the full package.
+  depositNote: "All packages include lessons and tests. Deposit accepted at 50% per segment or full package.",
+
   packages: [
     {
-      id: "learners",
-      name: "Learner's Licence (Code 8)",
-      code: "Code 8",
-      description: "K53 learner's licence theory preparation, so you walk into your test ready.",
+      id: "learners-all-codes",
+      name: "Learner's Licence — All Codes",
+      code: "Learner's",
+      description: "K53 learner's licence theory preparation for any code, so you walk into your test ready.",
       features: ["K53 road signs & rules coaching", "Mock theory tests", "Test booking assistance"],
-      price: null
+      price: 1600
     },
     {
-      id: "code8",
-      name: "Driving Lessons — Light Motor Vehicle",
+      id: "code8-bundle",
+      name: "Code 8 — Learner's + Licence",
       code: "Code 8",
-      description: "Practical driving lessons for cars, from your first lesson through to test-ready.",
-      features: ["Beginner to advanced lessons", "K53 yard & road test routes", "Flexible lesson packages"],
-      price: null
+      description: "Full package from learner's licence through to your Code 8 driving licence.",
+      features: ["Learner's licence prep included", "Practical lessons", "Yard & road test included"],
+      price: 6500
     },
     {
-      id: "code10",
-      name: "Driving Lessons — Code 10",
+      id: "code8-licence",
+      name: "Code 8 — Driving Licence Only",
+      code: "Code 8",
+      description: "Already have your learner's? Practical lessons and test straight through to your Code 8.",
+      features: ["Practical lessons", "K53 yard & road test routes", "Test included"],
+      price: 4900
+    },
+    {
+      id: "code10-bundle",
+      name: "Code 10 — Learner's + Licence",
       code: "Code 10",
-      description: "Light rigid / heavy vehicle lessons for drivers moving up from a Code 8.",
-      features: ["Vehicle handling & yard test prep", "Road test preparation"],
-      price: null
+      description: "Full package from learner's licence through to your Code 10 (light rigid) licence.",
+      features: ["Learner's licence prep included", "Vehicle handling & yard test prep", "Road test included"],
+      price: 6700
     },
     {
-      id: "code14",
-      name: "Driving Lessons — Code 14",
+      id: "code10-licence",
+      name: "Code 10 — Driving Licence Only",
+      code: "Code 10",
+      description: "Already have your learner's? Lessons and test straight through to your Code 10.",
+      features: ["Vehicle handling & yard test prep", "Road test included"],
+      price: 5100
+    },
+    {
+      id: "code14-bundle",
+      name: "Code 14 — Learner's + Licence",
       code: "Code 14",
-      description: "Heavy and articulated vehicle training for professional driving careers.",
-      features: ["Articulated vehicle handling", "Professional driving permit (PrDP) guidance"],
-      price: null
+      description: "Full package from learner's licence through to your Code 14 (articulated) licence.",
+      features: ["Learner's licence prep included", "Articulated vehicle handling", "Road test included"],
+      price: 10300
+    },
+    {
+      id: "code14-licence",
+      name: "Code 14 — Driving Licence Only",
+      code: "Code 14",
+      description: "Already have your learner's? Lessons and test straight through to your Code 14.",
+      features: ["Articulated vehicle handling", "Road test included"],
+      price: 8700
+    },
+    {
+      id: "prdp",
+      name: "PrDP",
+      code: "PrDP",
+      description: "Professional Driving Permit application and test preparation.",
+      features: ["PrDP requirements guidance", "Test booking assistance"],
+      price: 1500
     },
     {
       id: "refresher",
@@ -160,10 +230,10 @@ export const lcdKhayaConfig = {
   testimonials: [] as { name: string; area: string; quote: string }[],
 
   whyChooseUs: [
-    { title: "Patient, Professional Instructors", text: "Learn at a pace that works for you, with instructors focused on building real confidence behind the wheel." },
-    { title: "K53-Focused Training", text: "Lessons and test prep built around exactly what South Africa's K53 test expects." },
-    { title: "Local to Daveyton & Benoni", text: "Test routes and yard practice based on your local test centres and roads." },
-    { title: "Flexible Scheduling", text: "Lessons that fit around work, school and family commitments." }
+    { title: "Serving the East Rand Since 2014", text: "Over a decade of exciting, excellent service experience, preparing learners with pride." },
+    { title: "K53-Focused Training", text: "Lessons and test prep built around exactly what South Africa's K53 test expects, for every code." },
+    { title: "Three Local Branches", text: "Convenient branches in Daveyton, Mayfield and Benoni's Chief A Luthuli Park." },
+    { title: "Flexible Packages", text: "Deposits accepted at 50% per segment or on the full package, with refresher lessons available too." }
   ]
 };
 

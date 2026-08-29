@@ -32,28 +32,36 @@ for all branding/copy in one place.
   photos, so the site looks like one deliberate design rather than a mismatched
   placeholder grab-bag until real photography is ready.
 
+## Resolved from your flyer
+
+Pricing, branch addresses/phones, the main contact number/email, founding year
+(2014), and Facebook/Instagram handles are now wired in from the flyer you sent
+— see `src/lib/lcdkhaya/config.ts` (`packages`, `branches`, `contact`, `social`,
+`foundedYear`). Nine real packages are live: Learner's Licence (All Codes),
+Code 8/10/14 in both "Learner's + Licence" and "Driving Licence Only" variants,
+PrDP, and Refresher (still untitled on the flyer, so it stays "contact us for
+pricing"). The three branches — Daveyton, Mayfield, and Chief A Luthuli Park
+(Benoni) — now appear in the footer, About page, booking form, and JSON-LD.
+
 ## What you still need to supply
 
-1. **Pricing** for each package in `src/lib/lcdkhaya/config.ts` (`packages[].price`,
-   currently `null` → the site shows "Contact us for pricing" and routes bookings
-   as leads to quote manually instead of charging through Paystack). Once you send
-   real prices, I'll wire them in.
-2. **Real contact details** — phone, WhatsApp number, and email are placeholders
-   in `config.ts` (`contact.phone`, `contact.whatsapp`, `contact.email`).
-3. **Logo** — once uploaded to ImageKit, swap `branding.logo` in `config.ts` for
+1. **Logo** — once uploaded to ImageKit, swap `branding.logo` in `config.ts` for
    the real URL (same pattern as `siteConfig.branding.logoHeader` for Insights).
-4. **Real photos** — see prompts below. Once generated, swap them in for the
+2. **Real photos** — see prompts below. Once generated, swap them in for the
    `PlaceholderImage` components (they're all in `src/app/lcdkhaya/**` and
    `src/components/lcdkhaya/`).
-5. **Domain DNS** — point `lcdkhaya.co.za` at this Vercel project once registered,
+3. **Domain DNS** — point `lcdkhaya.co.za` at this Vercel project once registered,
    and add it under the project's domain settings.
-6. **Testimonials** — `config.ts`'s `testimonials` array is intentionally empty;
+4. **Testimonials** — `config.ts`'s `testimonials` array is intentionally empty;
    only add real, permissioned reviews there (the site shows a "coming soon"
    state until then rather than fabricated quotes).
-7. **Contact form destination** — LCD Khaya's contact form currently notifies
+5. **Contact form destination** — LCD Khaya's contact form currently notifies
    whatever email is set in Insights' Admin → Settings → `contact_email` (shared
    with the main Insights site). Let me know if you want a dedicated inbox for
    LCD Khaya enquiries instead.
+6. **WhatsApp number** — assumed to be the same as the main call number
+   (073 536 0733 → +27 73 536 0733) since the flyer doesn't list a separate one.
+   Confirm or correct in `contact.whatsapp`.
 
 ## AI image-generation prompts
 

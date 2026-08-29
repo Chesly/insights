@@ -21,7 +21,7 @@ export async function GET() {
     lcdKhayaConfig.description,
     "",
     `Site: ${lcdKhayaConfig.url}`,
-    `Areas served: ${lcdKhayaConfig.contact.serviceAreas.join(", ")}`,
+    `Branches: ${lcdKhayaConfig.branches.map((b) => `${b.name} (${b.addressLines.join(", ")}, ${b.postalCode})`).join("; ")}`,
     `Contact: ${lcdKhayaConfig.contact.email} / ${lcdKhayaConfig.contact.phone}`,
     "",
     "## Services & Packages",

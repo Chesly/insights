@@ -30,7 +30,7 @@ export default function ContactPage() {
               </a>
             </li>
             <li><strong className="text-[#1A1A1A]">Hours:</strong> {lcdKhayaConfig.contact.hours}</li>
-            <li><strong className="text-[#1A1A1A]">Areas Served:</strong> {lcdKhayaConfig.contact.serviceAreas.join(", ")}</li>
+            <li><strong className="text-[#1A1A1A]">Branches:</strong> {lcdKhayaConfig.branches.map((b) => b.name).join(", ")}</li>
           </ul>
         </div>
         <ContactForm />

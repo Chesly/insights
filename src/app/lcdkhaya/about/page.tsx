@@ -27,7 +27,7 @@ export default function AboutPage() {
             a Code 8 driver's licence, or moving up to a Code 10 or Code 14.
           </p>
           <p className="mt-4 text-[#1A1A1A]/70">
-            We know the local test routes and yards in {lcdKhayaConfig.contact.serviceAreas.join(", ")} inside out —
+            We know the local test routes and yards in {lcdKhayaConfig.branches.map((b) => b.name).join(", ")} inside out —
             so your lessons prepare you for exactly what you'll face on test day.
           </p>
         </div>
@@ -36,12 +36,19 @@ export default function AboutPage() {
 
       <div className="bg-white py-14">
         <div className="container-page">
-          <h2 className="text-2xl font-bold text-[#1A1A1A]">Areas We Serve</h2>
-          <div className="mt-6 flex flex-wrap gap-3">
-            {lcdKhayaConfig.contact.serviceAreas.map((area) => (
-              <span key={area} className="border border-[#B8860B]/25 px-4 py-2 text-sm font-medium text-[#1A1A1A]/80">
-                {area}
-              </span>
+          <h2 className="text-2xl font-bold text-[#1A1A1A]">Our Branches</h2>
+          <div className="mt-6 grid gap-6 sm:grid-cols-3">
+            {lcdKhayaConfig.branches.map((branch) => (
+              <div key={branch.name} className="border border-[#B8860B]/25 p-5">
+                <h3 className="font-semibold text-[#1A1A1A]">{branch.name}</h3>
+                {branch.addressLines.map((line) => (
+                  <p key={line} className="mt-1 text-sm text-[#1A1A1A]/60">{line}</p>
+                ))}
+                <p className="text-sm text-[#1A1A1A]/60">{branch.postalCode}</p>
+                <a href={`tel:${branch.phone.replace(/\s/g, "")}`} className="mt-2 block text-sm font-medium text-[#B8860B] hover:underline">
+                  {branch.phone}
+                </a>
+              </div>
             ))}
           </div>
         </div>
