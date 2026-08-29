@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { lcdKhayaConfig } from "@/lib/lcdkhaya/config";
 import { getPostsByTag } from "@/lib/posts";
 import { getFactsByCategory } from "@/lib/facts";
+import { getApprovedTestimonials } from "@/lib/testimonials";
 
 // Served at /lcdkhaya/llms.txt (and lcdkhaya.co.za/llms.txt once DNS is
 // pointed) — an auto-generated summary of LCD Khaya for AI systems
@@ -10,9 +11,10 @@ import { getFactsByCategory } from "@/lib/facts";
 export const revalidate = 3600;
 
 export async function GET() {
-  const [posts, facts] = await Promise.all([
+  const [posts, facts, testimonials] = await Promise.all([
     getPostsByTag(lcdKhayaConfig.blogTag),
-    getFactsByCategory(lcdKhayaConfig.factsCategory)
+    getFactsByCategory(lcdKhayaConfig.factsCategory),
+    getApprovedTestimonials("lcdkhaya")
   ]);
 
   const lines = [
@@ -33,6 +35,7 @@ export async function GET() {
     `- Book a Lesson: ${lcdKhayaConfig.url}/booking`,
     `- Did You Know?: ${lcdKhayaConfig.url}/facts`,
     `- Blog: ${lcdKhayaConfig.url}/blog`,
+    `- Share Your Experience (submit a testimonial): ${lcdKhayaConfig.url}/testimonials`,
     "",
     ...(posts.length
       ? ["## Recent Articles", ...posts.slice(0, 20).map((p) => `- [${p.title}](${lcdKhayaConfig.url}/blog/${p.slug}): ${p.description}`)]
@@ -40,6 +43,10 @@ export async function GET() {
     "",
     ...(facts.length
       ? ["## Did You Know Facts", ...facts.slice(0, 20).map((f) => `- [${f.headline}](${lcdKhayaConfig.url}/facts/${f.slug}): ${f.fact_text}`)]
+      : []),
+    "",
+    ...(testimonials.length
+      ? ["## Learner Testimonials", ...testimonials.slice(0, 20).map((t) => `- "${t.content}" — ${t.authorName}`)]
       : [])
   ];
 

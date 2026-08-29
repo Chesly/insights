@@ -266,11 +266,6 @@ export const lcdKhayaConfig = {
     }
   ] as DrivingPackage[],
 
-  // Left empty on purpose — real testimonials only, never fabricated ones.
-  // The Testimonials component shows a "coming soon" state until this has
-  // entries. Add real, permissioned reviews here once available.
-  testimonials: [] as { name: string; area: string; quote: string }[],
-
   whyChooseUs: [
     { title: "Beyond a Decade of Experience", text: "Serving Ekurhuleni since 2014 with a spirit of excellence — it worked for many, it can work for you." },
     { title: "Every Licence Category", text: "Motorcycle, light vehicle, heavy vehicle, articulated vehicle and PrDP — all under one roof." },

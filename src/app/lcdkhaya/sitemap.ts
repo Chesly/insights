@@ -23,6 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${lcdKhayaConfig.url}/facts`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${lcdKhayaConfig.url}/contact`, changeFrequency: "yearly", priority: 0.4 },
     { url: `${lcdKhayaConfig.url}/booking`, changeFrequency: "yearly", priority: 0.5 },
+    { url: `${lcdKhayaConfig.url}/testimonials`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${lcdKhayaConfig.url}/terms`, changeFrequency: "yearly", priority: 0.2 },
     { url: `${lcdKhayaConfig.url}/privacy`, changeFrequency: "yearly", priority: 0.2 }
   ];

@@ -135,6 +135,19 @@ export interface Download {
   updated_at: string
 }
 
+export interface Testimonial {
+  id: string
+  /** Which client site this testimonial belongs to — see
+      supabase-migration-4-testimonials.sql. */
+  site: string
+  author_name: string
+  author_email: string
+  rating: number | null
+  content: string
+  status: 'pending' | 'approved' | 'rejected'
+  created_at: string
+}
+
 export interface ContactMessage {
   id: string
   name: string

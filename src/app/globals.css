@@ -21,3 +21,10 @@ body {
 .reading-progress {
   @apply fixed left-0 top-0 z-50 h-1 bg-gold transition-all duration-150;
 }
+
+/* LCD Khaya testimonials marquee — the rendered list is duplicated so
+   this can loop seamlessly from -50% back to 0 with no visible jump. */
+@keyframes lcd-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}

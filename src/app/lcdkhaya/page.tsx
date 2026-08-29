@@ -5,7 +5,7 @@ import { getTodaysFact } from "@/lib/facts";
 import { getPostsByTag } from "@/lib/posts";
 import PlaceholderImage from "@/components/lcdkhaya/PlaceholderImage";
 import PackageCard from "@/components/lcdkhaya/PackageCard";
-import Testimonials from "@/components/lcdkhaya/Testimonials";
+import TestimonialsScroller from "@/components/lcdkhaya/TestimonialsScroller";
 import NewsletterSignup from "@/components/lcdkhaya/NewsletterSignup";
 import CallbackForm from "@/components/lcdkhaya/CallbackForm";
 
@@ -106,10 +106,10 @@ export default async function LcdKhayaHomePage() {
       )}
 
       {/* Testimonials */}
-      <section className="container-page py-14">
-        <h2 className="text-2xl font-bold text-[#1A1A1A]">What Learners Say</h2>
+      <section className="py-14">
+        <h2 className="container-page text-2xl font-bold text-[#1A1A1A]">What Learners Say</h2>
         <div className="mt-8">
-          <Testimonials />
+          <TestimonialsScroller />
         </div>
       </section>
 
