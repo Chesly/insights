@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Topbar from '@/components/layout/Topbar'
 import Link from 'next/link'
-import { Edit2, Trash2, Eye, Clock, CheckCircle, Archive, Calendar } from 'lucide-react'
+import { Edit2, Trash2, ExternalLink, Clock, CheckCircle, Archive, Calendar } from 'lucide-react'
 import { formatDate, STATUS_COLORS, STATUS_LABELS } from '@/lib/utils'
 
 interface SearchParams { status?: string; page?: string; q?: string }
@@ -18,7 +18,7 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
 
   let query = supabase
     .from('posts')
-    .select('id,title,slug,status,featured,trending,popular,created_at,published_at,read_time,view_count,category:categories!category_id(name,color),author:profiles!author_id(full_name)', { count:'exact' })
+    .select('id,title,slug,status,section,featured,trending,popular,created_at,published_at,read_time,view_count,category:categories!category_id(name,color),author:profiles!author_id(full_name)', { count:'exact' })
     .order('created_at', { ascending:false })
     .range(from, to)
 
@@ -121,7 +121,18 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
                     <td>
                       <div style={{ display:'flex', gap:4 }}>
                         <Link href={`/admin/posts/${post.id}`} className="btn btn-ghost btn-sm" style={{ padding:'5px' }} title="Edit"><Edit2 size={13}/></Link>
-                        <button className="btn btn-ghost btn-sm" style={{ padding:'5px', color:'#94a3b8' }} title="Preview"><Eye size={13}/></button>
+                        {post.status === 'published' && (
+                          <a
+                            href={`https://insights.chesly.tech/${post.section === 'coffee' ? 'coffee' : 'insights'}/${post.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-ghost btn-sm"
+                            style={{ padding:'5px', color:'#94a3b8' }}
+                            title="View live"
+                          >
+                            <ExternalLink size={13}/>
+                          </a>
+                        )}
                       </div>
                     </td>
                   </tr>

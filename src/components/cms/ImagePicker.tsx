@@ -74,7 +74,7 @@ export default function ImagePicker({ open, onClose, onSelect, currentUrl }: Pro
               <p style={{ color:'#94a3b8', fontSize:14 }}>No media found. Upload images via the Media Library.</p>
             </div>
           )}
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(80px,1fr))', gap:10 }}>
             {filtered.map(item => (
               <div key={item.id} onClick={()=>setSelected(item.url)}
                 style={{ position:'relative', aspectRatio:'1', borderRadius:8, overflow:'hidden', cursor:'pointer', border:selected===item.url?'2px solid #8B6914':'2px solid #e2e8f0', transition:'all 0.15s' }}>

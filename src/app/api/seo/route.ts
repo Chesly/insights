@@ -1,6 +1,36 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { getSessionProfile, isAllowedElevatedAccess } from '@/lib/auth/session'
+import { siteConfig } from '@/lib/siteConfig'
+
+const TECH_CHECK_TIMEOUT_MS = 4000
+const TECH_CHECK_HEADERS = { 'User-Agent': 'Mozilla/5.0 (compatible; CheslyTechSeoChecker/1.0)' }
+
+async function fetchOk(url: string): Promise<boolean> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), TECH_CHECK_TIMEOUT_MS)
+  try {
+    const res = await fetch(url, { signal: controller.signal, headers: TECH_CHECK_HEADERS })
+    return res.ok
+  } catch {
+    return false
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
+async function fetchBody(url: string): Promise<string | null> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), TECH_CHECK_TIMEOUT_MS)
+  try {
+    const res = await fetch(url, { signal: controller.signal, headers: TECH_CHECK_HEADERS })
+    return res.ok ? await res.text() : null
+  } catch {
+    return null
+  } finally {
+    clearTimeout(timeout)
+  }
+}
 
 export async function GET() {
   const supabase = await createClient()
@@ -13,7 +43,7 @@ export async function GET() {
 
   const { data: posts } = await supabase
     .from('posts')
-    .select('id,title,slug,status,seo_title,meta_description,og_image,featured_image,body,excerpt,canonical_url,published_at')
+    .select('id,title,slug,status,section,seo_title,meta_description,og_image,featured_image,body,excerpt,canonical_url,published_at')
     .neq('status', 'archived')
 
   if (!posts) return NextResponse.json({ issues: [], score: 0, posts: [] })
@@ -58,8 +88,34 @@ export async function GET() {
   const thinContent = postAudits.filter(p => p.issues.some(i => i.includes('Content too short'))).length
   const avgScore = postAudits.length > 0 ? Math.round(postAudits.reduce((s, p) => s + p.score, 0) / postAudits.length) : 0
 
+  // Live technical checks — actually fetch the deployed site rather than
+  // assuming the templates still emit what they did when this was written.
+  const samplePost = posts.find(p => p.status === 'published')
+  const sampleUrl = samplePost
+    ? `${siteConfig.url}/${samplePost.section === 'coffee' ? 'coffee' : 'insights'}/${samplePost.slug}`
+    : null
+
+  const [sitemapOk, robotsOk, sampleHtml] = await Promise.all([
+    fetchOk(`${siteConfig.url}/sitemap.xml`),
+    fetchOk(`${siteConfig.url}/robots.txt`),
+    sampleUrl ? fetchBody(sampleUrl) : Promise.resolve(null),
+  ])
+
+  const technical = {
+    sitemap: sitemapOk,
+    robots: robotsOk,
+    organizationSchema: sampleHtml ? sampleHtml.includes('"@type":"Organization"') : null,
+    articleSchema: sampleHtml ? sampleHtml.includes('"@type":"Article"') : null,
+    personSchema: sampleHtml ? sampleHtml.includes('"@type":"Person"') : null,
+    openGraph: sampleHtml ? /property="og:/.test(sampleHtml) : null,
+    twitterCards: sampleHtml ? /name="twitter:/.test(sampleHtml) : null,
+    canonicalUrls: totalPosts - missingMeta > 0,
+    sampleUrl,
+  }
+
   return NextResponse.json({
     stats: { totalPosts, missingMeta, missingSeoTitle, missingImage, thinContent, avgScore },
     posts: postAudits.sort((a, b) => a.score - b.score),
+    technical,
   })
 }

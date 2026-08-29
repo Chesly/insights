@@ -23,6 +23,7 @@ const EMPTY: FormState = { name:'', slug:'', description:'', icon:'📁', color:
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [totalPosts, setTotalPosts] = useState<number|null>(null)
+  const [uncategorized, setUncategorized] = useState<number|null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -33,9 +34,10 @@ export default function CategoriesPage() {
 
   const load = useCallback(async () => {
     setLoading(true)
-    const [catRes, postsRes] = await Promise.all([
+    const [catRes, postsRes, uncategorizedRes] = await Promise.all([
       fetch('/api/categories'),
       fetch('/api/posts?limit=1'),
+      fetch('/api/posts?limit=1&uncategorized=1'),
     ])
     const catJson = await catRes.json()
     setCategories(catJson.data || [])
@@ -43,6 +45,10 @@ export default function CategoriesPage() {
       const postsJson = await postsRes.json()
       setTotalPosts(typeof postsJson.count === 'number' ? postsJson.count : null)
     } catch { setTotalPosts(null) }
+    try {
+      const uncategorizedJson = await uncategorizedRes.json()
+      setUncategorized(typeof uncategorizedJson.count === 'number' ? uncategorizedJson.count : null)
+    } catch { setUncategorized(null) }
     setLoading(false)
   }, [])
 
@@ -99,11 +105,11 @@ export default function CategoriesPage() {
       <div style={{ padding:24, maxWidth:1100 }}>
 
         {/* Stats */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginBottom:24 }}>
+        <div className="cms-stat-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginBottom:24 }}>
           {[
             { label:'Total Categories', value:categories.length, icon:'📁' },
             { label:'Total Posts', value:displayTotalPosts, icon:'📝' },
-            { label:'Uncategorised', value:'—', icon:'❓' },
+            { label:'Uncategorised', value:uncategorized ?? '—', icon:'❓' },
           ].map(s=>(
             <div key={s.label} className="stat-card" style={{ display:'flex', alignItems:'center', gap:14 }}>
               <span style={{ fontSize:28 }}>{s.icon}</span>
@@ -115,7 +121,7 @@ export default function CategoriesPage() {
           ))}
         </div>
 
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 340px', gap:20 }}>
+        <div className="cms-form-grid-collapse" style={{ display:'grid', gridTemplateColumns:'1fr 340px', gap:20 }}>
 
           {/* ── CATEGORIES TABLE ── */}
           <div>

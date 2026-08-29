@@ -11,6 +11,7 @@ export async function GET(req: NextRequest) {
   const limit = parseInt(searchParams.get('limit') || '20')
   const page = parseInt(searchParams.get('page') || '1')
   const from = (page - 1) * limit
+  const uncategorized = searchParams.get('uncategorized')
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let query: any = supabase
@@ -29,6 +30,7 @@ export async function GET(req: NextRequest) {
 
   if (status) query = query.eq('status', status)
   if (slug) query = query.eq('slug', slug).single()
+  if (uncategorized) query = query.is('category_id', null)
 
   const { data, error, count } = await query
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })

@@ -122,7 +122,7 @@ export default function MediaPage() {
       <div style={{ padding:24 }}>
 
         {/* Stats */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:24 }}>
+        <div className="cms-stat-grid" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:24 }}>
           {[
             { label:'Total Files', value:total, icon:'🖼️' },
             { label:'Images', value:media.filter(m=>isImage(m.mime_type)).length, icon:'📷' },
@@ -160,7 +160,7 @@ export default function MediaPage() {
 
           <details style={{ marginTop:16 }}>
             <summary style={{ fontSize:12, color:'#94a3b8', cursor:'pointer' }}>Already hosted elsewhere? Register an existing URL instead</summary>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 200px 120px', gap:10, alignItems:'flex-end', marginTop:12 }}>
+            <div className="cms-form-grid-collapse" style={{ display:'grid', gridTemplateColumns:'1fr 200px 120px', gap:10, alignItems:'flex-end', marginTop:12 }}>
               <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#64748b', marginBottom:4 }}>File URL *</label>
                 <input className="cms-input" value={ikUrl} onChange={e=>setIkUrl(e.target.value)}
