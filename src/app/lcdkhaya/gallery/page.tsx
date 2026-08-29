@@ -2,16 +2,14 @@ import type { Metadata } from "next";
 import { lcdKhayaConfig } from "@/lib/lcdkhaya/config";
 import PageHero from "@/components/lcdkhaya/PageHero";
 import PlaceholderImage from "@/components/lcdkhaya/PlaceholderImage";
+import GalleryCarousel from "@/components/lcdkhaya/GalleryCarousel";
 
 export const metadata: Metadata = { title: { absolute: `Gallery | ${lcdKhayaConfig.shortName}` } };
 
 const PLACEHOLDER_SLOTS: { variant: "road" | "wheel" | "car" | "sign"; label: string }[] = [
   { variant: "car", label: "Our vehicles" },
-  { variant: "wheel", label: "In the driver's seat" },
   { variant: "sign", label: "K53 test routes" },
-  { variant: "road", label: "On the road" },
-  { variant: "car", label: "Instructors" },
-  { variant: "wheel", label: "Learners at work" }
+  { variant: "wheel", label: "Instructors" }
 ];
 
 export default function GalleryPage() {
@@ -19,11 +17,18 @@ export default function GalleryPage() {
     <div>
       <PageHero
         title="Gallery"
-        subtitle="Real photos are coming soon — see LCDKHAYA-SETUP.md for AI image-generation prompts ready to go."
+        subtitle="Real graduates, real results — more photos added regularly."
         breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "Gallery" }]}
       />
       <div className="container-page py-14">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <h2 className="text-2xl font-bold text-[#1A1A1A]">Our Graduates</h2>
+        <div className="mx-auto mt-6 max-w-2xl">
+          <GalleryCarousel slides={lcdKhayaConfig.galleryPhotos} />
+        </div>
+
+        <h2 className="mt-16 text-2xl font-bold text-[#1A1A1A]">More From LCD Khaya</h2>
+        <p className="mt-1 text-sm text-[#1A1A1A]/50">Photos coming soon — see below for what's next.</p>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {PLACEHOLDER_SLOTS.map((slot, i) => (
             <PlaceholderImage key={i} variant={slot.variant} label={slot.label} className="aspect-[4/3] w-full" />
           ))}

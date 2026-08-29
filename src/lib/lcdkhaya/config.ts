@@ -273,6 +273,18 @@ export const lcdKhayaConfig = {
     { title: "We Handle the Details", text: "Online booking and assistance with your necessary requirements, so you can focus on learning to drive." }
   ],
 
+  // Real graduate photos (ID/licence card details blurred out before
+  // publishing — see LCDKHAYA-SETUP.md). More arrive in batches, so this
+  // is just a flat list to extend rather than a full media-library module.
+  galleryPhotos: [
+    { src: "/lcdkhaya/gallery/graduate-1.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
+    { src: "/lcdkhaya/gallery/graduate-2.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
+    { src: "/lcdkhaya/gallery/graduate-3.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
+    { src: "/lcdkhaya/gallery/graduate-4.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
+    { src: "/lcdkhaya/gallery/graduate-5.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
+    { src: "/lcdkhaya/gallery/graduate-6.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" }
+  ],
+
   // Copy for the lightweight "request a callback" lead form — for
   // visitors who'd rather have LCD Khaya call them than fill out a full
   // booking or contact form.

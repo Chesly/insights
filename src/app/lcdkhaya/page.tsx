@@ -3,11 +3,11 @@ import type { Metadata } from "next";
 import { lcdKhayaConfig } from "@/lib/lcdkhaya/config";
 import { getTodaysFact } from "@/lib/facts";
 import { getPostsByTag } from "@/lib/posts";
-import PlaceholderImage from "@/components/lcdkhaya/PlaceholderImage";
 import PackageCard from "@/components/lcdkhaya/PackageCard";
 import TestimonialsScroller from "@/components/lcdkhaya/TestimonialsScroller";
 import NewsletterSignup from "@/components/lcdkhaya/NewsletterSignup";
 import CallbackForm from "@/components/lcdkhaya/CallbackForm";
+import GalleryCarousel from "@/components/lcdkhaya/GalleryCarousel";
 
 export const metadata: Metadata = { title: { absolute: lcdKhayaConfig.seo.defaultTitle } };
 export const revalidate = 3600;
@@ -38,7 +38,12 @@ export default async function LcdKhayaHomePage() {
               </Link>
             </div>
           </div>
-          <PlaceholderImage variant="car" label="Photo coming soon" className="aspect-[4/3] w-full" />
+          <div>
+            <GalleryCarousel slides={lcdKhayaConfig.galleryPhotos} />
+            <Link href="/lcdkhaya/gallery" className="mt-3 block text-center text-sm font-semibold text-[#B8860B] hover:underline">
+              See more real results →
+            </Link>
+          </div>
         </div>
       </section>
 
