@@ -240,10 +240,10 @@ export default async function DashboardPage() {
                 { label:'Posts', done:true },
                 { label:'Categories', done:true },
                 { label:'Downloads', done:true },
-                { label:'Media Library', done:false },
-                { label:'Newsletter', done:false },
-                { label:'SEO Audit', done:false },
-                { label:'Pages', done:false },
+                { label:'Media Library', done:true },
+                { label:'Newsletter', done:true },
+                { label:'SEO Audit', done:true },
+                { label:'Pages', done:true },
               ].map(m=>(
                 <div key={m.label} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'7px 0', borderBottom:'1px solid #f8fafc', fontSize:13 }}>
                   <span style={{ color:'#374151' }}>{m.label}</span>
