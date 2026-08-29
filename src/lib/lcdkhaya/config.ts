@@ -122,6 +122,7 @@ export const lcdKhayaConfig = {
     { label: "Home", href: "/lcdkhaya" },
     { label: "About", href: "/lcdkhaya/about" },
     { label: "Services & Packages", href: "/lcdkhaya/services" },
+    { label: "FAQ", href: "/lcdkhaya/faq" },
     { label: "Did You Know?", href: "/lcdkhaya/facts" },
     { label: "Blog", href: "/lcdkhaya/blog" },
     { label: "Gallery", href: "/lcdkhaya/gallery" },
@@ -292,7 +293,43 @@ export const lcdKhayaConfig = {
     title: "Not Sure Where to Start?",
     description: "Submit your details and we'll call you to answer your questions and get you ready to proceed.",
     successMessage: "Thanks! We've got your details and will call you shortly."
-  }
+  },
+
+  // Kept deliberately general/operational rather than citing specific
+  // legal or regulatory numbers we can't verify (e.g. exact waiting
+  // periods) — safer to say "contact us" than publish a wrong legal
+  // detail on a real commercial site. Everything here is sourced from
+  // LCD Khaya's own flyer/config above (pricing, hours, branches).
+  faqs: [
+    {
+      question: "How do I book a lesson?",
+      answer: "Book online at lcdkhaya.co.za/booking, message us on WhatsApp, or request a callback and we'll call you to sort out your package."
+    },
+    {
+      question: "Which branch should I choose?",
+      answer: "Whichever is most convenient for you — we have branches in Daveyton, Mayfield and Chief A Luthuli Park (Benoni). You can also ask us for a recommendation based on where you live."
+    },
+    {
+      question: "Do you offer payment plans?",
+      answer: "Yes — a 50% deposit is accepted per segment or on the full package."
+    },
+    {
+      question: "What licence codes do you offer?",
+      answer: "Motorcycle (Code A), Code 8 light vehicle (B), Code 10 heavy vehicle (C1), Code 14 articulated vehicle (EC), and PrDP for both Goods and Passengers."
+    },
+    {
+      question: "Do lessons run on weekends?",
+      answer: "Yes — lessons run during normal working days and hours, plus every Saturday and alternate Sundays. Our office itself is closed on Sundays."
+    },
+    {
+      question: "Can I reschedule a lesson?",
+      answer: "Yes, just contact us as soon as you can and we'll help you find a new time."
+    },
+    {
+      question: "How do I leave feedback about my experience?",
+      answer: "We'd love to hear it — submit your testimonial at lcdkhaya.co.za/testimonials."
+    }
+  ]
 };
 
 export type LcdKhayaConfig = typeof lcdKhayaConfig;

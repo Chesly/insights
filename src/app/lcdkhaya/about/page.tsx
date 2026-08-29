@@ -1,5 +1,7 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { lcdKhayaConfig } from "@/lib/lcdkhaya/config";
+import { slugify } from "@/lib/types";
 import PageHero from "@/components/lcdkhaya/PageHero";
 import PlaceholderImage from "@/components/lcdkhaya/PlaceholderImage";
 
@@ -64,7 +66,9 @@ export default function AboutPage() {
           <div className="mt-6 grid gap-6 sm:grid-cols-3">
             {lcdKhayaConfig.branches.map((branch) => (
               <div key={branch.name} className="border border-[#B8860B]/25 p-5">
-                <h3 className="font-semibold text-[#1A1A1A]">{branch.name}</h3>
+                <Link href={`/lcdkhaya/areas/${slugify(branch.name)}`} className="font-semibold text-[#1A1A1A] hover:text-[#B8860B]">
+                  {branch.name}
+                </Link>
                 {branch.addressLines.map((line) => (
                   <p key={line} className="mt-1 text-sm text-[#1A1A1A]/60">{line}</p>
                 ))}

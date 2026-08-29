@@ -3,6 +3,7 @@ import { lcdKhayaConfig } from "@/lib/lcdkhaya/config";
 import { getPostsByTag } from "@/lib/posts";
 import { getFactsByCategory } from "@/lib/facts";
 import { getApprovedTestimonials } from "@/lib/testimonials";
+import { slugify } from "@/lib/types";
 
 // Served at /lcdkhaya/llms.txt (and lcdkhaya.co.za/llms.txt once DNS is
 // pointed) — an auto-generated summary of LCD Khaya for AI systems
@@ -36,6 +37,11 @@ export async function GET() {
     `- Did You Know?: ${lcdKhayaConfig.url}/facts`,
     `- Blog: ${lcdKhayaConfig.url}/blog`,
     `- Share Your Experience (submit a testimonial): ${lcdKhayaConfig.url}/testimonials`,
+    `- FAQ: ${lcdKhayaConfig.url}/faq`,
+    ...lcdKhayaConfig.branches.map((b) => `- ${b.name} branch page: ${lcdKhayaConfig.url}/areas/${slugify(b.name)}`),
+    "",
+    "## FAQ",
+    ...lcdKhayaConfig.faqs.map((f) => `- Q: ${f.question}\n  A: ${f.answer}`),
     "",
     ...(posts.length
       ? ["## Recent Articles", ...posts.slice(0, 20).map((p) => `- [${p.title}](${lcdKhayaConfig.url}/blog/${p.slug}): ${p.description}`)]

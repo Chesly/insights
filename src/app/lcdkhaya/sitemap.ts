@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { lcdKhayaConfig } from "@/lib/lcdkhaya/config";
 import { getPostsByTag } from "@/lib/posts";
 import { getFactsByCategory } from "@/lib/facts";
+import { slugify } from "@/lib/types";
 
 // Served at /lcdkhaya/sitemap.xml (and at lcdkhaya.co.za/sitemap.xml once
 // DNS is pointed, via the middleware host rewrite). Kept separate from
@@ -24,9 +25,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${lcdKhayaConfig.url}/contact`, changeFrequency: "yearly", priority: 0.4 },
     { url: `${lcdKhayaConfig.url}/booking`, changeFrequency: "yearly", priority: 0.5 },
     { url: `${lcdKhayaConfig.url}/testimonials`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${lcdKhayaConfig.url}/faq`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${lcdKhayaConfig.url}/terms`, changeFrequency: "yearly", priority: 0.2 },
     { url: `${lcdKhayaConfig.url}/privacy`, changeFrequency: "yearly", priority: 0.2 }
   ];
+
+  const areaRoutes: MetadataRoute.Sitemap = lcdKhayaConfig.branches.map((b) => ({
+    url: `${lcdKhayaConfig.url}/areas/${slugify(b.name)}`,
+    changeFrequency: "monthly",
+    priority: 0.7
+  }));
 
   const postRoutes: MetadataRoute.Sitemap = posts.map((p) => ({
     url: `${lcdKhayaConfig.url}/blog/${p.slug}`,
@@ -42,5 +50,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5
   }));
 
-  return [...staticRoutes, ...postRoutes, ...factRoutes];
+  return [...staticRoutes, ...areaRoutes, ...postRoutes, ...factRoutes];
 }
