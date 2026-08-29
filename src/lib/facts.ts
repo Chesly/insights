@@ -13,6 +13,14 @@ export const getAllFacts = cache(async (): Promise<Fact[]> => {
   return data as Fact[];
 });
 
+/** Facts scoped to one category — e.g. LCD Khaya's "Did You Know" page
+    reuses this shared facts table filtered to category "Driving" instead
+    of getting its own table, same pattern as getPostsByCategory. */
+export async function getFactsByCategory(category: string): Promise<Fact[]> {
+  const facts = await getAllFacts();
+  return facts.filter((f) => (f.category || "").toLowerCase() === category.toLowerCase());
+}
+
 export const getFactBySlug = cache(async (slug: string): Promise<Fact | null> => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
