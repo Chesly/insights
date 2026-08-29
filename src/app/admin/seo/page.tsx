@@ -14,6 +14,13 @@ interface AuditStats {
   missingImage: number; thinContent: number; avgScore: number
 }
 
+interface TechnicalChecks {
+  sitemap: boolean; robots: boolean
+  organizationSchema: boolean | null; articleSchema: boolean | null; personSchema: boolean | null
+  openGraph: boolean | null; twitterCards: boolean | null
+  canonicalUrls: boolean; sampleUrl: string | null
+}
+
 function ScoreBadge({ score }: { score: number }) {
   const color = score >= 80 ? '#059669' : score >= 50 ? '#f59e0b' : '#dc2626'
   const bg = score >= 80 ? '#d1fae5' : score >= 50 ? '#fef3c7' : '#fee2e2'
@@ -34,7 +41,7 @@ function ScoreBar({ score }: { score: number }) {
 }
 
 export default function SEOPage() {
-  const [data, setData] = useState<{ stats: AuditStats; posts: PostAudit[] }|null>(null)
+  const [data, setData] = useState<{ stats: AuditStats; posts: PostAudit[]; technical?: TechnicalChecks }|null>(null)
   const [settings, setSettings] = useState<Record<string,string>>({})
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all'|'issues'|'warnings'|'good'>('all')
@@ -128,26 +135,42 @@ export default function SEOPage() {
           )}
         </div>
 
-        {/* Schema / robots quick status */}
+        {/* Schema / robots quick status — real, live checks against the
+            deployed site, not decorative (the sitemap/robots fetches and
+            sample-post scan below actually run on every page load). */}
         <div className="cms-card" style={{ padding: '16px 20px', marginBottom: 20 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 12 }}>Technical SEO Checklist</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
             {[
-              { label: 'Sitemap.xml', ok: true, href: '/sitemap.xml' },
-              { label: 'Robots.txt', ok: true, href: '/robots.txt' },
-              { label: 'Organization Schema', ok: true },
-              { label: 'Article Schema', ok: true },
-              { label: 'Person Schema', ok: true },
-              { label: 'Open Graph', ok: true },
-              { label: 'Twitter Cards', ok: true },
-              { label: 'Canonical URLs', ok: (s?.totalPosts||0)-(s?.missingMeta||0) > 0 },
-            ].map(item => (
-              <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', background: item.ok ? '#f0fdf4' : '#fff7ed', borderRadius: 8, border: `1px solid ${item.ok ? '#bbf7d0' : '#fed7aa'}` }}>
-                {item.ok ? <CheckCircle size={14} color="#059669"/> : <AlertTriangle size={14} color="#f59e0b"/>}
-                <span style={{ fontSize: 12, fontWeight: 600, color: item.ok ? '#065f46' : '#92400e' }}>{item.label}</span>
-              </div>
-            ))}
+              { label: 'Sitemap.xml', ok: data?.technical?.sitemap },
+              { label: 'Robots.txt', ok: data?.technical?.robots },
+              { label: 'Organization Schema', ok: data?.technical?.organizationSchema },
+              { label: 'Article Schema', ok: data?.technical?.articleSchema },
+              { label: 'Person Schema', ok: data?.technical?.personSchema },
+              { label: 'Open Graph', ok: data?.technical?.openGraph },
+              { label: 'Twitter Cards', ok: data?.technical?.twitterCards },
+              { label: 'Canonical URLs', ok: data?.technical?.canonicalUrls },
+            ].map(item => {
+              const state = loading ? 'loading' : item.ok === true ? 'ok' : item.ok === false ? 'fail' : 'unknown'
+              const style = {
+                loading: { bg: '#f9fafb', border: '#e5e7eb', color: '#9ca3af' },
+                ok: { bg: '#f0fdf4', border: '#bbf7d0', color: '#065f46' },
+                fail: { bg: '#fff7ed', border: '#fed7aa', color: '#92400e' },
+                unknown: { bg: '#f8fafc', border: '#e2e8f0', color: '#64748b' },
+              }[state]
+              return (
+                <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', background: style.bg, borderRadius: 8, border: `1px solid ${style.border}` }}>
+                  {state === 'ok' ? <CheckCircle size={14} color="#059669"/> : state === 'fail' ? <AlertTriangle size={14} color="#f59e0b"/> : <Info size={14} color="#94a3b8"/>}
+                  <span style={{ fontSize: 12, fontWeight: 600, color: style.color }}>{item.label}</span>
+                </div>
+              )
+            })}
           </div>
+          {data?.technical && !data.technical.sampleUrl && (
+            <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 10 }}>
+              Schema/OG/Twitter checks need at least one published post to sample — publish one to verify these.
+            </p>
+          )}
         </div>
 
         {/* Posts audit table */}

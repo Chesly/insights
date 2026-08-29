@@ -12,7 +12,7 @@ import {
 const NAV = [
   { group: 'Content', items: [
     { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-    { label: 'Posts', href: '/admin/posts', icon: FileText, badge: 'new' },
+    { label: 'Posts', href: '/admin/posts', icon: FileText },
     { label: 'Pages', href: '/admin/pages', icon: Globe },
     { label: 'Did You Know?', href: '/admin/facts', icon: Lightbulb },
     { label: 'Categories', href: '/admin/categories', icon: FolderOpen },
@@ -96,9 +96,6 @@ export default function Sidebar() {
                     className={`nav-item ${active ? 'active' : ''}`}>
                     <Icon size={15} />
                     <span style={{ flex: 1 }}>{item.label}</span>
-                    {item.badge && (
-                      <span style={{ fontSize: 9, fontWeight: 700, background: '#8B6914', color: '#fff', padding: '2px 6px', borderRadius: 999, textTransform: 'uppercase' }}>{item.badge}</span>
-                    )}
                     {active && <ChevronRight size={12} style={{ opacity: 0.5 }} />}
                   </Link>
                 )
