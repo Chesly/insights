@@ -77,7 +77,7 @@ export default function SEOPage() {
       <div style={{ padding: 24, maxWidth: 1200 }}>
 
         {/* Overview cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginBottom: 24 }}>
+        <div className="cms-stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginBottom: 24 }}>
           {/* Score card */}
           <div className="stat-card" style={{ gridColumn: '1', background: 'linear-gradient(135deg,#1B2A4A,#0f1c36)', color: '#fff', border: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -92,7 +92,7 @@ export default function SEOPage() {
           </div>
 
           {/* Issues grid */}
-          <div style={{ gridColumn: '2 / -1', display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 14 }}>
+          <div className="cms-stat-grid" style={{ gridColumn: '2 / -1', display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 14 }}>
             {[
               { label: 'Missing Meta Description', value: s?.missingMeta, icon: '📝', color: '#dc2626', bg: '#fee2e2' },
               { label: 'Missing SEO Title', value: s?.missingSeoTitle, icon: '🏷️', color: '#f59e0b', bg: '#fef3c7' },
@@ -115,7 +115,7 @@ export default function SEOPage() {
         {/* Integration status — real, live checks, not decorative */}
         <div className="cms-card" style={{ padding: '16px 20px', marginBottom: 20 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 12 }}>Integration Status</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
+          <div className="cms-stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
             {[
               { label: 'Google Tag Manager', ok: !!settings.google_tag_manager },
               { label: 'Microsoft Clarity', ok: !!settings.microsoft_clarity },
@@ -140,7 +140,7 @@ export default function SEOPage() {
             sample-post scan below actually run on every page load). */}
         <div className="cms-card" style={{ padding: '16px 20px', marginBottom: 20 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 12 }}>Technical SEO Checklist</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
+          <div className="cms-stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
             {[
               { label: 'Sitemap.xml', ok: data?.technical?.sitemap },
               { label: 'Robots.txt', ok: data?.technical?.robots },

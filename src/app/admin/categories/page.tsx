@@ -105,7 +105,7 @@ export default function CategoriesPage() {
       <div style={{ padding:24, maxWidth:1100 }}>
 
         {/* Stats */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginBottom:24 }}>
+        <div className="cms-stat-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginBottom:24 }}>
           {[
             { label:'Total Categories', value:categories.length, icon:'📁' },
             { label:'Total Posts', value:displayTotalPosts, icon:'📝' },
@@ -121,7 +121,7 @@ export default function CategoriesPage() {
           ))}
         </div>
 
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 340px', gap:20 }}>
+        <div className="cms-form-grid-collapse" style={{ display:'grid', gridTemplateColumns:'1fr 340px', gap:20 }}>
 
           {/* ── CATEGORIES TABLE ── */}
           <div>

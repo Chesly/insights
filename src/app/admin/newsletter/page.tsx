@@ -112,7 +112,7 @@ export default function NewsletterPage() {
       <div style={{ padding: 24, maxWidth: 1200 }}>
 
         {/* Stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 24 }}>
+        <div className="cms-stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 24 }}>
           {[
             { label: 'Total', value: stats.total, icon: Users, color: '#1B2A4A' },
             { label: 'Active', value: stats.active, icon: CheckCircle, color: '#059669' },

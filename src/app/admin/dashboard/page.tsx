@@ -128,7 +128,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Stats grid */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginBottom:28 }}>
+        <div className="cms-stat-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginBottom:28 }}>
           {statCards.map(card => {
             const Icon = card.icon
             return (
@@ -150,7 +150,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Quick status row */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:28 }}>
+        <div className="cms-stat-grid" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:28 }}>
           {[
             { label:'Published', value:stats.published, color:'#10b981' },
             { label:'Drafts', value:stats.drafts, color:'#94a3b8' },
@@ -166,7 +166,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Two-col: recent posts + quick actions */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 300px', gap:20 }}>
+        <div className="cms-form-grid-collapse" style={{ display:'grid', gridTemplateColumns:'1fr 300px', gap:20 }}>
           {/* Recent posts */}
           <div className="cms-card">
             <div style={{ padding:'16px 20px', borderBottom:'1px solid #f1f5f9', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
@@ -256,16 +256,6 @@ export default async function DashboardPage() {
           </div>
         </div>
       </div>
-
-      <style>{`
-        @media(max-width:900px){
-          .stat-grid{grid-template-columns:repeat(2,1fr)!important}
-          .two-col{grid-template-columns:1fr!important}
-        }
-        @media(max-width:600px){
-          .stat-grid{grid-template-columns:1fr!important}
-        }
-      `}</style>
     </>
   )
 }

@@ -107,6 +107,17 @@ h1,h2,h3,h4,h5 { font-family: 'Plus Jakarta Sans', sans-serif; }
   .cms-topbar h1 { font-size: 15px !important; }
   .cms-table th, .cms-table td { padding: 8px 10px; font-size: 12.5px; white-space: nowrap; }
 }
+
+/* Shared reflow classes for the fixed-column grids used across admin
+   pages (stat cards, checklists, two-column forms/sidebars) — one place
+   to fix instead of a bespoke class+query per page. */
+@media (max-width: 900px) {
+  .cms-stat-grid { grid-template-columns: repeat(2,1fr) !important; }
+  .cms-form-grid-collapse { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 600px) {
+  .cms-stat-grid { grid-template-columns: 1fr !important; }
+}
 .stat-card-hover:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0,0,0,0.08);

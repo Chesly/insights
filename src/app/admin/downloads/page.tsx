@@ -247,7 +247,7 @@ export default function DownloadsPage() {
       <div style={{ padding:24, maxWidth:1100 }}>
 
         {/* Stats */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:24 }}>
+        <div className="cms-stat-grid" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:24 }}>
           {[
             { label:'Total Files', value:stats.total, icon:'📦' },
             { label:'Published', value:stats.published, icon:'✅' },
@@ -287,7 +287,7 @@ export default function DownloadsPage() {
               </div>
             )}
 
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+            <div className="cms-form-grid-collapse" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
               <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Name * <span style={{ fontWeight:400, color:'#94a3b8' }}>(used as the page title if SEO Title is left blank)</span>

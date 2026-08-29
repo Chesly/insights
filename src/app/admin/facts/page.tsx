@@ -149,7 +149,7 @@ export default function FactsPage() {
       <Topbar title="Did You Know? Facts"/>
       <div style={{ padding:24, maxWidth:900 }}>
 
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginBottom:24 }}>
+        <div className="cms-stat-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginBottom:24 }}>
           {[
             { label:'Total Facts', value: facts.length, icon:'💡' },
             { label:'Published', value: facts.filter(f=>f.status==='published').length, icon:'✅' },
@@ -195,7 +195,7 @@ export default function FactsPage() {
                 <CharHint value={form.headline} min={30} max={90}/>
               </div>
 
-              <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr', gap:16 }}>
+              <div className="cms-form-grid-collapse" style={{ display:'grid', gridTemplateColumns:'2fr 1fr', gap:16 }}>
                 <div>
                   <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
                     <label style={{ fontSize:12, fontWeight:600, color:'#374151' }}>URL Slug</label>
@@ -215,7 +215,7 @@ export default function FactsPage() {
                 </div>
               </div>
 
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+              <div className="cms-form-grid-collapse" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
                 <div>
                   <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                     Background Image <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional — shows faintly behind the navy on the card & hero)</span>
@@ -252,7 +252,7 @@ export default function FactsPage() {
                   placeholder="Explain why it's true, what it means, or what makes it interesting…"/>
               </div>
 
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+              <div className="cms-form-grid-collapse" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
                 <div>
                   <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Source Name</label>
                   <input className="cms-input" value={form.source_name} onChange={set('source_name')} placeholder="e.g. SANParks"/>
