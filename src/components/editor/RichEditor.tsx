@@ -82,9 +82,13 @@ export default function RichEditor({ content, contentJson, onChange, placeholder
   const chars = editor.storage.characterCount?.characters() || 0
 
   return (
-    <div style={{ border:'1px solid #e2e8f0', borderRadius:10, overflow:'hidden', background:'#fff' }}>
-      {/* Toolbar */}
-      <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:2, padding:'8px 10px', borderBottom:'1px solid #f1f5f9', background:'#fafafa' }}>
+    <div style={{ border:'1px solid #e2e8f0', borderRadius:10, background:'#fff' }}>
+      {/* Toolbar — sticky so it stays reachable while scrolling through a
+          long post, instead of scrolling out of view (the outer wrapper
+          used to clip with overflow:hidden, which also silently breaks
+          position:sticky on anything inside it — removed in favor of
+          rounding this and the word-count bar's own corners directly). */}
+      <div style={{ position:'sticky', top:56, zIndex:10, display:'flex', alignItems:'center', flexWrap:'wrap', gap:2, padding:'8px 10px', borderBottom:'1px solid #f1f5f9', background:'#fafafa', borderTopLeftRadius:9, borderTopRightRadius:9 }}>
         <ToolBtn onClick={()=>editor.chain().focus().undo().run()} title="Undo"><Undo size={14}/></ToolBtn>
         <ToolBtn onClick={()=>editor.chain().focus().redo().run()} title="Redo"><Redo size={14}/></ToolBtn>
         <Divider/>
@@ -118,7 +122,7 @@ export default function RichEditor({ content, contentJson, onChange, placeholder
       </div>
 
       {/* Word count */}
-      <div style={{ padding:'8px 16px', borderTop:'1px solid #f1f5f9', display:'flex', gap:16, fontSize:11.5, color:'#94a3b8' }}>
+      <div style={{ padding:'8px 16px', borderTop:'1px solid #f1f5f9', display:'flex', gap:16, fontSize:11.5, color:'#94a3b8', borderBottomLeftRadius:9, borderBottomRightRadius:9 }}>
         <span>{words} words</span>
         <span>{chars} characters</span>
         <span>~{Math.max(1, Math.ceil(words/200))} min read</span>
