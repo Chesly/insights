@@ -177,6 +177,13 @@ export const lcdKhayaConfig = {
   // tests; a 50% deposit is accepted per segment or on the full package.
   depositNote: "All packages include lessons and tests. Deposit accepted at 50% per segment or full package.",
 
+  // Off while this site still lives inside Insights, ahead of client
+  // review and the planned move to its own repo — every booking records
+  // as a lead for manual follow-up instead of attempting a real
+  // Paystack charge, regardless of the package's price. Flip this to
+  // true once payments are ready to go live (see api/lcdkhaya/booking).
+  paymentsEnabled: false,
+
   packages: [
     {
       id: "learners-all-codes",

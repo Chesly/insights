@@ -68,7 +68,7 @@ function BookingSuccessContent() {
           {state.status === "lead" && (
             <>
               <h1 className="text-xl font-bold text-[#1A1A1A]">Request Received</h1>
-              <p className="mt-2 text-sm text-[#1A1A1A]/60">Thanks — pricing for this package is being finalised. We'll contact you shortly with a quote.</p>
+              <p className="mt-2 text-sm text-[#1A1A1A]/60">Thanks — we've received your booking request and will contact you shortly to confirm details and arrange payment.</p>
             </>
           )}
           {state.status === "failed" && (

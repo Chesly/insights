@@ -42,10 +42,12 @@ export async function POST(req: NextRequest) {
     newsletterOptIn
   });
 
-  // Pricing for this package is still TBD — record it as a lead for LCD
-  // Khaya to quote and confirm manually rather than trying to charge R0
-  // through Paystack.
-  if (packagePrice <= 0) {
+  // Record as a lead instead of charging through Paystack when either:
+  // pricing for this package is still TBD (packagePrice <= 0), or
+  // payments are deliberately switched off site-wide right now
+  // (lcdKhayaConfig.paymentsEnabled) while this site is still being
+  // presented for review ahead of its move to its own repo.
+  if (packagePrice <= 0 || !lcdKhayaConfig.paymentsEnabled) {
     await recordLeadBooking(reference);
     return NextResponse.json({ authorizationUrl: `/lcdkhaya/booking/success?reference=${reference}&lead=1` });
   }

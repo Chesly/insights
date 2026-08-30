@@ -63,7 +63,11 @@ export default function BookingForm() {
           ))}
         </select>
         <p className="mt-1 text-xs text-[#1A1A1A]/50">
-          {selected.price != null ? `R${selected.price.toLocaleString("en-ZA")}` : "Pricing to be confirmed — we'll contact you with a quote before anything is charged."}
+          {selected.price != null
+            ? lcdKhayaConfig.paymentsEnabled
+              ? `R${selected.price.toLocaleString("en-ZA")}`
+              : `R${selected.price.toLocaleString("en-ZA")} — we'll contact you to arrange payment.`
+            : "Pricing to be confirmed — we'll contact you with a quote before anything is charged."}
         </p>
       </div>
 
@@ -111,7 +115,7 @@ export default function BookingForm() {
         disabled={submitting}
         className="w-full bg-[#B8860B] px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#8B6E46] disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {submitting ? "Submitting…" : selected.price != null ? "Continue to Payment" : "Request Booking"}
+        {submitting ? "Submitting…" : selected.price != null && lcdKhayaConfig.paymentsEnabled ? "Continue to Payment" : "Request Booking"}
       </button>
     </form>
   );
