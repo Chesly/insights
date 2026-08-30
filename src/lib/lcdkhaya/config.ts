@@ -274,16 +274,27 @@ export const lcdKhayaConfig = {
     { title: "We Handle the Details", text: "Online booking and assistance with your necessary requirements, so you can focus on learning to drive." }
   ],
 
-  // Real graduate photos (ID/licence card details blurred out before
-  // publishing — see LCDKHAYA-SETUP.md). More arrive in batches, so this
-  // is just a flat list to extend rather than a full media-library module.
+  // Real photos. The first 6 are hosted locally (public/lcdkhaya/gallery)
+  // with licence card details pixelated before committing — see
+  // LCDKHAYA-SETUP.md. The rest are hosted on ImageKit and referenced
+  // directly by URL (no binary in this repo) per Chesly's preference to
+  // keep photo storage off GitHub going forward; confirmed to contain no
+  // visible licence/ID details, so no processing was needed before use.
   galleryPhotos: [
     { src: "/lcdkhaya/gallery/graduate-1.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
     { src: "/lcdkhaya/gallery/graduate-2.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
     { src: "/lcdkhaya/gallery/graduate-3.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
     { src: "/lcdkhaya/gallery/graduate-4.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
     { src: "/lcdkhaya/gallery/graduate-5.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
-    { src: "/lcdkhaya/gallery/graduate-6.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" }
+    { src: "/lcdkhaya/gallery/graduate-6.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
+    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-1.jpg", alt: "LCD Khaya Driving School" },
+    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-2.jpg", alt: "LCD Khaya Driving School" },
+    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-3.jpg", alt: "LCD Khaya Driving School" },
+    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-4.jpg", alt: "LCD Khaya Driving School" },
+    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-5.jpg", alt: "LCD Khaya Driving School" },
+    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-6.jpg", alt: "LCD Khaya Driving School" },
+    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-7.jpg", alt: "LCD Khaya Driving School" },
+    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-8.jpg", alt: "LCD Khaya Driving School" }
   ],
 
   // Copy for the lightweight "request a callback" lead form — for

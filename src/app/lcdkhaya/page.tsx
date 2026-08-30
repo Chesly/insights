@@ -39,7 +39,7 @@ export default async function LcdKhayaHomePage() {
             </div>
           </div>
           <div>
-            <GalleryCarousel slides={lcdKhayaConfig.galleryPhotos} />
+            <GalleryCarousel slides={lcdKhayaConfig.galleryPhotos.slice(0, 6)} />
             <Link href="/lcdkhaya/gallery" className="mt-3 block text-center text-sm font-semibold text-[#B8860B] hover:underline">
               See more real results →
             </Link>
