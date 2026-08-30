@@ -7,84 +7,108 @@ import PackageCard from "@/components/lcdkhaya/PackageCard";
 import TestimonialsScroller from "@/components/lcdkhaya/TestimonialsScroller";
 import NewsletterSignup from "@/components/lcdkhaya/NewsletterSignup";
 import CallbackForm from "@/components/lcdkhaya/CallbackForm";
-import GalleryCarousel from "@/components/lcdkhaya/GalleryCarousel";
+import HeroSlideshow from "@/components/lcdkhaya/HeroSlideshow";
+import ThreeColumnSection from "@/components/lcdkhaya/ThreeColumnSection";
 
 export const metadata: Metadata = { title: { absolute: lcdKhayaConfig.seo.defaultTitle } };
 export const revalidate = 3600;
 
 export default async function LcdKhayaHomePage() {
+  const { sections } = lcdKhayaConfig;
   const [fact, posts] = await Promise.all([getTodaysFact(), getPostsByTag(lcdKhayaConfig.blogTag)]);
   const recentPosts = posts.slice(0, 3);
 
   return (
     <div>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="container-page grid gap-8 py-8 lg:grid-cols-2 lg:items-center lg:py-12">
-          <div>
-            <span className="inline-block bg-[#B8860B]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#8B6E46]">
-              Daveyton &amp; Benoni, Gauteng
-            </span>
-            <h1 className="mt-4 font-serif text-3xl font-bold leading-tight text-[#1A1A1A] sm:text-4xl lg:text-5xl">
-              {lcdKhayaConfig.tagline}
-            </h1>
-            <p className="mt-4 max-w-lg text-[#1A1A1A]/70">{lcdKhayaConfig.description}</p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Link href="/lcdkhaya/booking" className="bg-[#B8860B] px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#8B6E46]">
-                Book a Lesson
-              </Link>
-              <Link href="/lcdkhaya/services" className="border border-[#1A1A1A]/20 px-6 py-3.5 text-sm font-semibold text-[#1A1A1A] transition-colors hover:border-[#B8860B] hover:text-[#B8860B]">
-                View Packages
-              </Link>
+      {/* Hero / slideshow */}
+      {sections.hero && (
+        <section className="relative overflow-hidden">
+          <div className="container-page grid gap-6 py-6 lg:grid-cols-2 lg:items-center lg:py-6">
+            <div>
+              <span className="inline-block bg-[#B8860B]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#8B6E46]">
+                Daveyton &amp; Benoni, Gauteng
+              </span>
+              <h1 className="mt-3 font-serif text-2xl font-bold leading-tight text-[#1A1A1A] sm:text-3xl lg:text-4xl">
+                {lcdKhayaConfig.tagline}
+              </h1>
+              <p className="mt-3 max-w-lg text-sm text-[#1A1A1A]/70">{lcdKhayaConfig.description}</p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Link href="/lcdkhaya/booking" className="bg-[#B8860B] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#8B6E46]">
+                  Book a Lesson
+                </Link>
+                <Link href="/lcdkhaya/services" className="border border-[#1A1A1A]/20 px-6 py-3 text-sm font-semibold text-[#1A1A1A] transition-colors hover:border-[#B8860B] hover:text-[#B8860B]">
+                  View Packages
+                </Link>
+              </div>
             </div>
+            <HeroSlideshow slides={lcdKhayaConfig.heroSlides} />
           </div>
-          <div>
-            <GalleryCarousel slides={lcdKhayaConfig.galleryPhotos.slice(0, 6)} />
-            <Link href="/lcdkhaya/gallery" className="mt-3 block text-center text-sm font-semibold text-[#B8860B] hover:underline">
-              See more real results →
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* Why choose us */}
-      <section className="container-page py-8">
-        <h2 className="text-2xl font-bold text-[#1A1A1A]">Why Learn With LCD Khaya</h2>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {lcdKhayaConfig.whyChooseUs.map((item) => (
-            <div key={item.title} className="border border-[#B8860B]/15 bg-white p-6">
-              <h3 className="font-semibold text-[#1A1A1A]">{item.title}</h3>
-              <p className="mt-2 text-sm text-[#1A1A1A]/60">{item.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Packages preview */}
-      <section className="bg-white py-8">
-        <div className="container-page">
-          <div className="flex items-end justify-between">
-            <h2 className="text-2xl font-bold text-[#1A1A1A]">Lessons &amp; Packages</h2>
-            <Link href="/lcdkhaya/services" className="text-sm font-semibold text-[#B8860B] hover:underline">
-              View all →
-            </Link>
-          </div>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {lcdKhayaConfig.packages.slice(0, 3).map((pkg) => (
-              <PackageCard key={pkg.id} pkg={pkg} />
+      {/* Important information — scannable, right after the hero */}
+      {sections.importantInfo && (
+        <section className="border-y border-[#B8860B]/15 bg-white py-4">
+          <div className="container-page grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {lcdKhayaConfig.importantInfo.map((item) => (
+              <div key={item.label}>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-[#8B6E46]">{item.label}</p>
+                <p className="mt-0.5 text-sm font-semibold text-[#1A1A1A]">{item.value}</p>
+              </div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* Three-column: Learner's Licence / Driving Licence / PrDP */}
+      {sections.threeColumn && (
+        <section className="container-page py-6">
+          <ThreeColumnSection items={lcdKhayaConfig.threeColumn} ctaHref="/lcdkhaya/services" />
+        </section>
+      )}
+
+      {/* Why choose us */}
+      {sections.whyChooseUs && (
+        <section className="container-page py-6">
+          <h2 className="text-xl font-bold text-[#1A1A1A]">Why Learn With LCD Khaya</h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {lcdKhayaConfig.whyChooseUs.map((item) => (
+              <div key={item.title} className="border border-[#B8860B]/15 bg-white p-5">
+                <h3 className="font-semibold text-[#1A1A1A]">{item.title}</h3>
+                <p className="mt-1.5 text-sm text-[#1A1A1A]/60">{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Packages preview */}
+      {sections.packagesPreview && (
+        <section className="bg-white py-6">
+          <div className="container-page">
+            <div className="flex items-end justify-between">
+              <h2 className="text-xl font-bold text-[#1A1A1A]">Lessons &amp; Packages</h2>
+              <Link href="/lcdkhaya/services" className="text-sm font-semibold text-[#B8860B] hover:underline">
+                View all →
+              </Link>
+            </div>
+            <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {lcdKhayaConfig.packages.slice(0, 3).map((pkg) => (
+                <PackageCard key={pkg.id} pkg={pkg} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Did you know */}
-      {fact && (
-        <section className="container-page py-8">
-          <div className="flex flex-col gap-6 border border-[#B8860B]/20 bg-[#8B6E46]/5 p-8 sm:flex-row sm:items-center">
+      {sections.didYouKnow && fact && (
+        <section className="container-page py-6">
+          <div className="flex flex-col gap-4 border border-[#B8860B]/20 bg-[#8B6E46]/5 p-6 sm:flex-row sm:items-center">
             <div className="flex-1">
               <span className="text-xs font-semibold uppercase tracking-wide text-[#8B6E46]">Did You Know?</span>
-              <h3 className="mt-2 text-lg font-bold text-[#1A1A1A]">{fact.headline}</h3>
-              <p className="mt-2 text-sm text-[#1A1A1A]/70">{fact.fact_text}</p>
+              <h3 className="mt-1 text-base font-bold text-[#1A1A1A]">{fact.headline}</h3>
+              <p className="mt-1 text-sm text-[#1A1A1A]/70">{fact.fact_text}</p>
             </div>
             <Link href="/lcdkhaya/facts" className="shrink-0 border border-[#1A1A1A]/20 px-5 py-2.5 text-sm font-semibold hover:border-[#B8860B] hover:text-[#B8860B]">
               More Driving Facts
@@ -94,11 +118,11 @@ export default async function LcdKhayaHomePage() {
       )}
 
       {/* Recent blog */}
-      {recentPosts.length > 0 && (
-        <section className="bg-white py-8">
+      {sections.blogPreview && recentPosts.length > 0 && (
+        <section className="bg-white py-6">
           <div className="container-page">
-            <h2 className="text-2xl font-bold text-[#1A1A1A]">From the Blog</h2>
-            <div className="mt-8 grid gap-6 sm:grid-cols-3">
+            <h2 className="text-xl font-bold text-[#1A1A1A]">From the Blog</h2>
+            <div className="mt-4 grid gap-6 sm:grid-cols-3">
               {recentPosts.map((post) => (
                 <Link key={post.slug} href={`/lcdkhaya/blog/${post.slug}`} className="group border border-[#B8860B]/15 p-5">
                   <h3 className="font-semibold text-[#1A1A1A] group-hover:text-[#B8860B]">{post.title}</h3>
@@ -111,21 +135,25 @@ export default async function LcdKhayaHomePage() {
       )}
 
       {/* Testimonials */}
-      <section className="py-8">
-        <h2 className="container-page text-2xl font-bold text-[#1A1A1A]">What Learners Say</h2>
-        <div className="mt-8">
-          <TestimonialsScroller />
-        </div>
-      </section>
+      {sections.testimonials && (
+        <section className="py-6">
+          <h2 className="container-page text-xl font-bold text-[#1A1A1A]">What Learners Say</h2>
+          <div className="mt-4">
+            <TestimonialsScroller />
+          </div>
+        </section>
+      )}
 
       {/* Request a callback */}
-      <section className="container-page py-8">
-        <div className="mx-auto max-w-xl">
-          <CallbackForm />
-        </div>
-      </section>
+      {sections.callback && (
+        <section className="container-page py-6">
+          <div className="mx-auto max-w-xl">
+            <CallbackForm />
+          </div>
+        </section>
+      )}
 
-      <NewsletterSignup />
+      {sections.newsletter && <NewsletterSignup />}
     </div>
   );
 }

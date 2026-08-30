@@ -43,7 +43,7 @@ export default async function AreaPage({ params }: { params: Promise<{ branch: s
         breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "About", href: "/lcdkhaya/about" }, { label: branch.name }]}
       />
 
-      <div className="container-page grid gap-10 py-8 lg:grid-cols-2">
+      <div className="container-page grid gap-6 py-6 lg:grid-cols-2">
         <div>
           <h2 className="text-xl font-bold text-[#1A1A1A]">{branch.name} Branch</h2>
           {branch.addressLines.map((line) => (
@@ -78,7 +78,7 @@ export default async function AreaPage({ params }: { params: Promise<{ branch: s
         </div>
       </div>
 
-      <div className="bg-white py-8">
+      <div className="bg-white py-6">
         <div className="container-page">
           <h2 className="text-2xl font-bold text-[#1A1A1A]">Packages Available at {branch.name}</h2>
           <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -93,7 +93,7 @@ export default async function AreaPage({ params }: { params: Promise<{ branch: s
       </div>
 
       {otherBranches.length > 0 && (
-        <div className="container-page py-8">
+        <div className="container-page py-6">
           <h2 className="text-lg font-bold text-[#1A1A1A]">Other Branches</h2>
           <div className="mt-4 flex flex-wrap gap-3">
             {otherBranches.map((b) => (

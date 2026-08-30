@@ -126,7 +126,6 @@ export const lcdKhayaConfig = {
     { label: "FAQ", href: "/lcdkhaya/faq" },
     { label: "Did You Know?", href: "/lcdkhaya/facts" },
     { label: "Blog", href: "/lcdkhaya/blog" },
-    { label: "Gallery", href: "/lcdkhaya/gallery" },
     { label: "Contact", href: "/lcdkhaya/contact" }
   ],
 
@@ -282,27 +281,66 @@ export const lcdKhayaConfig = {
     { title: "We Handle the Details", text: "Online booking and assistance with your necessary requirements, so you can focus on learning to drive." }
   ],
 
-  // Real photos. The first 6 are hosted locally (public/lcdkhaya/gallery)
-  // with licence card details pixelated before committing — see
-  // LCDKHAYA-SETUP.md. The rest are hosted on ImageKit and referenced
-  // directly by URL (no binary in this repo) per Chesly's preference to
-  // keep photo storage off GitHub going forward; confirmed to contain no
-  // visible licence/ID details, so no processing was needed before use.
-  galleryPhotos: [
-    { src: "/lcdkhaya/gallery/graduate-1.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
-    { src: "/lcdkhaya/gallery/graduate-2.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
-    { src: "/lcdkhaya/gallery/graduate-3.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
-    { src: "/lcdkhaya/gallery/graduate-4.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
-    { src: "/lcdkhaya/gallery/graduate-5.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
-    { src: "/lcdkhaya/gallery/graduate-6.jpg", alt: "LCD Khaya graduate holding their driving licence in front of the branded truck" },
-    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-1.jpg", alt: "LCD Khaya Driving School" },
-    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-2.jpg", alt: "LCD Khaya Driving School" },
-    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-3.jpg", alt: "LCD Khaya Driving School" },
-    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-4.jpg", alt: "LCD Khaya Driving School" },
-    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-5.jpg", alt: "LCD Khaya Driving School" },
-    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-6.jpg", alt: "LCD Khaya Driving School" },
-    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-7.jpg", alt: "LCD Khaya Driving School" },
-    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/lcd-8.jpg", alt: "LCD Khaya Driving School" }
+  // Flip any of these off to remove that homepage section entirely — a
+  // plain conditional render in normal document flow, so the layout
+  // reflows and closes the gap automatically. No section here needs its
+  // own on/off code path; this object is the single switchboard.
+  sections: {
+    hero: true,
+    importantInfo: true,
+    threeColumn: true,
+    whyChooseUs: true,
+    packagesPreview: true,
+    didYouKnow: true,
+    blogPreview: true,
+    testimonials: true,
+    callback: true,
+    newsletter: true
+  },
+
+  // The client's own graduate photos didn't fit the tightened, premium
+  // layout direction — placeholders stand in until proper photography
+  // is ready (see LCDKHAYA-SETUP.md for AI image-generation prompts).
+  // Swapping in real photos later is a data change here, not a layout
+  // change — every placeholder already carries the final aspect ratio.
+  heroSlides: [
+    { variant: "car", label: "Photo coming soon — Our Fleet" },
+    { variant: "wheel", label: "Photo coming soon — Learner Success" },
+    { variant: "sign", label: "Photo coming soon — K53 Training" }
+  ] as { variant: "road" | "wheel" | "car" | "sign"; label: string }[],
+
+  // A compact, scannable strip right after the hero — the "important
+  // information" a visitor shouldn't have to scroll past whitespace to
+  // reach.
+  importantInfo: [
+    { label: "Serving Since", value: String(2014) },
+    { label: "Branches", value: "Daveyton, Mayfield, Benoni" },
+    { label: "Licence Codes", value: "A · B · C1 · EC · PrDP" },
+    { label: "Booking", value: "Online, instant confirmation" }
+  ],
+
+  // The three-column section the spec calls for: image + heading +
+  // description + CTA. Kept to the school's three real service
+  // categories rather than inventing new ones.
+  threeColumn: [
+    {
+      title: "Learner's Licence",
+      variant: "sign" as const,
+      description: "K53 theory training for Code 1 (motorcycle), Code 2 (light vehicle) and Code 3 (heavy & articulated).",
+      cta: "View Packages"
+    },
+    {
+      title: "Driving Licence",
+      variant: "car" as const,
+      description: "Practical lessons for motorcycle, Code 8, Code 10 and Code 14 — through to your road test.",
+      cta: "View Packages"
+    },
+    {
+      title: "PrDP",
+      variant: "wheel" as const,
+      description: "Professional Driving Permit applications for both Goods and Passengers categories.",
+      cta: "View Packages"
+    }
   ],
 
   // Copy for the lightweight "request a callback" lead form — for

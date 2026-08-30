@@ -8,7 +8,7 @@ export default function PrivacyPage() {
   return (
     <div>
       <PageHero title="Privacy Policy" breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "Privacy Policy" }]} />
-      <div className="container-page max-w-2xl py-8 text-sm text-[#1A1A1A]/70">
+      <div className="container-page max-w-2xl py-6 text-sm text-[#1A1A1A]/70">
         <p>
           {lcdKhayaConfig.name} collects the personal information you provide when booking a lesson, subscribing
           to updates, or contacting us — including your name, email, phone number and preferred location — solely

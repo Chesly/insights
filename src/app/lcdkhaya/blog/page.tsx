@@ -14,10 +14,9 @@ export default async function LcdKhayaBlogPage() {
     <div>
       <PageHero
         title="Blog"
-        subtitle="Driving tips, K53 advice and news from LCD Khaya Driving School."
         breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "Blog" }]}
       />
-      <div className="container-page py-8">
+      <div className="container-page py-6">
         {posts.length === 0 ? (
           <p className="text-sm text-[#1A1A1A]/50">
             No articles yet — publish a post in the Insights admin panel tagged &ldquo;{lcdKhayaConfig.blogTag}&rdquo; and it will appear here.

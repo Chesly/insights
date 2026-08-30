@@ -78,7 +78,7 @@ function BookingSuccessContent() {
             </>
           )}
           {state.status === "error" && <p className="text-sm text-red-600">{state.message}</p>}
-          <Link href="/lcdkhaya" className="mt-8 inline-block bg-[#B8860B] px-6 py-3 text-sm font-semibold text-white hover:bg-[#8B6E46]">
+          <Link href="/lcdkhaya" className="mt-4 inline-block bg-[#B8860B] px-6 py-3 text-sm font-semibold text-white hover:bg-[#8B6E46]">
             Back to Home
           </Link>
         </div>

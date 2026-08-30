@@ -29,7 +29,7 @@ export default async function LcdKhayaBlogPostPage({ params }: { params: Promise
         subtitle={post.description}
         breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "Blog", href: "/lcdkhaya/blog" }, { label: post.title }]}
       />
-      <article className="container-page py-8">
+      <article className="container-page py-6">
         <div
           className="prose max-w-none prose-headings:text-[#1A1A1A] prose-a:text-[#B8860B]"
           dangerouslySetInnerHTML={{ __html: post.content }}

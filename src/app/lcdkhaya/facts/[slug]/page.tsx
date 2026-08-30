@@ -28,7 +28,7 @@ export default async function LcdKhayaFactPage({ params }: { params: Promise<{ s
         title={fact.headline}
         breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "Did You Know?", href: "/lcdkhaya/facts" }, { label: fact.headline }]}
       />
-      <div className="container-page max-w-2xl py-8">
+      <div className="container-page max-w-2xl py-6">
         <p className="text-lg text-[#1A1A1A]/80">{fact.fact_text}</p>
         {fact.context && <p className="mt-4 text-sm text-[#1A1A1A]/60">{fact.context}</p>}
         {fact.source_name && (
@@ -37,7 +37,7 @@ export default async function LcdKhayaFactPage({ params }: { params: Promise<{ s
           </p>
         )}
         {fact.faq?.length > 0 && (
-          <div className="mt-10 space-y-4">
+          <div className="mt-6 space-y-4">
             {fact.faq.map((item) => (
               <div key={item.question} className="border-t border-[#B8860B]/15 pt-4">
                 <h2 className="font-semibold text-[#1A1A1A]">{item.question}</h2>

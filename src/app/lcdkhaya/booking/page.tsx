@@ -14,7 +14,7 @@ export default function BookingPage() {
         subtitle="Pick your package and tell us a bit about you — we'll take it from there."
         breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "Book a Lesson" }]}
       />
-      <div className="container-page py-8">
+      <div className="container-page py-6">
         <Suspense fallback={null}>
           <BookingForm />
         </Suspense>
