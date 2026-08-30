@@ -17,7 +17,7 @@ export default async function LcdKhayaFactsPage() {
         subtitle="Road safety and K53 facts every Daveyton & Benoni driver should know."
         breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "Did You Know?" }]}
       />
-      <div className="container-page py-14">
+      <div className="container-page py-8">
         {facts.length === 0 ? (
           <p className="text-sm text-[#1A1A1A]/50">
             No facts published yet — add one in the Insights admin panel with category &ldquo;{lcdKhayaConfig.factsCategory}&rdquo; and it will appear here.

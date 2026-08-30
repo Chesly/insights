@@ -8,7 +8,7 @@ export default function TermsPage() {
   return (
     <div>
       <PageHero title="Terms of Use" breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "Terms of Use" }]} />
-      <div className="container-page max-w-2xl py-14 text-sm text-[#1A1A1A]/70">
+      <div className="container-page max-w-2xl py-8 text-sm text-[#1A1A1A]/70">
         <p>
           These terms govern your use of the {lcdKhayaConfig.name} website and booking of lessons or packages
           through it. By booking a lesson, you agree to attend at the scheduled time or provide reasonable notice

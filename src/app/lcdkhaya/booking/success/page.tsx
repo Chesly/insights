@@ -24,7 +24,7 @@ function Fallback() {
   return (
     <div>
       <PageHero title="Booking Confirmation" breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "Booking", href: "/lcdkhaya/booking" }, { label: "Confirmation" }]} />
-      <div className="container-page py-16 text-center text-sm text-[#1A1A1A]/60">Confirming your booking…</div>
+      <div className="container-page py-10 text-center text-sm text-[#1A1A1A]/60">Confirming your booking…</div>
     </div>
   );
 }
@@ -56,7 +56,7 @@ function BookingSuccessContent() {
   return (
     <div>
       <PageHero title="Booking Confirmation" breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "Booking", href: "/lcdkhaya/booking" }, { label: "Confirmation" }]} />
-      <div className="container-page py-16 text-center">
+      <div className="container-page py-10 text-center">
         <div className="mx-auto max-w-md">
           {state.status === "loading" && <p className="text-sm text-[#1A1A1A]/60">Confirming your booking…</p>}
           {state.status === "confirmed" && (

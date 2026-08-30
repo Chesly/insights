@@ -15,7 +15,7 @@ export default function AboutPage() {
         subtitle={`Based in ${lcdKhayaConfig.contact.primaryArea}`}
         breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "About" }]}
       />
-      <div className="container-page grid gap-10 py-14 lg:grid-cols-2 lg:items-center">
+      <div className="container-page grid gap-10 py-8 lg:grid-cols-2 lg:items-center">
         <div>
           <h2 className="text-2xl font-bold text-[#1A1A1A]">{lcdKhayaConfig.tagline}</h2>
           {lcdKhayaConfig.aboutCopy.map((p) => (
@@ -29,7 +29,7 @@ export default function AboutPage() {
         <PlaceholderImage variant="wheel" label="Photo coming soon" className="aspect-square w-full" />
       </div>
 
-      <div className="bg-white py-14">
+      <div className="bg-white py-8">
         <div className="container-page">
           <h2 className="text-2xl font-bold text-[#1A1A1A]">Our Services</h2>
           <div className="mt-6 grid gap-6 sm:grid-cols-3">
@@ -60,7 +60,7 @@ export default function AboutPage() {
         </div>
       </div>
 
-      <div className="py-14">
+      <div className="py-8">
         <div className="container-page">
           <h2 className="text-2xl font-bold text-[#1A1A1A]">Our Branches</h2>
           <div className="mt-6 grid gap-6 sm:grid-cols-3">

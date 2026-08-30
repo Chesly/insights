@@ -59,9 +59,10 @@ export const lcdKhayaConfig = {
   language: "en-ZA",
 
   branding: {
-    // Uploaded logo is hosted via ImageKit once Chesly adds it there —
-    // placeholder path until that account/upload is set up.
-    logo: "/lcdkhaya/logo-placeholder.svg",
+    // Rendered directly from the real logo PDF LCD Khaya provided.
+    logoHorizontal: "/lcdkhaya/brand/logo-horizontal.png",
+    logoStacked: "/lcdkhaya/brand/logo-stacked.png",
+    favicon: "/lcdkhaya/brand/favicon-source.png",
     colors: {
       // Lifted from the LCD Khaya logo (bronze wordmark, gold crown accent)
       primary: "#B8860B", // gold

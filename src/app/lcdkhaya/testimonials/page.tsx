@@ -13,7 +13,7 @@ export default function TestimonialsPage() {
         subtitle="Passed your test with us? Tell other learners about it."
         breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "Share Your Experience" }]}
       />
-      <div className="container-page py-14">
+      <div className="container-page py-8">
         <TestimonialSubmitForm />
       </div>
     </div>

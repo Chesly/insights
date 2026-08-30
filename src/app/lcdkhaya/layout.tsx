@@ -13,6 +13,11 @@ export const metadata: Metadata = {
   description: lcdKhayaConfig.seo.defaultDescription,
   keywords: lcdKhayaConfig.seo.defaultKeywords,
   alternates: { canonical: lcdKhayaConfig.url },
+  icons: {
+    icon: lcdKhayaConfig.branding.favicon,
+    shortcut: lcdKhayaConfig.branding.favicon,
+    apple: lcdKhayaConfig.branding.favicon
+  },
   openGraph: {
     type: "website",
     locale: lcdKhayaConfig.locale,

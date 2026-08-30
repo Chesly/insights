@@ -20,7 +20,7 @@ export default async function LcdKhayaHomePage() {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="container-page grid gap-8 py-14 lg:grid-cols-2 lg:items-center lg:py-20">
+        <div className="container-page grid gap-8 py-8 lg:grid-cols-2 lg:items-center lg:py-12">
           <div>
             <span className="inline-block bg-[#B8860B]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#8B6E46]">
               Daveyton &amp; Benoni, Gauteng
@@ -48,7 +48,7 @@ export default async function LcdKhayaHomePage() {
       </section>
 
       {/* Why choose us */}
-      <section className="container-page py-14">
+      <section className="container-page py-8">
         <h2 className="text-2xl font-bold text-[#1A1A1A]">Why Learn With LCD Khaya</h2>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {lcdKhayaConfig.whyChooseUs.map((item) => (
@@ -61,7 +61,7 @@ export default async function LcdKhayaHomePage() {
       </section>
 
       {/* Packages preview */}
-      <section className="bg-white py-14">
+      <section className="bg-white py-8">
         <div className="container-page">
           <div className="flex items-end justify-between">
             <h2 className="text-2xl font-bold text-[#1A1A1A]">Lessons &amp; Packages</h2>
@@ -79,7 +79,7 @@ export default async function LcdKhayaHomePage() {
 
       {/* Did you know */}
       {fact && (
-        <section className="container-page py-14">
+        <section className="container-page py-8">
           <div className="flex flex-col gap-6 border border-[#B8860B]/20 bg-[#8B6E46]/5 p-8 sm:flex-row sm:items-center">
             <div className="flex-1">
               <span className="text-xs font-semibold uppercase tracking-wide text-[#8B6E46]">Did You Know?</span>
@@ -95,7 +95,7 @@ export default async function LcdKhayaHomePage() {
 
       {/* Recent blog */}
       {recentPosts.length > 0 && (
-        <section className="bg-white py-14">
+        <section className="bg-white py-8">
           <div className="container-page">
             <h2 className="text-2xl font-bold text-[#1A1A1A]">From the Blog</h2>
             <div className="mt-8 grid gap-6 sm:grid-cols-3">
@@ -111,7 +111,7 @@ export default async function LcdKhayaHomePage() {
       )}
 
       {/* Testimonials */}
-      <section className="py-14">
+      <section className="py-8">
         <h2 className="container-page text-2xl font-bold text-[#1A1A1A]">What Learners Say</h2>
         <div className="mt-8">
           <TestimonialsScroller />
@@ -119,7 +119,7 @@ export default async function LcdKhayaHomePage() {
       </section>
 
       {/* Request a callback */}
-      <section className="container-page py-14">
+      <section className="container-page py-8">
         <div className="mx-auto max-w-xl">
           <CallbackForm />
         </div>

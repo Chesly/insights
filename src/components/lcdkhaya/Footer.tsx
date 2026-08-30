@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { lcdKhayaConfig } from "@/lib/lcdkhaya/config";
+import AccordionFooter from "@/components/AccordionFooter";
 
 // lucide-react doesn't ship brand/logo icons (trademark reasons), so —
 // same pattern as the main site's components/SocialLinks.tsx — these are
@@ -14,89 +16,84 @@ const SOCIAL_ICON_PATHS: Record<string, string> = {
 
 export default function LcdKhayaFooter() {
   return (
-    <footer className="mt-16 border-t border-[#B8860B]/20 bg-[#1A1A1A] text-white/80">
-      <div className="container-page grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
-        <div>
-          <p className="font-serif text-lg font-bold text-white">
-            <span className="text-[#D4AF37]">LCD</span> Khaya Driving School
-          </p>
-          <p className="mt-3 max-w-xs text-sm text-white/60">{lcdKhayaConfig.footer.about}</p>
-          {lcdKhayaConfig.social.length > 0 && (
-            <div className="mt-4 flex gap-3">
-              {lcdKhayaConfig.social.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`${lcdKhayaConfig.shortName} on ${s.label}`}
-                  className="flex h-9 w-9 items-center justify-center border border-white/15 text-white/70 transition-colors hover:border-[#D4AF37] hover:text-[#D4AF37]"
-                >
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
-                    <path d={SOCIAL_ICON_PATHS[s.label]} />
-                  </svg>
-                </a>
+    <AccordionFooter
+      brand={
+        <Image
+          src={lcdKhayaConfig.branding.logoStacked}
+          alt={lcdKhayaConfig.name}
+          width={140}
+          height={80}
+          className="h-16 w-auto"
+        />
+      }
+      about={lcdKhayaConfig.footer.about}
+      social={lcdKhayaConfig.social.map((s) => ({ label: s.label, href: s.href, iconPath: SOCIAL_ICON_PATHS[s.label] }))}
+      theme={{
+        bg: lcdKhayaConfig.branding.colors.ink,
+        text: "#FFFFFF",
+        textMuted: "rgba(255,255,255,0.7)",
+        accent: lcdKhayaConfig.branding.colors.primaryLight,
+        border: "rgba(255,255,255,0.12)"
+      }}
+      bottomText={`© ${new Date().getFullYear()} ${lcdKhayaConfig.name}. Since ${lcdKhayaConfig.foundedYear}. All Rights Reserved.`}
+      columns={[
+        {
+          title: "Branches",
+          content: (
+            <ul className="space-y-3">
+              {lcdKhayaConfig.branches.map((b) => (
+                <li key={b.name}>
+                  <p className="font-medium text-white">{b.name}</p>
+                  {b.addressLines.map((line) => (
+                    <p key={line}>{line}</p>
+                  ))}
+                  <a href={`tel:${b.phone.replace(/\s/g, "")}`} className="hover:text-[#D4AF37]">
+                    {b.phone}
+                  </a>
+                </li>
               ))}
-            </div>
-          )}
-        </div>
-
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-white/50">Branches</p>
-          <ul className="mt-3 space-y-3 text-sm">
-            {lcdKhayaConfig.branches.map((b) => (
-              <li key={b.name}>
-                <p className="font-medium text-white">{b.name}</p>
-                {b.addressLines.map((line) => (
-                  <p key={line} className="text-white/50">{line}</p>
+            </ul>
+          )
+        },
+        {
+          title: "Contact & Hours",
+          content: (
+            <>
+              <ul className="space-y-2">
+                <li>
+                  <a href={`tel:${lcdKhayaConfig.contact.phone.replace(/\s/g, "")}`} className="hover:text-[#D4AF37]">
+                    {lcdKhayaConfig.contact.phone}
+                  </a>
+                </li>
+                <li>
+                  <a href={`mailto:${lcdKhayaConfig.contact.email}`} className="hover:text-[#D4AF37]">
+                    {lcdKhayaConfig.contact.email}
+                  </a>
+                </li>
+              </ul>
+              <ul className="mt-3 space-y-1">
+                {lcdKhayaConfig.officeHours.map((d) => (
+                  <li key={d.label}>{d.label}: {d.hours}</li>
                 ))}
-                <a href={`tel:${b.phone.replace(/\s/g, "")}`} className="text-white/60 hover:text-[#D4AF37]">
-                  {b.phone}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-white/50">Contact</p>
-          <ul className="mt-3 space-y-2 text-sm">
-            <li>
-              <a href={`tel:${lcdKhayaConfig.contact.phone.replace(/\s/g, "")}`} className="hover:text-[#D4AF37]">
-                {lcdKhayaConfig.contact.phone}
-              </a>
-            </li>
-            <li>
-              <a href={`mailto:${lcdKhayaConfig.contact.email}`} className="hover:text-[#D4AF37]">
-                {lcdKhayaConfig.contact.email}
-              </a>
-            </li>
-          </ul>
-          <p className="mt-4 text-sm font-semibold uppercase tracking-wide text-white/50">Office Hours</p>
-          <ul className="mt-2 space-y-1 text-sm text-white/50">
-            {lcdKhayaConfig.officeHours.map((d) => (
-              <li key={d.label}>{d.label}: {d.hours}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-white/50">Legal</p>
-          <ul className="mt-3 space-y-2 text-sm">
-            {lcdKhayaConfig.footer.legal.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="hover:text-[#D4AF37]">
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="border-t border-white/10 py-5 text-center text-xs text-white/40">
-        © {new Date().getFullYear()} {lcdKhayaConfig.name}. Since {lcdKhayaConfig.foundedYear}. All Rights Reserved.
-      </div>
-    </footer>
+              </ul>
+            </>
+          )
+        },
+        {
+          title: "Legal",
+          content: (
+            <ul className="space-y-2">
+              {lcdKhayaConfig.footer.legal.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="hover:text-[#D4AF37]">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      ]}
+    />
   );
 }

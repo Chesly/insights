@@ -14,7 +14,7 @@ export default function ContactPage() {
         subtitle="Questions about lessons, pricing or booking? Get in touch."
         breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "Contact" }]}
       />
-      <div className="container-page py-14">
+      <div className="container-page py-8">
         <div className="mb-10">
           <CallbackForm />
         </div>

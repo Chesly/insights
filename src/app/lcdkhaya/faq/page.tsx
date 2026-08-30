@@ -26,7 +26,7 @@ export default function FaqPage() {
         subtitle="Everything you need to know before booking your first lesson."
         breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "FAQ" }]}
       />
-      <div className="container-page max-w-2xl py-14">
+      <div className="container-page max-w-2xl py-8">
         <FaqAccordion faqs={lcdKhayaConfig.faqs} />
         <p className="mt-6 text-center text-sm text-[#1A1A1A]/50">
           Still have questions?{" "}
