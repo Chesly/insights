@@ -23,26 +23,25 @@ export default async function LcdKhayaHomePage() {
       {/* Hero / slideshow */}
       {sections.hero && (
         <section className="relative overflow-hidden">
-          <div className="container-page grid gap-6 py-6 lg:grid-cols-2 lg:items-center lg:py-6">
-            <div>
-              <span className="inline-block bg-[#B8860B]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#8B6E46]">
+          <HeroSlideshow slides={lcdKhayaConfig.heroSlides}>
+            <div className="max-w-lg">
+              <span className="inline-block bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white backdrop-blur-sm">
                 Daveyton &amp; Benoni, Gauteng
               </span>
-              <h1 className="mt-3 font-serif text-2xl font-bold leading-tight text-[#1A1A1A] sm:text-3xl lg:text-4xl">
+              <h1 className="mt-3 font-serif text-2xl font-bold leading-tight text-white sm:text-3xl lg:text-4xl">
                 {lcdKhayaConfig.tagline}
               </h1>
-              <p className="mt-3 max-w-lg text-sm text-[#1A1A1A]/70">{lcdKhayaConfig.description}</p>
+              <p className="mt-3 max-w-lg text-sm text-white/85">{lcdKhayaConfig.description}</p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <Link href="/lcdkhaya/booking" className="bg-[#B8860B] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#8B6E46]">
                   Book a Lesson
                 </Link>
-                <Link href="/lcdkhaya/services" className="border border-[#1A1A1A]/20 px-6 py-3 text-sm font-semibold text-[#1A1A1A] transition-colors hover:border-[#B8860B] hover:text-[#B8860B]">
+                <Link href="/lcdkhaya/services" className="border border-white/50 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:border-white hover:bg-white/20">
                   View Packages
                 </Link>
               </div>
             </div>
-            <HeroSlideshow slides={lcdKhayaConfig.heroSlides} />
-          </div>
+          </HeroSlideshow>
         </section>
       )}
 

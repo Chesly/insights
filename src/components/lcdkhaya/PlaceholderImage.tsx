@@ -13,10 +13,12 @@
 export default function PlaceholderImage({
   variant = "road",
   label,
+  showCaption = true,
   className = ""
 }: {
   variant?: "road" | "wheel" | "car" | "sign";
   label?: string;
+  showCaption?: boolean;
   className?: string;
 }) {
   return (
@@ -27,7 +29,7 @@ export default function PlaceholderImage({
     >
       <div className="absolute inset-0 bg-[#1A1A1A]/20 mix-blend-multiply" aria-hidden="true" />
       <Motif variant={variant} className="relative h-1/2 w-1/2 text-white/85" />
-      {label && (
+      {label && showCaption && (
         <span className="absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#1A1A1A]/40 px-3 py-1 text-xs font-medium text-white/90">
           {label}
         </span>
