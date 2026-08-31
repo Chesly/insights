@@ -71,30 +71,29 @@ export default function AccordionFooter({
         style={{ maxHeight: open ? "1400px" : "0px", opacity: open ? 1 : 0 }}
         aria-hidden={!open}
       >
-        <div className="container-page border-b border-[var(--footer-border)] py-8">
-          <div className="text-[var(--footer-text)]">{brand}</div>
-          <p className="mt-3 max-w-md text-sm">{about}</p>
-          {social.length > 0 && (
-            <div className="mt-4 flex gap-3">
-              {social.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={s.label}
-                  className="flex h-9 w-9 items-center justify-center border border-[var(--footer-border)] transition-colors hover:border-[var(--footer-accent)] hover:text-[var(--footer-accent)]"
-                >
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
-                    <path d={s.iconPath} />
-                  </svg>
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="container-page grid gap-8 py-8 sm:grid-cols-3">
+        <div className="container-page grid gap-8 py-10 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <div className="text-[var(--footer-text)]">{brand}</div>
+            <p className="mt-3 max-w-xs text-sm">{about}</p>
+            {social.length > 0 && (
+              <div className="mt-4 flex gap-3">
+                {social.map((s) => (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={s.label}
+                    className="flex h-9 w-9 items-center justify-center border border-[var(--footer-border)] transition-colors hover:border-[var(--footer-accent)] hover:text-[var(--footer-accent)]"
+                  >
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+                      <path d={s.iconPath} />
+                    </svg>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
           {columns.map((col) => (
             <div key={col.title}>
               <p className="mono-label text-xs font-semibold uppercase tracking-wide text-[var(--footer-text)]">{col.title}</p>
