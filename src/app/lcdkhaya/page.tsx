@@ -13,6 +13,8 @@ import ThreeColumnSection from "@/components/lcdkhaya/ThreeColumnSection";
 export const metadata: Metadata = { title: { absolute: lcdKhayaConfig.seo.defaultTitle } };
 export const revalidate = 3600;
 
+const eyebrowClass = "eyebrow block text-xs font-semibold uppercase tracking-[0.15em] text-[#B8860B]";
+
 export default async function LcdKhayaHomePage() {
   const { sections } = lcdKhayaConfig;
   const [fact, posts] = await Promise.all([getTodaysFact(), getPostsByTag(lcdKhayaConfig.blogTag)]);
@@ -45,14 +47,15 @@ export default async function LcdKhayaHomePage() {
         </section>
       )}
 
-      {/* Important information — scannable, right after the hero */}
+      {/* Important information — a stat strip: big serif value, small mono
+          label, dark background, bordered columns */}
       {sections.importantInfo && (
-        <section className="border-y border-[#B8860B]/15 bg-white py-4">
-          <div className="container-page grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <section className="bg-[#1A1A1A] py-6 text-white">
+          <div className="container-page grid grid-cols-2 divide-y divide-white/10 sm:grid-cols-4 sm:divide-y-0 sm:divide-x">
             {lcdKhayaConfig.importantInfo.map((item) => (
-              <div key={item.label}>
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-[#8B6E46]">{item.label}</p>
-                <p className="mt-0.5 text-sm font-semibold text-[#1A1A1A]">{item.value}</p>
+              <div key={item.label} className="px-4 py-3 text-center first:pl-0 last:pr-0">
+                <p className="font-serif text-xl font-bold text-[#D4AF37] sm:text-2xl">{item.value}</p>
+                <p className="mono-label mt-1 text-[11px] uppercase tracking-[0.12em] text-white/60">{item.label}</p>
               </div>
             ))}
           </div>
@@ -69,7 +72,8 @@ export default async function LcdKhayaHomePage() {
       {/* Why choose us */}
       {sections.whyChooseUs && (
         <section className="container-page py-6">
-          <h2 className="text-xl font-bold text-[#1A1A1A]">Why Learn With LCD Khaya</h2>
+          <span className={eyebrowClass}>Our Advantage</span>
+          <h2 className="mt-1 text-xl font-bold text-[#1A1A1A]">Why Learn With LCD Khaya</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {lcdKhayaConfig.whyChooseUs.map((item) => (
               <div key={item.title} className="border border-[#B8860B]/15 bg-white p-5">
@@ -86,7 +90,10 @@ export default async function LcdKhayaHomePage() {
         <section className="bg-white py-6">
           <div className="container-page">
             <div className="flex items-end justify-between">
-              <h2 className="text-xl font-bold text-[#1A1A1A]">Lessons &amp; Packages</h2>
+              <div>
+                <span className={eyebrowClass}>Pricing</span>
+                <h2 className="mt-1 text-xl font-bold text-[#1A1A1A]">Lessons &amp; Packages</h2>
+              </div>
               <Link href="/lcdkhaya/services" className="text-sm font-semibold text-[#B8860B] hover:underline">
                 View all →
               </Link>
@@ -120,7 +127,8 @@ export default async function LcdKhayaHomePage() {
       {sections.blogPreview && recentPosts.length > 0 && (
         <section className="bg-white py-6">
           <div className="container-page">
-            <h2 className="text-xl font-bold text-[#1A1A1A]">From the Blog</h2>
+            <span className={eyebrowClass}>Resources</span>
+            <h2 className="mt-1 text-xl font-bold text-[#1A1A1A]">From the Blog</h2>
             <div className="mt-4 grid gap-6 sm:grid-cols-3">
               {recentPosts.map((post) => (
                 <Link key={post.slug} href={`/lcdkhaya/blog/${post.slug}`} className="group border border-[#B8860B]/15 p-5">
@@ -136,7 +144,10 @@ export default async function LcdKhayaHomePage() {
       {/* Testimonials */}
       {sections.testimonials && (
         <section className="py-6">
-          <h2 className="container-page text-xl font-bold text-[#1A1A1A]">What Learners Say</h2>
+          <div className="container-page">
+            <span className={eyebrowClass}>Testimonials</span>
+            <h2 className="mt-1 text-xl font-bold text-[#1A1A1A]">What Learners Say</h2>
+          </div>
           <div className="mt-4">
             <TestimonialsScroller />
           </div>

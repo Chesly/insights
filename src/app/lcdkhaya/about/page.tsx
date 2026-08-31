@@ -32,7 +32,8 @@ export default function AboutPage() {
 
       <div className="bg-white py-6">
         <div className="container-page">
-          <h2 className="text-xl font-bold text-[#1A1A1A]">Our Services</h2>
+          <span className="eyebrow block text-xs font-semibold uppercase tracking-[0.15em] text-[#B8860B]">What We Offer</span>
+          <h2 className="mt-1 text-xl font-bold text-[#1A1A1A]">Our Services</h2>
           <div className="mt-4">
             <ThreeColumnSection items={lcdKhayaConfig.threeColumn} ctaHref="/lcdkhaya/services" />
           </div>
@@ -45,7 +46,8 @@ export default function AboutPage() {
 
       <div className="py-6">
         <div className="container-page">
-          <h2 className="text-xl font-bold text-[#1A1A1A]">Our Branches</h2>
+          <span className="eyebrow block text-xs font-semibold uppercase tracking-[0.15em] text-[#B8860B]">Locations</span>
+          <h2 className="mt-1 text-xl font-bold text-[#1A1A1A]">Our Branches</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
             {lcdKhayaConfig.branches.map((branch) => (
               <div key={branch.name} className="border border-[#B8860B]/25 p-4">

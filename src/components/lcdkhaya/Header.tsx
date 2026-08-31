@@ -36,6 +36,16 @@ export default function LcdKhayaHeader() {
         </div>
       </div>
 
+      {/* Strip — greeting + tagline, sits between the utility bar and the
+          main nav row so the brand voice shows before the logo does. */}
+      <div className="hidden border-b border-[#B8860B]/15 bg-[#F1E9D8] lg:block">
+        <div className="container-page flex h-8 items-center justify-center">
+          <p className="mono-label text-[11px] uppercase tracking-[0.12em] text-[#8B6E46]">
+            Welcome to {lcdKhayaConfig.name} — Learner&rsquo;s, Driving &amp; PrDP Licence Training Since {lcdKhayaConfig.foundedYear}
+          </p>
+        </div>
+      </div>
+
       <div className="border-b border-[#B8860B]/20">
         <div className="container-page flex h-16 items-center justify-between">
           <Link href="/lcdkhaya" className="flex items-center">
