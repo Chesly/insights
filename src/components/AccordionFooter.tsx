@@ -39,11 +39,17 @@ export interface AccordionFooterTheme {
   border: string;
 }
 
+export interface FooterLegalLink {
+  label: string;
+  href: string;
+}
+
 export default function AccordionFooter({
   brand,
   about,
   social = [],
   columns,
+  legalLinks = [],
   bottomText,
   theme
 }: {
@@ -51,7 +57,8 @@ export default function AccordionFooter({
   about: string;
   social?: FooterSocialLink[];
   columns: FooterColumn[];
-  bottomText: string;
+  legalLinks?: FooterLegalLink[];
+  bottomText: ReactNode;
   theme: AccordionFooterTheme;
 }) {
   const [open, setOpen] = useState(true);
@@ -123,8 +130,20 @@ export default function AccordionFooter({
         </button>
       </div>
 
-      <div className="border-t border-[var(--footer-border)] py-5 text-center text-xs opacity-70">
-        {bottomText}
+      <div className="border-t border-[var(--footer-border)] py-5">
+        <div className="container-page flex flex-col items-center justify-between gap-2 text-center text-xs opacity-70 sm:flex-row sm:text-left">
+          <p>{bottomText}</p>
+          {legalLinks.length > 0 && (
+            <nav className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+              {legalLinks.map((l, i) => (
+                <span key={l.href} className="flex items-center gap-3">
+                  {i > 0 && <span aria-hidden="true">·</span>}
+                  <a href={l.href} className="hover:text-[var(--footer-accent)]">{l.label}</a>
+                </span>
+              ))}
+            </nav>
+          )}
+        </div>
       </div>
     </footer>
   );

@@ -3,6 +3,11 @@ import Link from "next/link";
 import { lcdKhayaConfig } from "@/lib/lcdkhaya/config";
 import AccordionFooter from "@/components/AccordionFooter";
 
+// A curated subset of packages, not all ten variants — the footer is meant
+// to sell, not to replace the full Services & Packages page. Links jump
+// straight to that package's card there via its id as a hash anchor.
+const FOOTER_PACKAGE_IDS = ["learners-all-codes", "code8-bundle", "code10-bundle", "code14-bundle", "prdp"];
+
 // lucide-react doesn't ship brand/logo icons (trademark reasons), so —
 // same pattern as the main site's components/SocialLinks.tsx — these are
 // plain inline SVG paths.
@@ -15,6 +20,10 @@ const SOCIAL_ICON_PATHS: Record<string, string> = {
 };
 
 export default function LcdKhayaFooter() {
+  const footerPackages = FOOTER_PACKAGE_IDS
+    .map((id) => lcdKhayaConfig.packages.find((p) => p.id === id))
+    .filter((p): p is (typeof lcdKhayaConfig.packages)[number] => Boolean(p));
+
   return (
     <AccordionFooter
       brand={
@@ -35,7 +44,15 @@ export default function LcdKhayaFooter() {
         accent: lcdKhayaConfig.branding.colors.primaryLight,
         border: "rgba(255,255,255,0.12)"
       }}
-      bottomText={`© ${new Date().getFullYear()} ${lcdKhayaConfig.name}. Since ${lcdKhayaConfig.foundedYear}. All Rights Reserved.`}
+      bottomText={
+        <>
+          © {new Date().getFullYear()} {lcdKhayaConfig.name}. Since {lcdKhayaConfig.foundedYear}. All Rights Reserved.{" "}
+          <a href="https://chesly.tech" target="_blank" rel="noopener noreferrer" className="hover:text-[#D4AF37]">
+            Site by Chesly.Tech
+          </a>
+        </>
+      }
+      legalLinks={lcdKhayaConfig.footer.legal}
       columns={[
         {
           title: "Branches",
@@ -80,16 +97,21 @@ export default function LcdKhayaFooter() {
           )
         },
         {
-          title: "Legal",
+          title: "Packages",
           content: (
             <ul className="space-y-2">
-              {lcdKhayaConfig.footer.legal.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className="hover:text-[#D4AF37]">
-                    {l.label}
+              {footerPackages.map((pkg) => (
+                <li key={pkg.id}>
+                  <Link href={`/lcdkhaya/services#${pkg.id}`} className="hover:text-[#D4AF37]">
+                    {pkg.name}
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link href="/lcdkhaya/services" className="font-semibold text-[#D4AF37] hover:underline">
+                  View All Packages →
+                </Link>
+              </li>
             </ul>
           )
         }

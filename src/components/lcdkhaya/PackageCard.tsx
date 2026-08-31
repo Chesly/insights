@@ -4,7 +4,10 @@ import type { DrivingPackage } from "@/lib/lcdkhaya/config";
 
 export default function PackageCard({ pkg }: { pkg: DrivingPackage }) {
   return (
-    <div className="group flex flex-col border border-[#B8860B]/20 bg-white p-6 transition-shadow hover:shadow-lg hover:shadow-[#B8860B]/10">
+    <div
+      id={pkg.id}
+      className="group flex scroll-mt-20 flex-col border border-[#B8860B]/20 bg-white p-6 transition-shadow hover:shadow-lg hover:shadow-[#B8860B]/10 lg:scroll-mt-36"
+    >
       <span className="w-fit bg-[#8B6E46]/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-[#8B6E46]">
         {pkg.code}{pkg.licenceCode ? ` · Licence Code ${pkg.licenceCode}` : ""}
       </span>
