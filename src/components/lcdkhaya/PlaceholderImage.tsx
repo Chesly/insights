@@ -14,20 +14,31 @@ export default function PlaceholderImage({
   variant = "road",
   label,
   showCaption = true,
+  tone = "bright",
   className = ""
 }: {
   variant?: "road" | "wheel" | "car" | "sign";
   label?: string;
   showCaption?: boolean;
+  // "bright" is the standard warm gold/bronze duotone used in cards and
+  // grids. "deep" is a darker, more cinematic treatment for full-bleed
+  // hero photography — closer in mood to a real dusk/low-light driving
+  // shot than the brighter card duotone would read as.
+  tone?: "bright" | "deep";
   className?: string;
 }) {
+  const gradient =
+    tone === "deep"
+      ? "bg-gradient-to-br from-[#2A1F10] via-[#5C4423] to-[#8B6E46]"
+      : "bg-gradient-to-br from-[#8B6E46] via-[#B8860B] to-[#D4AF37]";
+
   return (
     <div
-      className={`relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#8B6E46] via-[#B8860B] to-[#D4AF37] ${className}`}
+      className={`relative flex items-center justify-center overflow-hidden ${gradient} ${className}`}
       role="img"
       aria-label={label || "Placeholder image"}
     >
-      <div className="absolute inset-0 bg-[#1A1A1A]/20 mix-blend-multiply" aria-hidden="true" />
+      <div className={`absolute inset-0 mix-blend-multiply ${tone === "deep" ? "bg-[#1A1A1A]/40" : "bg-[#1A1A1A]/20"}`} aria-hidden="true" />
       <Motif variant={variant} className="relative h-1/2 w-1/2 text-white/85" />
       {label && showCaption && (
         <span className="absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#1A1A1A]/40 px-3 py-1 text-xs font-medium text-white/90">

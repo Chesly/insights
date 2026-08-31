@@ -38,11 +38,11 @@ export default function HeroSlideshow({
     >
       {slides.map((slide, i) => (
         <div key={i} className={`absolute inset-0 transition-opacity duration-700 ${i === index ? "opacity-100" : "opacity-0"}`}>
-          <PlaceholderImage variant={slide.variant} label={slide.label} showCaption={false} className="h-full w-full" />
+          <PlaceholderImage variant={slide.variant} label={slide.label} showCaption={false} tone="deep" className="h-full w-full" />
         </div>
       ))}
 
-      <div className="absolute inset-0 bg-gradient-to-r from-[#1A1A1A]/75 via-[#1A1A1A]/45 to-[#1A1A1A]/10" aria-hidden="true" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#1A1A1A]/85 via-[#1A1A1A]/70 to-[#1A1A1A]/55" aria-hidden="true" />
 
       {children && (
         <div className="relative z-10 flex h-full items-center">
