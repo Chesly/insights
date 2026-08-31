@@ -1,8 +1,18 @@
 import type { Metadata } from "next";
+import { Playfair_Display, Inter, IBM_Plex_Mono } from "next/font/google";
 import { lcdKhayaConfig } from "@/lib/lcdkhaya/config";
 import LcdKhayaHeader from "@/components/lcdkhaya/Header";
 import LcdKhayaFooter from "@/components/lcdkhaya/Footer";
 import WhatsAppButton from "@/components/lcdkhaya/WhatsAppButton";
+import BackToTopButton from "@/components/lcdkhaya/BackToTopButton";
+
+// Matches the font pairing used across Chesly's other sites (e.g. Nikson
+// M): Playfair Display for headings, Inter for body copy, IBM Plex Mono
+// for small labels/eyebrows/stats — scoped to LCD Khaya via CSS
+// variables rather than touching the root Insights font stack.
+const playfair = Playfair_Display({ subsets: ["latin"], weight: ["600", "700", "800"], variable: "--font-lcd-serif" });
+const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-lcd-sans" });
+const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-lcd-mono" });
 
 // `title: { absolute: ... }` bypasses the root layout's Insights title
 // template ("%s | Chesly.Tech Insights") — LCD Khaya is a distinct brand
@@ -70,7 +80,7 @@ function drivingSchoolSchema() {
 
 export default function LcdKhayaLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#FAF6EC] font-sans text-[#1A1A1A]">
+    <div className={`${playfair.variable} ${inter.variable} ${plexMono.variable} lcdkhaya-root min-h-screen bg-[#FAF6EC] font-[family-name:var(--font-lcd-sans)] text-[#1A1A1A]`}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(drivingSchoolSchema()) }}
@@ -79,6 +89,7 @@ export default function LcdKhayaLayout({ children }: { children: React.ReactNode
       <main id="main-content">{children}</main>
       <LcdKhayaFooter />
       <WhatsAppButton />
+      <BackToTopButton />
     </div>
   );
 }
