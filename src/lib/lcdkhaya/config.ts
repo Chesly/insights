@@ -298,16 +298,21 @@ export const lcdKhayaConfig = {
     newsletter: true
   },
 
-  // The client's own graduate photos didn't fit the tightened, premium
-  // layout direction — placeholders stand in until proper photography
-  // is ready (see LCDKHAYA-SETUP.md for AI image-generation prompts).
-  // Swapping in real photos later is a data change here, not a layout
-  // change — every placeholder already carries the final aspect ratio.
+  // Real photography, hosted on ImageKit (same CDN pattern as the rest of
+  // Chesly.Tech's client sites — see next.config.mjs remotePatterns).
   heroSlides: [
-    { variant: "car", label: "Photo coming soon — Our Fleet" },
-    { variant: "wheel", label: "Photo coming soon — Learner Success" },
-    { variant: "sign", label: "Photo coming soon — K53 Training" }
-  ] as { variant: "road" | "wheel" | "car" | "sign"; label: string }[],
+    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/driving_school_2.jpg", alt: "LCD Khaya driving lesson in progress" },
+    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/driving_school_3.jpg", alt: "LCD Khaya learner driver on the road" },
+    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/driving_school_1.jpg", alt: "LCD Khaya driving lesson" }
+  ] as { src: string; alt: string }[],
+
+  // Background photo behind every interior page's breadcrumb/title strip
+  // (PageHero) — one consistent image across the whole site rather than a
+  // flat color, matching the reference site's layered page headers.
+  pageHeroImage: "https://ik.imagekit.io/mkvu8hdr5/lcd/smiley-woman-posing-from-inside-her-car.jpg",
+
+  // Main image for the About page's intro section.
+  aboutImage: "https://ik.imagekit.io/mkvu8hdr5/lcd/about_us_image.jpg",
 
   // A compact, scannable strip right after the hero — the "important
   // information" a visitor shouldn't have to scroll past whitespace to
@@ -325,19 +330,19 @@ export const lcdKhayaConfig = {
   threeColumn: [
     {
       title: "Learner's Licence",
-      variant: "sign" as const,
+      image: "https://ik.imagekit.io/mkvu8hdr5/lcd/person-preparing-get-driver-license.jpg",
       description: "K53 theory training for Code 1 (motorcycle), Code 2 (light vehicle) and Code 3 (heavy & articulated).",
       cta: "View Packages"
     },
     {
       title: "Driving Licence",
-      variant: "car" as const,
+      image: "https://ik.imagekit.io/mkvu8hdr5/lcd/young-beautiful-woman-sitting-school-car-ready-classes.jpg",
       description: "Practical lessons for motorcycle, Code 8, Code 10 and Code 14 — through to your road test.",
       cta: "View Packages"
     },
     {
       title: "PrDP",
-      variant: "wheel" as const,
+      image: "https://ik.imagekit.io/mkvu8hdr5/lcd/african-american-man-woman-couple-driving-car-street.jpg",
       description: "Professional Driving Permit applications for both Goods and Passengers categories.",
       cta: "View Packages"
     }

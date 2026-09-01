@@ -1,4 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
+import { lcdKhayaConfig } from "@/lib/lcdkhaya/config";
 
 export interface LcdCrumb {
   label: string;
@@ -15,8 +17,18 @@ export default function LcdKhayaPageHero({
   breadcrumbs: LcdCrumb[];
 }) {
   return (
-    <div className="bg-[#1A1A1A] py-4 text-white sm:py-5">
-      <div className="container-page">
+    <div className="relative overflow-hidden bg-[#1A1A1A] py-4 text-white sm:py-5">
+      <Image
+        src={lcdKhayaConfig.pageHeroImage}
+        alt=""
+        fill
+        sizes="100vw"
+        className="object-cover"
+        aria-hidden="true"
+      />
+      <div className="absolute inset-0 bg-[#1A1A1A]/80" aria-hidden="true" />
+
+      <div className="container-page relative">
         <nav aria-label="Breadcrumb" className="mb-1.5 text-xs text-white/50">
           <ol className="flex flex-wrap items-center gap-1">
             {breadcrumbs.map((crumb, i) => (

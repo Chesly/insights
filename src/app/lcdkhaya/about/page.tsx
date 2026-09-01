@@ -1,9 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { lcdKhayaConfig } from "@/lib/lcdkhaya/config";
 import { slugify } from "@/lib/types";
 import PageHero from "@/components/lcdkhaya/PageHero";
-import PlaceholderImage from "@/components/lcdkhaya/PlaceholderImage";
 import ThreeColumnSection from "@/components/lcdkhaya/ThreeColumnSection";
 
 export const metadata: Metadata = { title: { absolute: `About | ${lcdKhayaConfig.shortName}` } };
@@ -27,7 +27,15 @@ export default function AboutPage() {
             so your lessons prepare you for exactly what you'll face on test day.
           </p>
         </div>
-        <PlaceholderImage variant="wheel" label="Photo coming soon" className="aspect-square w-full" />
+        <div className="relative aspect-square w-full">
+          <Image
+            src={lcdKhayaConfig.aboutImage}
+            alt={`${lcdKhayaConfig.name} instructor and learner`}
+            fill
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            className="object-cover"
+          />
+        </div>
       </div>
 
       <div className="bg-white py-6">

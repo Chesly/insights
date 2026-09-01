@@ -1,19 +1,17 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import PlaceholderImage from "./PlaceholderImage";
+import Image from "next/image";
 
 // Full-bleed hero: slides fill the entire section as a background layer,
 // with a dark scrim for legibility and the passed-in text content
-// (heading, CTAs, etc.) overlaid on top via `children`. Swap
-// PlaceholderImage for next/image once real hero photography is ready —
-// the slot/aspect-ratio stays identical either way.
+// (heading, CTAs, etc.) overlaid on top via `children`.
 export default function HeroSlideshow({
   slides,
   autoAdvanceMs = 4500,
   children
 }: {
-  slides: { variant: "road" | "wheel" | "car" | "sign"; label: string }[];
+  slides: { src: string; alt: string }[];
   autoAdvanceMs?: number;
   children?: ReactNode;
 }) {
@@ -37,8 +35,8 @@ export default function HeroSlideshow({
       onMouseLeave={() => setPaused(false)}
     >
       {slides.map((slide, i) => (
-        <div key={i} className={`absolute inset-0 transition-opacity duration-700 ${i === index ? "opacity-100" : "opacity-0"}`}>
-          <PlaceholderImage variant={slide.variant} label={slide.label} showCaption={false} tone="deep" className="h-full w-full" />
+        <div key={slide.src} className={`absolute inset-0 transition-opacity duration-700 ${i === index ? "opacity-100" : "opacity-0"}`}>
+          <Image src={slide.src} alt={slide.alt} fill priority={i === 0} sizes="100vw" className="object-cover" />
         </div>
       ))}
 

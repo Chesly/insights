@@ -47,7 +47,7 @@ export default function LcdKhayaFooter() {
       bottomText={
         <>
           © {new Date().getFullYear()} {lcdKhayaConfig.name}. Since {lcdKhayaConfig.foundedYear}. All Rights Reserved.{" "}
-          <a href="https://chesly.tech" target="_blank" rel="noopener noreferrer" className="hover:text-[#D4AF37]">
+          <a href="https://insights.chesly.tech/" target="_blank" rel="noopener noreferrer" className="hover:text-[#D4AF37]">
             Site by Chesly.Tech
           </a>
         </>
