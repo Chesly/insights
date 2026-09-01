@@ -13,7 +13,7 @@ import DidYouKnowCard from "@/components/DidYouKnowCard";
 import { getTodaysFact } from "@/lib/facts";
 import { getAllSiteSettings } from "@/lib/settings";
 
-export const revalidate = 3600;
+export const revalidate = 300;
 
 export default async function HomePage() {
   // Single blended fetch — Insights and Let's Have Coffee together, so the

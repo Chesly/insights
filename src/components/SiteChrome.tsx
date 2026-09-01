@@ -9,7 +9,10 @@ import { CartProvider } from "@/lib/cart/CartContext"
 // and should never show the public site's nav/footer around them. The
 // invoice page is a standalone printable document for the same reason —
 // the marketing header/cart/footer would print alongside it otherwise.
-const HIDDEN_PREFIXES = ["/admin", "/ct-login", "/register", "/invoice"]
+// /lcdkhaya is a separate branded micro-site (its own layout.tsx renders
+// its own header/footer) that just happens to share this Next.js app and
+// backend — it must never show the Insights header/footer either.
+const HIDDEN_PREFIXES = ["/admin", "/ct-login", "/register", "/invoice", "/lcdkhaya"]
 
 export default function SiteChrome({
   children,

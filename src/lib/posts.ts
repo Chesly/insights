@@ -72,9 +72,20 @@ function rowToPost(row: any): Post {
   };
 }
 
-export const getAllPosts = cache(async (
-  includeDrafts = false,
-  sections: ("insights" | "coffee")[] = ["insights"]
+// Content tagged with one of these belongs to a specific client sub-site
+// (reusing the shared posts table) and must never surface in the main
+// Insights site's own general listings (homepage, /insights, RSS,
+// sitemap, search) — only that client's own tag-scoped page should show
+// it. Add a new client's tag here when reusing this platform pattern.
+const CLIENT_EXCLUSIVE_TAGS = ["lcdkhaya"];
+
+function isClientExclusive(tags: string[]): boolean {
+  return tags.some((t) => CLIENT_EXCLUSIVE_TAGS.includes(slugify(t)));
+}
+
+const fetchPostsRaw = cache(async (
+  includeDrafts: boolean,
+  sections: ("insights" | "coffee")[]
 ): Promise<Post[]> => {
   const supabase = createPublicClient();
   let query = supabase.from("posts_with_categories").select("*").order("published_at", { ascending: false });
@@ -84,6 +95,14 @@ export const getAllPosts = cache(async (
   if (error || !data) return [];
   return data.map(rowToPost);
 });
+
+export async function getAllPosts(
+  includeDrafts = false,
+  sections: ("insights" | "coffee")[] = ["insights"]
+): Promise<Post[]> {
+  const posts = await fetchPostsRaw(includeDrafts, sections);
+  return posts.filter((p) => !isClientExclusive(p.tags));
+}
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
   const supabase = createPublicClient();
@@ -107,7 +126,12 @@ export async function getPostsByCategory(category: string): Promise<Post[]> {
 }
 
 export async function getPostsByTag(tag: string): Promise<Post[]> {
-  const posts = await getAllPosts();
+  // A client-exclusive tag (e.g. "lcdkhaya") is deliberately excluded from
+  // getAllPosts()'s general listing — this is the one place that content
+  // is meant to be reachable, so bypass the exclusion here specifically.
+  const posts = CLIENT_EXCLUSIVE_TAGS.includes(slugify(tag))
+    ? await fetchPostsRaw(false, ["insights"])
+    : await getAllPosts();
   return posts.filter((p) => p.tags.some((t) => slugify(t) === slugify(tag)));
 }
 

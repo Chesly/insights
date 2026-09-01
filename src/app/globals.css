@@ -21,3 +21,27 @@ body {
 .reading-progress {
   @apply fixed left-0 top-0 z-50 h-1 bg-gold transition-all duration-150;
 }
+
+/* LCD Khaya testimonials marquee — the rendered list is duplicated so
+   this can loop seamlessly from -50% back to 0 with no visible jump. */
+@keyframes lcd-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* LCD Khaya type system — matches the Playfair Display (headings) /
+   Inter (body) / IBM Plex Mono (small labels) pairing used across
+   Chesly's other client sites. Scoped to .lcdkhaya-root (set on the
+   LCD Khaya layout's wrapper) rather than touching Insights' own
+   font-serif/font-sans utilities, which stay untouched. */
+.lcdkhaya-root h1,
+.lcdkhaya-root h2,
+.lcdkhaya-root h3,
+.lcdkhaya-root h4 {
+  font-family: var(--font-lcd-serif), Georgia, serif;
+}
+
+.lcdkhaya-root .eyebrow,
+.lcdkhaya-root .mono-label {
+  font-family: var(--font-lcd-mono), monospace;
+}
