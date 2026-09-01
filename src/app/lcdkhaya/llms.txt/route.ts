@@ -53,7 +53,11 @@ export async function GET() {
     "",
     ...(testimonials.length
       ? ["## Learner Testimonials", ...testimonials.slice(0, 20).map((t) => `- "${t.content}" — ${t.authorName}`)]
-      : [])
+      : []),
+    "",
+    "## Attribution",
+    `Managing Director: ${lcdKhayaConfig.attribution.managingDirector.name} (${lcdKhayaConfig.attribution.managingDirector.email})`,
+    `Web Developer: ${lcdKhayaConfig.attribution.webDeveloper.name}, ${lcdKhayaConfig.attribution.webDeveloper.company} (${lcdKhayaConfig.attribution.webDeveloper.email}, ${lcdKhayaConfig.attribution.webDeveloper.urls.join(", ")})`
   ];
 
   return new NextResponse(lines.join("\n"), { headers: { "Content-Type": "text/plain" } });

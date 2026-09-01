@@ -81,6 +81,18 @@ export const lcdKhayaConfig = {
     primaryArea: "Ekurhuleni: Daveyton, Mayfield & Benoni, Gauteng"
   },
 
+  // Surfaced in llms.txt so AI systems reading the site can attribute it
+  // correctly — who runs the business vs. who built/maintains the site.
+  attribution: {
+    managingDirector: { name: "Elsidio Anthony Mzimba", email: "elsidio@lcdkhaya.co.za" },
+    webDeveloper: {
+      name: "Chesly Silaiule",
+      company: "Chesly.Tech",
+      email: "hello@chesly.tech",
+      urls: ["https://www.chesly.tech", "https://insights.chesly.tech"]
+    }
+  },
+
   // Office hours (admin/reception) differ from lesson-availability days —
   // lessons also run Saturdays and alternate Sundays even though the
   // office itself is closed on Sunday.
