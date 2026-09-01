@@ -36,6 +36,12 @@ export const getFactBySlug = cache(async (slug: string): Promise<Fact | null> =>
 const ROTATION_MINUTES = 6 * 60; // a fresh fact roughly every 6 hours, site-wide
 const LCD_KHAYA_ROTATION_MINUTES = 30; // LCD Khaya's homepage rotates every 30 minutes
 
+// Categories belonging to a specific client sub-site (reusing the shared
+// facts table) must never surface in the main Insights site's own
+// unscoped rotation — only that client's own category-scoped page should
+// show them. Add a new client's category here when reusing this pattern.
+const CLIENT_EXCLUSIVE_FACT_CATEGORIES = ["driving"];
+
 /** Picks the fact currently in rotation. A fact with `special_date` set
     (e.g. "05-01" for Workers' Day) takes over on that exact calendar date
     every year, overriding the normal rotation for the day. Otherwise it's
@@ -44,7 +50,10 @@ const LCD_KHAYA_ROTATION_MINUTES = 30; // LCD Khaya's homepage rotates every 30 
     scheduling/admin upkeep, and is stable for everyone within that same
     slot (matches the homepage's ISR revalidation interval). */
 export async function getTodaysFact(): Promise<Fact | null> {
-  return pickFromRotation(await getAllFacts(), ROTATION_MINUTES);
+  const facts = (await getAllFacts()).filter(
+    (f) => !CLIENT_EXCLUSIVE_FACT_CATEGORIES.includes((f.category || "").toLowerCase())
+  );
+  return pickFromRotation(facts, ROTATION_MINUTES);
 }
 
 /** Same rotation as getTodaysFact, scoped to one category — so a
