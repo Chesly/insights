@@ -62,7 +62,7 @@ export const lcdKhayaConfig = {
     // Rendered directly from the real logo PDF LCD Khaya provided.
     logoHorizontal: "/lcdkhaya/brand/logo-horizontal.png",
     logoStacked: "/lcdkhaya/brand/logo-stacked.png",
-    favicon: "/lcdkhaya/brand/favicon-source.png",
+    favicon: "https://ik.imagekit.io/mkvu8hdr5/lcd/favco.png",
     colors: {
       // Lifted from the LCD Khaya logo (bronze wordmark, gold crown accent)
       primary: "#B8860B", // gold
