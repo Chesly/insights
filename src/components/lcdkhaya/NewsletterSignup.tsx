@@ -17,7 +17,7 @@ export default function NewsletterSignup() {
     const data = new FormData(form);
 
     try {
-      const res = await fetch("/api/newsletter", {
+      const res = await fetch("/api/public/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
