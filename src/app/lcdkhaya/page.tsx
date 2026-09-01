@@ -195,6 +195,27 @@ export default async function LcdKhayaHomePage() {
         </section>
       )}
 
+      {/* Parking Challenge promo */}
+      {sections.parkingGamePromo && (
+        <section className="container-page py-6">
+          <div className="flex flex-col gap-4 border border-[#B8860B]/20 bg-[#8B6E46]/5 p-6 sm:flex-row sm:items-center">
+            <div className="flex-1">
+              <span className={eyebrowClass}>Just for Fun</span>
+              <h3 className="mt-1 text-lg font-bold text-[#1A1A1A]">Think You Can Park It?</h3>
+              <p className="mt-1 text-sm text-[#1A1A1A]/70">
+                Try our quick parking challenge — steer into the bay without hitting anything. Good warm-up before your real lesson.
+              </p>
+            </div>
+            <Link
+              href="/lcdkhaya/game"
+              className="shrink-0 bg-[#B8860B] px-6 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#8B6E46]"
+            >
+              Play Now
+            </Link>
+          </div>
+        </section>
+      )}
+
       {sections.newsletter && <NewsletterSignup />}
     </div>
   );

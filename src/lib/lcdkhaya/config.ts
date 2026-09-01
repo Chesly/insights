@@ -296,6 +296,7 @@ export const lcdKhayaConfig = {
     blogPreview: true,
     testimonials: true,
     callback: true,
+    parkingGamePromo: true,
     newsletter: true
   },
 
