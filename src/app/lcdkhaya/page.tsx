@@ -13,7 +13,9 @@ import HeroSlideshow from "@/components/lcdkhaya/HeroSlideshow";
 import ThreeColumnSection from "@/components/lcdkhaya/ThreeColumnSection";
 
 export const metadata: Metadata = { title: { absolute: lcdKhayaConfig.seo.defaultTitle } };
-export const revalidate = 3600;
+// 30 minutes — matches the "Did You Know" fact rotation interval, so the
+// cached page never serves a fact past the point it should have rotated.
+export const revalidate = 1800;
 
 const eyebrowClass = "eyebrow block text-xs font-semibold uppercase tracking-[0.15em] text-[#B8860B]";
 
