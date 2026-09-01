@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { lcdKhayaConfig } from "@/lib/lcdkhaya/config";
@@ -69,18 +70,29 @@ export default async function LcdKhayaHomePage() {
         </section>
       )}
 
-      {/* Why choose us */}
+      {/* Why choose us — split layout, real photo alongside the cards */}
       {sections.whyChooseUs && (
         <section className="container-page py-6">
           <span className={eyebrowClass}>Our Advantage</span>
           <h2 className="mt-1 text-xl font-bold text-[#1A1A1A]">Why Learn With LCD Khaya</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {lcdKhayaConfig.whyChooseUs.map((item) => (
-              <div key={item.title} className="border border-[#B8860B]/15 bg-white p-5">
-                <h3 className="font-semibold text-[#1A1A1A]">{item.title}</h3>
-                <p className="mt-1.5 text-sm text-[#1A1A1A]/60">{item.text}</p>
-              </div>
-            ))}
+          <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:items-stretch">
+            <div className="relative min-h-[220px] w-full overflow-hidden lg:min-h-0">
+              <Image
+                src={lcdKhayaConfig.whyChooseUsImage}
+                alt="LCD Khaya driving lesson"
+                fill
+                sizes="(min-width: 1024px) 45vw, 100vw"
+                className="object-cover"
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {lcdKhayaConfig.whyChooseUs.map((item) => (
+                <div key={item.title} className="border border-[#B8860B]/15 bg-white p-5">
+                  <h3 className="font-semibold text-[#1A1A1A]">{item.title}</h3>
+                  <p className="mt-1.5 text-sm text-[#1A1A1A]/60">{item.text}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       )}
@@ -107,16 +119,29 @@ export default async function LcdKhayaHomePage() {
         </section>
       )}
 
-      {/* Did you know */}
+      {/* Did you know — full-bleed background photo, same dark-scrim
+          treatment as the hero and page headers */}
       {sections.didYouKnow && fact && (
-        <section className="container-page py-6">
-          <div className="flex flex-col gap-4 border border-[#B8860B]/20 bg-[#8B6E46]/5 p-6 sm:flex-row sm:items-center">
+        <section className="relative overflow-hidden py-10 text-white">
+          <Image
+            src={lcdKhayaConfig.didYouKnowImage}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover"
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-[#1A1A1A]/75" aria-hidden="true" />
+          <div className="container-page relative flex flex-col gap-4 sm:flex-row sm:items-center">
             <div className="flex-1">
-              <span className="text-xs font-semibold uppercase tracking-wide text-[#8B6E46]">Did You Know?</span>
-              <h3 className="mt-1 text-base font-bold text-[#1A1A1A]">{fact.headline}</h3>
-              <p className="mt-1 text-sm text-[#1A1A1A]/70">{fact.fact_text}</p>
+              <span className="eyebrow block text-xs font-semibold uppercase tracking-[0.15em] text-[#D4AF37]">Did You Know?</span>
+              <h3 className="mt-1 text-lg font-bold sm:text-xl">{fact.headline}</h3>
+              <p className="mt-1 text-sm text-white/80">{fact.fact_text}</p>
             </div>
-            <Link href="/lcdkhaya/facts" className="shrink-0 border border-[#1A1A1A]/20 px-5 py-2.5 text-sm font-semibold hover:border-[#B8860B] hover:text-[#B8860B]">
+            <Link
+              href="/lcdkhaya/facts"
+              className="shrink-0 border border-white/40 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:border-white hover:bg-white/20"
+            >
               More Driving Facts
             </Link>
           </div>

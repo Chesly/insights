@@ -122,6 +122,7 @@ export const lcdKhayaConfig = {
   nav: [
     { label: "Home", href: "/lcdkhaya" },
     { label: "About", href: "/lcdkhaya/about" },
+    { label: "Gallery", href: "/lcdkhaya/gallery" },
     { label: "Services & Packages", href: "/lcdkhaya/services" },
     { label: "FAQ", href: "/lcdkhaya/faq" },
     { label: "Did You Know?", href: "/lcdkhaya/facts" },
@@ -312,7 +313,38 @@ export const lcdKhayaConfig = {
   pageHeroImage: "https://ik.imagekit.io/mkvu8hdr5/lcd/smiley-woman-posing-from-inside-her-car.jpg",
 
   // Main image for the About page's intro section.
-  aboutImage: "https://ik.imagekit.io/mkvu8hdr5/lcd/about_us_image.jpg",
+  aboutImage: "https://ik.imagekit.io/mkvu8hdr5/lcd/565686614_33053550694244006_8770830755126644720_n.jpg",
+
+  // Background for the homepage's "Did You Know" strip.
+  didYouKnowImage: "https://ik.imagekit.io/mkvu8hdr5/lcd/driving_2.jpg",
+
+  // "Why Learn With LCD Khaya" split-layout image on the homepage.
+  whyChooseUsImage: "https://ik.imagekit.io/mkvu8hdr5/lcd/driving.jpg",
+
+  // Booking page's intro image.
+  bookingImage: "https://ik.imagekit.io/mkvu8hdr5/lcd/person-preparing-get-driver-license(1).jpg",
+
+  // Gallery page — real photos, browsed as a thumbnail grid with a
+  // click-to-enlarge lightbox (see GalleryLightbox).
+  galleryPhotos: [
+    "568921468_33053553074243768_4263882523313228963_n.jpg",
+    "568483907_33053552807577128_6004110621625583190_n.jpg",
+    "568622120_33053555620910180_2776705463093240681_n.jpg",
+    "566286354_33053550740910668_3559782836880225837_n.jpg",
+    "565712504_33053551277577281_4830505460766922827_n.jpg",
+    "567695960_33053551824243893_4677512414978491509_n.jpg",
+    "565335451_33053554647576944_348831065985367054_n.jpg",
+    "568722243_33053553714243704_3718414224516160827_n.jpg",
+    "565704923_33053556314243444_8270103006588782991_n.jpg",
+    "566241114_33053555107576898_7377358598527916190_n.jpg",
+    "568615270_33053552414243834_2108864818684128109_n.jpg",
+    "565765279_33053555664243509_5976543362681552015_n.jpg",
+    "568087305_33053552037577205_4077300477497160119_n.jpg",
+    "565686614_33053550694244006_8770830755126644720_n.jpg"
+  ].map((file, i) => ({
+    src: `https://ik.imagekit.io/mkvu8hdr5/lcd/${file}`,
+    alt: `LCD Khaya Driving School — photo ${i + 1}`
+  })),
 
   // A compact, scannable strip right after the hero — the "important
   // information" a visitor shouldn't have to scroll past whitespace to
