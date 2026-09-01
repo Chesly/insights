@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Lightbulb } from "lucide-react";
 import type { Metadata } from "next";
 import { lcdKhayaConfig } from "@/lib/lcdkhaya/config";
-import { getTodaysFact } from "@/lib/facts";
+import { getTodaysFactByCategory } from "@/lib/facts";
 import { getPostsByTag } from "@/lib/posts";
 import PackageCard from "@/components/lcdkhaya/PackageCard";
 import TestimonialsScroller from "@/components/lcdkhaya/TestimonialsScroller";
@@ -18,7 +19,10 @@ const eyebrowClass = "eyebrow block text-xs font-semibold uppercase tracking-[0.
 
 export default async function LcdKhayaHomePage() {
   const { sections } = lcdKhayaConfig;
-  const [fact, posts] = await Promise.all([getTodaysFact(), getPostsByTag(lcdKhayaConfig.blogTag)]);
+  const [fact, posts] = await Promise.all([
+    getTodaysFactByCategory(lcdKhayaConfig.factsCategory),
+    getPostsByTag(lcdKhayaConfig.blogTag)
+  ]);
   const recentPosts = posts.slice(0, 3);
 
   return (
@@ -131,19 +135,20 @@ export default async function LcdKhayaHomePage() {
             className="object-cover"
             aria-hidden="true"
           />
-          <div className="absolute inset-0 bg-[#1A1A1A]/75" aria-hidden="true" />
-          <div className="container-page relative flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="flex-1">
-              <span className="eyebrow block text-xs font-semibold uppercase tracking-[0.15em] text-[#D4AF37]">Did You Know?</span>
-              <h3 className="mt-1 text-lg font-bold sm:text-xl">{fact.headline}</h3>
-              <p className="mt-1 text-sm text-white/80">{fact.fact_text}</p>
+          <div className="absolute inset-0 bg-[#1A1A1A]/70" aria-hidden="true" />
+          <div className="container-page relative max-w-2xl">
+            <span className="eyebrow inline-flex items-center gap-1.5 bg-[#D4AF37] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#1A1A1A]">
+              <Lightbulb className="h-3.5 w-3.5" /> Did You Know?
+            </span>
+            <h3 className="mt-4 text-lg font-bold sm:text-2xl">{fact.headline}</h3>
+            <p className="mt-2 text-sm text-white/80 sm:text-base">{fact.fact_text}</p>
+            <div className="mono-label mt-4 flex items-center gap-3 text-xs uppercase tracking-wide text-white/60">
+              <span>{fact.category || "Driving"}</span>
+              <span aria-hidden="true">·</span>
+              <Link href="/lcdkhaya/facts" className="font-semibold text-[#D4AF37] hover:underline">
+                Find Out More →
+              </Link>
             </div>
-            <Link
-              href="/lcdkhaya/facts"
-              className="shrink-0 border border-white/40 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:border-white hover:bg-white/20"
-            >
-              More Driving Facts
-            </Link>
           </div>
         </section>
       )}

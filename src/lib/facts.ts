@@ -43,7 +43,18 @@ const ROTATION_HOURS = 6; // 24 / 4 — a fresh fact roughly every 6 hours
     scheduling/admin upkeep, and is stable for everyone within that same
     slot (matches the homepage's hourly ISR revalidation). */
 export async function getTodaysFact(): Promise<Fact | null> {
-  const facts = await getAllFacts();
+  return pickFromRotation(await getAllFacts());
+}
+
+/** Same rotation as getTodaysFact, scoped to one category — so a
+    category-specific "Did You Know" widget (e.g. LCD Khaya's homepage)
+    doesn't show an unrelated fact just because it's in rotation
+    site-wide. */
+export async function getTodaysFactByCategory(category: string): Promise<Fact | null> {
+  return pickFromRotation(await getFactsByCategory(category));
+}
+
+function pickFromRotation(facts: Fact[]): Fact | null {
   if (facts.length === 0) return null;
 
   const now = new Date();
