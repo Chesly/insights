@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { lcdKhayaConfig } from "@/lib/lcdkhaya/config";
 import PageHero from "@/components/lcdkhaya/PageHero";
-import CallbackForm from "@/components/lcdkhaya/CallbackForm";
 import ContactForm from "./ContactForm";
 
 export const metadata: Metadata = { title: { absolute: `Contact | ${lcdKhayaConfig.shortName}` } };
@@ -15,10 +14,6 @@ export default function ContactPage() {
         breadcrumbs={[{ label: "Home", href: "/lcdkhaya" }, { label: "Contact" }]}
       />
       <div className="container-page py-6">
-        <div className="mb-6">
-          <CallbackForm />
-        </div>
-
         <div className="grid gap-6 lg:grid-cols-2">
           <div>
             <h2 className="text-lg font-bold text-[#1A1A1A]">Get In Touch</h2>
