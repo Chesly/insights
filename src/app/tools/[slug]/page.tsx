@@ -54,6 +54,9 @@ export default async function DownloadDetailPage({
     getApprovedReviews(item.id),
   ]);
   const latestPosts = allPosts.slice(0, 4);
+  const relatedReading = item.relatedPostIds
+    .map((id) => allPosts.find((p) => p.id === id))
+    .filter((p): p is NonNullable<typeof p> => !!p);
   const galleryImages = [item.thumbnailUrl, ...item.galleryImages].filter(Boolean);
 
   const crumbs = breadcrumbSchema([
@@ -331,6 +334,45 @@ export default async function DownloadDetailPage({
                   </div>
                 );
               })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {relatedReading.length > 0 && (
+        <section className="border-t border-navy/10 bg-navy/[0.02] py-14 dark:border-white/10 dark:bg-white/[0.02]" aria-labelledby="related-reading-heading">
+          <div className="container-page">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 id="related-reading-heading" className="text-xl font-bold uppercase tracking-wide text-navy dark:text-white">
+                Related Reading
+              </h2>
+              <Link href="/insights" className="text-xs font-semibold uppercase tracking-wide text-gold hover:underline">
+                View All →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
+              {relatedReading.map((post) => (
+                <Link
+                  key={post.slug}
+                  href={`/${post.section === "coffee" ? "coffee" : "insights"}/${post.slug}`}
+                  className="group block"
+                >
+                  <div className="relative w-full overflow-hidden bg-navy/5 dark:bg-white/5 aspect-[285/200]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={post.image}
+                      alt={post.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="pt-3">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-gold">{post.category}</span>
+                    <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-navy group-hover:text-gold dark:text-white">
+                      {post.title}
+                    </h3>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         </section>

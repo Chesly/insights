@@ -63,6 +63,11 @@ export interface PostFrontmatter {
   semanticKeywords?: string[];
   howToSteps?: HowToStep[];
 
+  /** Manually curated related product(s) — shown on the article alongside
+      the automatic same-category/tag related-article matching, so an
+      editor can link a post directly to the product it's selling. */
+  relatedDownloadIds?: string[];
+
   /** Groups this post into a numbered series (e.g. a 3-part conversation) —
       all optional since most posts don't belong to one. */
   seriesId?: string;

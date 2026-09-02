@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import Topbar from '@/components/layout/Topbar'
 import Toggle from '@/components/ui/Toggle'
 import TagInput from '@/components/cms/TagInput'
+import RelatedItemPicker from '@/components/cms/RelatedItemPicker'
 import FileUploadButton from '@/components/cms/FileUploadButton'
 import { Plus, Edit2, Trash2, Save, X, AlertCircle, Download as DownloadIcon, ExternalLink, GripVertical } from 'lucide-react'
 import type { Download, Category } from '@/types'
@@ -38,9 +39,11 @@ interface FormState {
   tags: string[]
   bundle_files: BundleFile[]
   faq: FaqItem[]
+  related_download_ids: string[]
+  related_post_ids: string[]
 }
 
-const EMPTY: FormState = { name:'', slug:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', tier:'free', price:'', compare_at_price:'', is_published:false, scheduled_at:'', target_audience:[], solves:[], seo_title:'', meta_description:'', store_url:'', gallery_images:[], key_features:[], how_it_helps:[], why_you_need_it:[], tags:[], bundle_files:[], faq:[] }
+const EMPTY: FormState = { name:'', slug:'', subtitle:'', description:'', thumbnail_url:'', file_url:'', file_type:'pdf', category_id:'', tier:'free', price:'', compare_at_price:'', is_published:false, scheduled_at:'', target_audience:[], solves:[], seo_title:'', meta_description:'', store_url:'', gallery_images:[], key_features:[], how_it_helps:[], why_you_need_it:[], tags:[], bundle_files:[], faq:[], related_download_ids:[], related_post_ids:[] }
 
 const BUNDLE_FILE_TYPES: { value: BundleFile['fileType']; label: string }[] = [
   { value:'xlsx', label:'📊 Spreadsheet' },
@@ -81,6 +84,7 @@ function CharHint({ value, min, max }: { value: string; min?: number; max: numbe
 export default function DownloadsPage() {
   const [downloads, setDownloads] = useState<Download[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [posts, setPosts] = useState<{ id: string; title: string }[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -97,10 +101,11 @@ export default function DownloadsPage() {
 
   const load = useCallback(async () => {
     setLoading(true)
-    const [dlRes, catRes] = await Promise.all([fetch('/api/downloads'), fetch('/api/categories')])
-    const [dlJson, catJson] = await Promise.all([dlRes.json(), catRes.json()])
+    const [dlRes, catRes, postsRes] = await Promise.all([fetch('/api/downloads'), fetch('/api/categories'), fetch('/api/posts?limit=500')])
+    const [dlJson, catJson, postsJson] = await Promise.all([dlRes.json(), catRes.json(), postsRes.json()])
     setDownloads(dlJson.data || [])
     setCategories(catJson.data || [])
+    setPosts((postsJson.data || []).map((p: { id: string; title: string }) => ({ id: p.id, title: p.title })))
     setLoading(false)
   }, [])
 
@@ -124,6 +129,8 @@ export default function DownloadsPage() {
       how_it_helps:(dl as unknown as FormState).how_it_helps||[], why_you_need_it:(dl as unknown as FormState).why_you_need_it||[],
       tags:(dl as unknown as FormState).tags||[], bundle_files:(dl as unknown as FormState).bundle_files||[],
       faq:(dl as unknown as FormState).faq||[],
+      related_download_ids:(dl as unknown as FormState).related_download_ids||[],
+      related_post_ids:(dl as unknown as FormState).related_post_ids||[],
     })
     setOriginalScheduledAt(toDatetimeLocalInput((dl as unknown as { scheduled_at?: string | null }).scheduled_at))
     setShowForm(true); setError('')
@@ -192,14 +199,15 @@ export default function DownloadsPage() {
     }
     setSaving(true); setError('')
     try {
-      // `faq` and `scheduled_at` are only sent when there's something to
-      // write (or, for scheduled_at, when clearing a schedule that was
-      // actually there before — checked against originalScheduledAt, not
-      // just "editing an existing row") — so saving a product before those
-      // columns exist in the database doesn't break every other field on
-      // the form, and a normal edit to a never-scheduled product doesn't
-      // try to touch the column either.
-      const { faq, scheduled_at: scheduledLocal, ...formRest } = form
+      // `faq`, `related_download_ids`, `related_post_ids` and `scheduled_at`
+      // are only sent when there's something to write (or, for
+      // scheduled_at, when clearing a schedule that was actually there
+      // before — checked against originalScheduledAt, not just "editing an
+      // existing row") — so saving a product before those columns exist in
+      // the database doesn't break every other field on the form, and a
+      // normal edit to an unscheduled/unlinked product doesn't try to touch
+      // columns it doesn't need to.
+      const { faq, related_download_ids: relatedDownloads, related_post_ids: relatedPosts, scheduled_at: scheduledLocal, ...formRest } = form
       const scheduledIso = fromDatetimeLocalInput(scheduledLocal)
       // A future schedule always overrides the Published toggle — no need
       // to remember to leave it off when scheduling something ahead.
@@ -210,6 +218,8 @@ export default function DownloadsPage() {
         price: form.price.trim() ? Number(form.price) : null,
         compare_at_price: form.compare_at_price.trim() ? Number(form.compare_at_price) : null,
         ...(faq.length > 0 ? { faq } : {}),
+        ...(relatedDownloads.length > 0 ? { related_download_ids: relatedDownloads } : {}),
+        ...(relatedPosts.length > 0 ? { related_post_ids: relatedPosts } : {}),
         ...(scheduledLocal ? { scheduled_at: scheduledIso } : originalScheduledAt ? { scheduled_at: null } : {}),
       }
       const url = form.id ? `/api/downloads/${form.id}` : '/api/downloads'
@@ -472,6 +482,28 @@ export default function DownloadsPage() {
                   Tags <span style={{ fontWeight:400, color:'#94a3b8' }}>(SEO — shown only on the single product page; 1–3 words each, 5–10 tags total)</span>
                 </label>
                 <TagInput tags={form.tags} onChange={v=>setForm(f=>({...f,tags:v}))} placeholder="Add a tag…"/>
+              </div>
+              <div style={{ gridColumn:'1/-1' }}>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  Related Products <span style={{ fontWeight:400, color:'#94a3b8' }}>(shown ahead of the automatic same-category matches — use this to deliberately link a natural next purchase)</span>
+                </label>
+                <RelatedItemPicker
+                  selectedIds={form.related_download_ids}
+                  onChange={v=>setForm(f=>({...f,related_download_ids:v}))}
+                  options={downloads.filter(d=>d.id!==form.id).map(d=>({ id:d.id, label:d.name }))}
+                  placeholder="Search products…"
+                />
+              </div>
+              <div style={{ gridColumn:'1/-1' }}>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  Related Blog Posts <span style={{ fontWeight:400, color:'#94a3b8' }}>(build an internal-linking cluster — link this product to the articles that sell it, and link back from those articles below)</span>
+                </label>
+                <RelatedItemPicker
+                  selectedIds={form.related_post_ids}
+                  onChange={v=>setForm(f=>({...f,related_post_ids:v}))}
+                  options={posts.map(p=>({ id:p.id, label:p.title }))}
+                  placeholder="Search posts…"
+                />
               </div>
               <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>

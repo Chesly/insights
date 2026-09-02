@@ -60,6 +60,7 @@ function rowToPost(row: any): Post {
     suggestedQuestions: row.suggested_questions || undefined,
     semanticKeywords: row.semantic_keywords || undefined,
     howToSteps: row.how_to_steps || undefined,
+    relatedDownloadIds: row.related_download_ids || undefined,
 
     seriesId: row.series_id || undefined,
     seriesName: row.series_name || undefined,

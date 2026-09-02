@@ -88,6 +88,7 @@ const COMPLIANCE_DOCS = [
 export default function TenderBidNoBidCalculatorPage() {
   const crumbs = breadcrumbSchema([
     { name: "Home", url: siteConfig.url },
+    { name: "Calculators", url: `${siteConfig.url}/calculators` },
     { name: "Bid/No-Bid Calculator", url: PAGE_URL }
   ]);
 
@@ -122,7 +123,7 @@ export default function TenderBidNoBidCalculatorPage() {
       <PageHero
         title="Know which tenders are worth bidding for."
         subtitle="Answer twelve questions about the tender in front of you. Get a score, a recommendation, and a printable record of why you decided what you decided — before you spend two weeks on a bid you were never going to win."
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Bid/No-Bid Calculator" }]}
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Calculators", href: "/calculators" }, { label: "Bid/No-Bid Calculator" }]}
       />
 
       <div className="container-page py-4">
@@ -138,7 +139,7 @@ export default function TenderBidNoBidCalculatorPage() {
               you a bid, a submission checklist, and a printable decision record.
             </p>
             <a
-              href="/tools/tender-toolkit"
+              href="/tools/south-african-tender-toolkit"
               className="mt-4 inline-block border border-gold bg-gold px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:bg-gold-dark"
             >
               Get the Tender Toolkit

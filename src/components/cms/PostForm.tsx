@@ -6,6 +6,7 @@ import { generateSlug, estimateReadTime, toDatetimeLocalInput, fromDatetimeLocal
 import { adminFetch } from '@/lib/adminFetch'
 import Toggle from '@/components/ui/Toggle'
 import TagInput from '@/components/cms/TagInput'
+import RelatedItemPicker from '@/components/cms/RelatedItemPicker'
 import ImagePicker from '@/components/cms/ImagePicker'
 import type { Post, Category } from '@/types'
 import type { FaqItem } from '@/lib/types'
@@ -97,6 +98,10 @@ export default function PostForm({ post, categories }: Props) {
   const [canonical, setCanonical] = useState(post?.canonical_url || '')
   const [faq, setFaq] = useState<FaqItem[]>((post as unknown as { faq?: FaqItem[] })?.faq || [])
   const faqAnswerRefs = useRef<Record<number, HTMLTextAreaElement | null>>({})
+  const [relatedDownloadIds, setRelatedDownloadIds] = useState<string[]>(
+    (post as unknown as { related_download_ids?: string[] })?.related_download_ids || []
+  )
+  const [downloadsList, setDownloadsList] = useState<{ id: string; name: string }[]>([])
 
   // Inserts a real link into an FAQ answer at the cursor — nobody should
   // have to hand-type [text](url) markdown to link to a download or
@@ -133,6 +138,7 @@ export default function PostForm({ post, categories }: Props) {
 
   useEffect(() => {
     fetch('/api/series').then(r=>r.json()).then(j=>setSeriesList(j.data||[])).catch(()=>{})
+    fetch('/api/downloads').then(r=>r.json()).then(j=>setDownloadsList((j.data||[]).map((d:{id:string,name:string})=>({id:d.id,name:d.name})))).catch(()=>{})
   }, [])
 
   const readTime = estimateReadTime(body)
@@ -156,7 +162,11 @@ export default function PostForm({ post, categories }: Props) {
     scheduled_at: fromDatetimeLocalInput(scheduledAt),
     read_time: readTime,
     faq,
-  }), [title,slug,excerpt,body,bodyJson,featuredImage,imageCaption,categoryIds,section,seriesId,seriesOrder,tags,status,featured,trending,popular,allowComments,seoTitle,metaDesc,ogImage,canonical,scheduledAt,readTime,faq])
+    // Only sent when non-empty — this column is newer than the rest of
+    // the form, so saving a post before it exists in the database
+    // shouldn't break every other field on the form.
+    ...(relatedDownloadIds.length > 0 ? { related_download_ids: relatedDownloadIds } : {}),
+  }), [title,slug,excerpt,body,bodyJson,featuredImage,imageCaption,categoryIds,section,seriesId,seriesOrder,tags,status,featured,trending,popular,allowComments,seoTitle,metaDesc,ogImage,canonical,scheduledAt,readTime,faq,relatedDownloadIds])
 
   const save = async (overrideStatus?: Post['status']) => {
     if (!title.trim()) { setError('Title is required'); return }
@@ -409,6 +419,16 @@ export default function PostForm({ post, categories }: Props) {
               <Label sub="Press Enter or comma to add">Tags</Label>
               <TagInput tags={tags} onChange={setTags} placeholder="Add tag…"
                 suggestions={['AI','South Africa','SEO','GEO','ChatGPT','Claude','WordPress','Webflow','Entrepreneurship','Startups']}/>
+            </Field>
+
+            <Field>
+              <Label sub="Shown on the article as a linked product — use this to link a post directly to the product it's selling, as part of an internal-linking cluster">Related Products</Label>
+              <RelatedItemPicker
+                selectedIds={relatedDownloadIds}
+                onChange={setRelatedDownloadIds}
+                options={downloadsList.map(d=>({ id:d.id, label:d.name }))}
+                placeholder="Search products…"
+              />
             </Field>
 
             <div style={{ borderTop:'1px solid #f1f5f9', margin:'20px 0', paddingTop:20 }}>
