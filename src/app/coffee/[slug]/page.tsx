@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { getPostBySlug, getRelatedPosts } from "@/lib/posts";
+import { getAllDownloads, pricing } from "@/lib/downloads";
 import { getAuthorBySlug } from "@/lib/authors";
 import { siteConfig } from "@/lib/siteConfig";
 import { slugify } from "@/lib/types";
@@ -67,6 +68,9 @@ export default async function CoffeePostPage({
   if ((post.section || "insights") !== "coffee") notFound();
 
   const related = await getRelatedPosts(post);
+  const relatedProducts = (post.relatedDownloadIds?.length ?? 0) > 0
+    ? (await getAllDownloads()).filter((d) => post.relatedDownloadIds!.includes(d.id))
+    : [];
   const author = await getAuthorBySlug(post.authorSlug || "chesly-silaule", post.author);
   const authorUrl = `${siteConfig.url}/author/${author.slug}`;
 
@@ -330,6 +334,41 @@ export default async function CoffeePostPage({
           content, so the page reads less like a single long newspaper
           column and more like something you can also browse sideways. */}
       <aside className="space-y-8 lg:pt-2">
+        {relatedProducts.length > 0 && (
+          <div aria-labelledby="related-products-heading">
+            <h2 id="related-products-heading" className="text-xs font-bold uppercase tracking-wide text-navy/60 dark:text-white/50">
+              Related Products
+            </h2>
+            <div className="mt-3 space-y-3">
+              {relatedProducts.map((rp) => {
+                const rpPricing = pricing(rp);
+                return (
+                  <Link key={rp.id} href={`/tools/${rp.slug}`} className="group flex gap-3 border border-gold/10 p-3">
+                    <div className="relative w-20 flex-none overflow-hidden bg-navy/5 dark:bg-white/5 aspect-[68/35]">
+                      {rp.thumbnailUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={rp.thumbnailUrl}
+                          alt={rp.name}
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-xl">📄</div>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="line-clamp-2 text-xs font-semibold leading-snug text-navy group-hover:text-gold dark:text-white">
+                        {rp.name}
+                      </h3>
+                      <p className="mt-1 text-xs font-bold text-gold">{rpPricing.label}</p>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {post.tags?.length > 0 && (
           <div>
             <h2 className="text-xs font-bold uppercase tracking-wide text-navy/60 dark:text-white/50">

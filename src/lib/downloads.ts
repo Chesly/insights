@@ -48,6 +48,13 @@ export interface DownloadItem {
       same shape/purpose as the (currently admin-inaccessible) `faq` field
       already used on posts. */
   faq: FaqItem[];
+  /** Manually curated related products/posts — shown ahead of (not
+      instead of) the automatic same-category matches, so an editor can
+      build a deliberate internal-linking cluster (e.g. this toolkit and
+      the two articles that sell it) rather than relying on category
+      matching alone. */
+  relatedDownloadIds: string[];
+  relatedPostIds: string[];
 }
 
 export interface BundleFile {
@@ -86,6 +93,8 @@ function rowToDownload(row: any): DownloadItem {
     tags: row.tags || [],
     bundleFiles: row.bundle_files || [],
     faq: row.faq || [],
+    relatedDownloadIds: row.related_download_ids || [],
+    relatedPostIds: row.related_post_ids || [],
   };
 }
 
@@ -105,14 +114,19 @@ export const getDownloadBySlug = cache(async (slug: string): Promise<DownloadIte
   return all.find((d) => d.slug === slug) || null;
 });
 
-/** Same-category downloads first (excluding the item itself), padded out
-    with the most recent other downloads so the section is never empty. */
+/** Manually linked products first (in the order the editor set them),
+    then same-category downloads, then padded out with the most recent
+    other downloads so the section is never empty. */
 export async function getRelatedDownloads(item: DownloadItem, limit = 4): Promise<DownloadItem[]> {
   const all = await getAllDownloads();
   const others = all.filter((d) => d.id !== item.id);
-  const sameCategory = item.category ? others.filter((d) => d.category === item.category) : [];
-  const rest = others.filter((d) => !sameCategory.includes(d));
-  return [...sameCategory, ...rest].slice(0, limit);
+  const manual = item.relatedDownloadIds
+    .map((id) => others.find((d) => d.id === id))
+    .filter((d): d is DownloadItem => !!d);
+  const remaining = others.filter((d) => !manual.includes(d));
+  const sameCategory = item.category ? remaining.filter((d) => d.category === item.category) : [];
+  const rest = remaining.filter((d) => !sameCategory.includes(d));
+  return [...manual, ...sameCategory, ...rest].slice(0, limit);
 }
 
 /** The three states you actually see — Free, On Sale, Premium — derived

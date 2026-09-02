@@ -138,7 +138,7 @@ export default function TenderBidNoBidCalculatorPage() {
               you a bid, a submission checklist, and a printable decision record.
             </p>
             <a
-              href="/tools/tender-toolkit"
+              href="/tools/south-african-tender-toolkit"
               className="mt-4 inline-block border border-gold bg-gold px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:bg-gold-dark"
             >
               Get the Tender Toolkit
