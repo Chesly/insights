@@ -25,5 +25,13 @@ export const CALCULATORS: CalculatorMeta[] = [
     cardTitle: "VAT Calculator",
     description:
       "Add or remove 15% VAT from any amount in seconds — inclusive or exclusive, with the working shown so you can check it."
+  },
+  {
+    slug: "retention-calculator",
+    icon: "🏗️",
+    title: "Retention & Progress Payment Calculator",
+    cardTitle: "Retention Calculator",
+    description:
+      "Work out retention withheld, net payment due and VAT on any progress claim, and track when the retained amount gets released."
   }
 ];
