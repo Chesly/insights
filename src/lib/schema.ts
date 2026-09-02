@@ -189,6 +189,28 @@ export function howToSchema(name: string, steps: HowToStep[]) {
   };
 }
 
+export function webApplicationSchema(app: {
+  name: string;
+  url: string;
+  description: string;
+  applicationCategory: string;
+  featureList: string[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: app.name,
+    url: app.url,
+    description: app.description,
+    applicationCategory: app.applicationCategory,
+    operatingSystem: "Any",
+    inLanguage: siteConfig.language,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "ZAR" },
+    featureList: app.featureList,
+    publisher: { "@id": `${siteConfig.url}/#organization` }
+  };
+}
+
 export function collectionPageSchema(name: string, url: string, description: string) {
   return {
     "@context": "https://schema.org",

@@ -19,6 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: siteConfig.url, changeFrequency: "daily", priority: 1 },
     { url: `${siteConfig.url}/insights`, changeFrequency: "daily", priority: 0.9 },
     { url: `${siteConfig.url}/tools`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${siteConfig.url}/calculators/tender-bid-no-bid`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${siteConfig.url}/facts`, changeFrequency: "daily", priority: 0.6 },
     { url: `${siteConfig.url}/spaza-support`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${siteConfig.url}/category`, changeFrequency: "weekly", priority: 0.7 },
