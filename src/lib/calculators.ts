@@ -4,6 +4,10 @@
 export interface CalculatorMeta {
   slug: string;
   icon: string;
+  // Optional custom icon artwork (square image URL) — when set, this
+  // replaces the emoji `icon` on cards. Left blank until real artwork is
+  // supplied; fill in per-calculator as images become available.
+  image?: string;
   title: string;
   cardTitle: string;
   description: string;

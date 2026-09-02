@@ -69,8 +69,13 @@ export default function CalculatorsHubPage() {
               href={`/calculators/${c.slug}`}
               className="group flex flex-col border border-navy/10 p-6 transition-colors hover:border-gold dark:border-white/10"
             >
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gold/10 text-2xl">
-                {c.icon}
+              <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-gold/10 text-2xl">
+                {c.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={c.image} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  c.icon
+                )}
               </div>
               <h2 className="mt-4 text-lg font-bold text-navy group-hover:text-gold dark:text-white">
                 {c.cardTitle}

@@ -9,6 +9,7 @@ import Carousel from "@/components/Carousel";
 import ArticleRow from "@/components/ArticleRow";
 import Newsletter from "@/components/Newsletter";
 import ProductsTeaser from "@/components/ProductsTeaser";
+import CalculatorsTeaser from "@/components/CalculatorsTeaser";
 import DidYouKnowCard from "@/components/DidYouKnowCard";
 import { getTodaysFact } from "@/lib/facts";
 import { getAllSiteSettings } from "@/lib/settings";
@@ -133,6 +134,8 @@ export default async function HomePage() {
       </div>
 
       <ProductsTeaser />
+
+      <CalculatorsTeaser />
 
       <Newsletter />
     </div>
