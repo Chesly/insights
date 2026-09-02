@@ -136,7 +136,7 @@ export const siteConfig = {
     resources: [
       { label: "Insights", href: "/insights" },
       { label: "Business Tools", href: "/tools" },
-      { label: "Bid/No-Bid Calculator", href: "/calculators/tender-bid-no-bid" },
+      { label: "Calculators", href: "/calculators" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms of Use", href: "/terms" },
       { label: "Disclaimer", href: "/disclaimer" },
