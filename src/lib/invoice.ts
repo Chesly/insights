@@ -5,7 +5,7 @@ export interface InvoiceOrder {
   paystackReference: string;
   customerEmail: string;
   customerName: string | null;
-  items: { productId: string; slug: string; name: string; price: number }[];
+  items: { productId: string; slug: string; name: string; price: number; quantity?: number }[];
   amount: number;
   discountAmount: number;
   couponCode: string | null;
@@ -13,6 +13,9 @@ export interface InvoiceOrder {
   createdAt: string;
   paidAt: string | null;
   isFree: boolean;
+  shippingAddressLine1: string | null;
+  shippingCity: string | null;
+  shippingPostalCode: string | null;
 }
 
 /** A human-readable, sequential-looking invoice number derived entirely
@@ -44,5 +47,8 @@ export async function getOrderByReference(reference: string): Promise<InvoiceOrd
     createdAt: data.created_at,
     paidAt: data.paid_at,
     isFree: data.paystack_reference?.startsWith("free_") || Number(data.amount) === 0,
+    shippingAddressLine1: data.shipping_address_line1 || null,
+    shippingCity: data.shipping_city || null,
+    shippingPostalCode: data.shipping_postal_code || null,
   };
 }

@@ -21,6 +21,10 @@ export interface Category {
   color: string
   icon: string
   parent_id?: string
+  /** NULL/undefined = shared Insights blog & downloads categories.
+      A client slug (e.g. 'primehealthmeds') scopes this category to that
+      client's own catalog so it never mixes into Insights' pickers. */
+  site?: string | null
   post_count: number
   created_at: string
 }
@@ -131,6 +135,36 @@ export interface Download {
   is_published: boolean
   scheduled_at?: string | null
   download_count: number
+  created_at: string
+  updated_at: string
+}
+
+/** A physical, inventory-tracked product — the reusable "E-commerce"
+    module from the CMS platform bible. Distinct from `Download`, which
+    stays the digital-goods catalog (no stock, no shipping, instant
+    delivery). Scoped per client via `site`, e.g. 'primehealthmeds'. */
+export interface Product {
+  id: string
+  site: string
+  name: string
+  slug: string
+  sku?: string
+  short_description?: string
+  description?: string
+  category_id?: string
+  category?: Category
+  price: number
+  compare_at_price?: number | null
+  currency: string
+  track_stock: boolean
+  stock_quantity: number
+  requires_prescription: boolean
+  thumbnail_url?: string
+  gallery_images: string[]
+  tags: string[]
+  seo_title?: string
+  meta_description?: string
+  is_published: boolean
   created_at: string
   updated_at: string
 }

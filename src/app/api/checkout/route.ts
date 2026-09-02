@@ -8,6 +8,9 @@ interface CheckoutItem {
   slug: string;
   name: string;
   price: number;
+  type?: "digital" | "physical";
+  site?: string;
+  quantity?: number;
 }
 
 // POST — takes the cart + shopper email, records a 'pending' order, then
@@ -18,7 +21,13 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
 
-  const items: CheckoutItem[] = Array.isArray(body.items) ? body.items : [];
+  const rawItems: CheckoutItem[] = Array.isArray(body.items) ? body.items : [];
+  // Quantity is client-supplied like price already was here — clamp it to
+  // a sane integer range rather than trusting it blindly for the amount math.
+  const items: CheckoutItem[] = rawItems.map((i) => ({
+    ...i,
+    quantity: Math.min(99, Math.max(1, Math.round(Number(i.quantity) || 1))),
+  }));
   const email = String(body.email || "").trim();
   const name = body.name ? String(body.name).trim() : null;
   const whatsapp = body.whatsapp ? String(body.whatsapp).trim() : null;
@@ -26,6 +35,18 @@ export async function POST(req: NextRequest) {
   const stateProvince = body.stateProvince ? String(body.stateProvince).trim() : null;
   const notes = body.notes ? String(body.notes).trim() : null;
   const newsletterOptIn = Boolean(body.newsletterOptIn);
+
+  const hasPhysical = items.some((i) => i.type === "physical");
+  const shippingAddressLine1 = body.shippingAddressLine1 ? String(body.shippingAddressLine1).trim() : null;
+  const shippingCity = body.shippingCity ? String(body.shippingCity).trim() : null;
+  const shippingPostalCode = body.shippingPostalCode ? String(body.shippingPostalCode).trim() : null;
+  if (hasPhysical && (!shippingAddressLine1 || !shippingCity || !shippingPostalCode)) {
+    return NextResponse.json({ error: "A delivery address (address, city, postal code) is required for physical items in your cart." }, { status: 400 });
+  }
+  // All physical items in one order come from the same client catalog in
+  // practice (one storefront's cart) — used only to tag the order for
+  // admin filtering, so the first one found is a fine representative.
+  const site = items.find((i) => i.site)?.site || null;
 
   if (items.length === 0) {
     return NextResponse.json({ error: "Your cart is empty." }, { status: 400 });
@@ -43,7 +64,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const subtotal = items.reduce((sum, i) => sum + Number(i.price || 0), 0);
+  const subtotal = items.reduce((sum, i) => sum + Number(i.price || 0) * (i.quantity || 1), 0);
   if (subtotal <= 0) {
     return NextResponse.json({ error: "Cart total must be greater than zero." }, { status: 400 });
   }
@@ -79,6 +100,11 @@ export async function POST(req: NextRequest) {
     whatsapp,
     country,
     state_province: stateProvince,
+    site,
+    shipping_address_line1: shippingAddressLine1,
+    shipping_city: shippingCity,
+    shipping_postal_code: shippingPostalCode,
+    shipping_status: hasPhysical ? "pending" : null,
     notes,
     newsletter_opt_in: newsletterOptIn,
   });

@@ -78,7 +78,7 @@ function rowToPost(row: any): Post {
 // Insights site's own general listings (homepage, /insights, RSS,
 // sitemap, search) — only that client's own tag-scoped page should show
 // it. Add a new client's tag here when reusing this platform pattern.
-const CLIENT_EXCLUSIVE_TAGS = ["lcdkhaya"];
+const CLIENT_EXCLUSIVE_TAGS = ["lcdkhaya", "primehealthmeds"];
 
 function isClientExclusive(tags: string[]): boolean {
   return tags.some((t) => CLIENT_EXCLUSIVE_TAGS.includes(slugify(t)));

@@ -3,21 +3,28 @@
 import { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
 
 export interface CartItem {
-  /** The download's id — doubles as the line-item key since qty is
-      always 1 for digital goods. Kept generic (productId) so this same
-      cart can hold physical products later without a rename. */
+  /** The download's/product's id — doubles as the line-item key. */
   productId: string;
   slug: string;
   name: string;
   thumbnailUrl?: string;
   price: number; // ZAR, snapshot at add-time so a later price change
                   // doesn't retroactively alter something already in cart
+  /** 'digital' (default, instant download — the original behaviour) or
+      'physical' (ships, tracks stock, needs an address at checkout).
+      Drives fulfillment branching in lib/orders.ts — see fulfillOrder. */
+  type?: "digital" | "physical";
+  /** Which client catalog this came from, e.g. 'primehealthmeds'. Only
+      set for physical items; digital Insights downloads leave it unset. */
+  site?: string;
+  quantity?: number; // defaults to 1 — digital goods stay effectively 1-per-line
 }
 
 interface CartContextValue {
   items: CartItem[];
   addItem: (item: CartItem) => void;
   removeItem: (productId: string) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   isInCart: (productId: string) => boolean;
   count: number;
@@ -53,21 +60,37 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [items, hydrated]);
 
   const addItem = useCallback((item: CartItem) => {
-    setItems((prev) => (prev.some((i) => i.productId === item.productId) ? prev : [...prev, item]));
+    setItems((prev) => {
+      const existing = prev.find((i) => i.productId === item.productId);
+      if (!existing) return [...prev, { quantity: 1, ...item }];
+      // Digital goods (no `type`, or 'digital') stay single-line — adding
+      // an already-in-cart download is a no-op, same as before. Physical
+      // goods bump quantity, since a shopper reasonably wants more than one.
+      if (item.type !== "physical") return prev;
+      return prev.map((i) => (i.productId === item.productId ? { ...i, quantity: (i.quantity || 1) + 1 } : i));
+    });
   }, []);
 
   const removeItem = useCallback((productId: string) => {
     setItems((prev) => prev.filter((i) => i.productId !== productId));
   }, []);
 
+  const updateQuantity = useCallback((productId: string, quantity: number) => {
+    setItems((prev) =>
+      quantity <= 0
+        ? prev.filter((i) => i.productId !== productId)
+        : prev.map((i) => (i.productId === productId ? { ...i, quantity } : i))
+    );
+  }, []);
+
   const clearCart = useCallback(() => setItems([]), []);
   const isInCart = useCallback((productId: string) => items.some((i) => i.productId === productId), [items]);
 
-  const count = items.length;
-  const total = useMemo(() => items.reduce((sum, i) => sum + i.price, 0), [items]);
+  const count = items.reduce((sum, i) => sum + (i.quantity || 1), 0);
+  const total = useMemo(() => items.reduce((sum, i) => sum + i.price * (i.quantity || 1), 0), [items]);
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, clearCart, isInCart, count, total }}>
+    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, isInCart, count, total }}>
       {children}
     </CartContext.Provider>
   );

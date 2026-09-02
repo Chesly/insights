@@ -9,6 +9,9 @@ interface OrderItem {
   slug: string;
   name: string;
   price: number;
+  type?: "digital" | "physical";
+  site?: string;
+  quantity?: number;
 }
 
 /**
@@ -72,8 +75,11 @@ export async function fulfillOrder(
     .update({ status: "paid", paid_at: new Date().toISOString() })
     .eq("id", order.id);
 
+  const digitalItems = items.filter((i) => i.type !== "physical");
+  const physicalItems = items.filter((i) => i.type === "physical");
+
   const downloads = await Promise.all(
-    items.map(async (item) => {
+    digitalItems.map(async (item) => {
       const token = await createDownloadToken({
         downloadId: item.productId,
         email: order.customer_email,
@@ -84,21 +90,52 @@ export async function fulfillOrder(
     })
   );
 
+  // Physical goods don't get a download token — decrement stock instead.
+  // Best-effort per item: one product's stock read/write failing must
+  // never stop the rest of the order (already paid) from being fulfilled.
+  await Promise.all(
+    physicalItems.map(async (item) => {
+      try {
+        const { data: product } = await supabase
+          .from("products")
+          .select("stock_quantity, track_stock")
+          .eq("id", item.productId)
+          .single();
+        if (product?.track_stock) {
+          const nextStock = Math.max(0, product.stock_quantity - (item.quantity || 1));
+          await supabase.from("products").update({ stock_quantity: nextStock }).eq("id", item.productId);
+        }
+      } catch {
+        /* stock bookkeeping only — never blocks fulfillment */
+      }
+    })
+  );
+
   // Best-effort — the order is already fulfilled above regardless of
   // whether this succeeds, so an unconfigured/failed send never blocks
   // a customer's download.
   const invoiceUrl = `${siteConfig.url}/invoice/${order.paystack_reference}`;
+  const physicalLines = physicalItems
+    .map((i) => `<li>${i.name}${i.quantity && i.quantity > 1 ? ` × ${i.quantity}` : ""}</li>`)
+    .join("");
   sendEmail({
     to: order.customer_email,
     from: "Insights Orders <onboarding@resend.dev>",
     subject: isFreeOrder ? "Your download is ready" : "Your order is complete",
     html: `
       <p>Hi ${order.customer_name || "there"},</p>
-      <p>${isFreeOrder ? "Your free download is ready" : "Thanks for your order — here's your download"}${downloads.length > 1 ? "s" : ""}:</p>
-      <ul>
-        ${downloads.map((d) => `<li><a href="${siteConfig.url}${d.downloadUrl}">${d.name}</a></li>`).join("")}
-      </ul>
-      <p style="color:#888;font-size:12px">Keep this email — each link can be reused a few times before it expires.</p>
+      ${downloads.length > 0 ? `
+        <p>${isFreeOrder ? "Your free download is ready" : "Here's your download"}${downloads.length > 1 ? "s" : ""}:</p>
+        <ul>
+          ${downloads.map((d) => `<li><a href="${siteConfig.url}${d.downloadUrl}">${d.name}</a></li>`).join("")}
+        </ul>
+        <p style="color:#888;font-size:12px">Keep this email — each link can be reused a few times before it expires.</p>
+      ` : ""}
+      ${physicalLines ? `
+        <p>Your order is confirmed and will be prepared for delivery${order.shipping_address_line1 ? ` to ${order.shipping_address_line1}, ${order.shipping_city || ""} ${order.shipping_postal_code || ""}` : ""}:</p>
+        <ul>${physicalLines}</ul>
+        <p style="color:#888;font-size:12px">We'll be in touch with delivery updates.</p>
+      ` : ""}
       <p style="margin-top:16px"><a href="${invoiceUrl}">View / download your ${isFreeOrder ? "receipt" : "invoice"} (${invoiceNumber({ id: order.id, createdAt: order.created_at })})</a></p>
     `,
   }).catch(() => {});

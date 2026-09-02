@@ -5,8 +5,17 @@ import { Plus, Edit2, Trash2, Save, X, AlertCircle, FolderOpen, RefreshCw } from
 import { generateSlug } from '@/lib/utils'
 import type { Category } from '@/types'
 
-const ICONS = ['📁','🤖','🔍','💻','📣','📈','🇿🇦','🚀','🏪','📖','🎨','📋','💡','⚡','🌍','🏆']
+const ICONS = ['📁','🤖','🔍','💻','📣','📈','🇿🇦','🚀','🏪','📖','🎨','📋','💡','⚡','🌍','🏆','💊','🌿','🤧','🍼','🧴']
 const COLORS = ['#8B6914','#1B2A4A','#059669','#0891b2','#7c3aed','#dc2626','#ea580c','#65a30d']
+
+// The Insights blog/downloads catalog is `site: null` (the original,
+// shared category tree). Anything else is one client's own product
+// category tree — see /admin/products, which reads categories scoped
+// the same way. Add a new client's site slug here when they onboard.
+const CATALOGS = [
+  { value: '', label: 'Insights (blog & downloads)' },
+  { value: 'primehealthmeds', label: 'Prime Health Meds' },
+]
 
 interface FormState {
   id?: string
@@ -21,6 +30,7 @@ interface FormState {
 const EMPTY: FormState = { name:'', slug:'', description:'', icon:'📁', color:'#8B6914', parent_id:'' }
 
 export default function CategoriesPage() {
+  const [catalog, setCatalog] = useState<string>('')
   const [categories, setCategories] = useState<Category[]>([])
   const [totalPosts, setTotalPosts] = useState<number|null>(null)
   const [uncategorized, setUncategorized] = useState<number|null>(null)
@@ -32,10 +42,11 @@ export default function CategoriesPage() {
   const [deleteId, setDeleteId] = useState<string|null>(null)
   const [deleteError, setDeleteError] = useState('')
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (site: string) => {
     setLoading(true)
+    const catQuery = site ? `?site=${encodeURIComponent(site)}` : ''
     const [catRes, postsRes, uncategorizedRes] = await Promise.all([
-      fetch('/api/categories'),
+      fetch(`/api/categories${catQuery}`),
       fetch('/api/posts?limit=1'),
       fetch('/api/posts?limit=1&uncategorized=1'),
     ])
@@ -52,7 +63,7 @@ export default function CategoriesPage() {
     setLoading(false)
   }, [])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => { load(catalog) }, [load, catalog])
 
   const set = (k: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) => {
     const v = e.target.value
@@ -75,13 +86,13 @@ export default function CategoriesPage() {
     if (!form.name.trim()) { setError('Name is required'); return }
     setSaving(true); setError('')
     try {
-      const payload = { name: form.name, slug: form.slug || generateSlug(form.name), description: form.description, icon: form.icon, color: form.color, parent_id: form.parent_id || null }
+      const payload = { name: form.name, slug: form.slug || generateSlug(form.name), description: form.description, icon: form.icon, color: form.color, parent_id: form.parent_id || null, site: catalog || null }
       const url = form.id ? `/api/categories/${form.id}` : '/api/categories'
       const method = form.id ? 'PATCH' : 'POST'
       const res = await fetch(url, { method, headers: { 'Content-Type':'application/json' }, body: JSON.stringify(payload) })
       const json = await res.json()
       if (!res.ok) throw new Error(json.error)
-      await load(); reset()
+      await load(catalog); reset()
     } catch (e: any) { setError(e.message) }
     finally { setSaving(false) }
   }
@@ -92,7 +103,7 @@ export default function CategoriesPage() {
       const res = await fetch(`/api/categories/${id}`, { method: 'DELETE' })
       const json = await res.json()
       if (!res.ok) throw new Error(json.error)
-      await load(); setDeleteId(null)
+      await load(catalog); setDeleteId(null)
     } catch (e: any) { setDeleteError(e.message) }
     finally { setSaving(false) }
   }
@@ -103,6 +114,14 @@ export default function CategoriesPage() {
     <>
       <Topbar title="Categories"/>
       <div style={{ padding:24, maxWidth:1100 }}>
+
+        {/* Catalog selector */}
+        <div style={{ marginBottom: 18, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <label style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>Catalog</label>
+          <select className="cms-input cms-select" style={{ width: 260 }} value={catalog} onChange={e => { setCatalog(e.target.value); reset() }}>
+            {CATALOGS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+          </select>
+        </div>
 
         {/* Stats */}
         <div className="cms-stat-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginBottom:24 }}>
@@ -129,7 +148,7 @@ export default function CategoriesPage() {
               <div style={{ padding:'14px 20px', borderBottom:'1px solid #f1f5f9', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                 <h3 style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontWeight:700, fontSize:15, color:'#1e293b' }}>All Categories</h3>
                 <div style={{ display:'flex', gap:8 }}>
-                  <button onClick={load} className="btn btn-ghost btn-sm" title="Refresh"><RefreshCw size={13}/></button>
+                  <button onClick={()=>load(catalog)} className="btn btn-ghost btn-sm" title="Refresh"><RefreshCw size={13}/></button>
                   <button onClick={()=>{ reset(); setEditing(true) }} className="btn btn-primary btn-sm">
                     <Plus size={13}/>Add Category
                   </button>

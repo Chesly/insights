@@ -3,12 +3,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { generateSlug } from '@/lib/utils'
 import { getSessionProfile, isAllowedElevatedAccess } from '@/lib/auth/session'
 
-export async function GET() {
+// `site` scopes the result to one client's product categories (e.g.
+// 'primehealthmeds'). Omitted = the original behaviour: only the shared
+// Insights blog/download categories (site IS NULL) — existing callers
+// (blog/downloads category pickers) keep working unchanged and never see
+// another client's catalog mixed into their dropdown.
+export async function GET(req: NextRequest) {
   const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('categories')
-    .select('*, parent:categories(id,name)')
-    .order('name')
+  const site = req.nextUrl.searchParams.get('site')
+  let query = supabase.from('categories').select('*, parent:categories(id,name)').order('name')
+  query = site ? query.eq('site', site) : query.is('site', null)
+  const { data, error } = await query
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
   return NextResponse.json({ data })
 }

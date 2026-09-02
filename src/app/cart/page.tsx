@@ -8,7 +8,8 @@ import PageHero from "@/components/PageHero";
 import { COUNTRIES } from "@/lib/countries";
 
 export default function CartPage() {
-  const { items, removeItem, total, clearCart } = useCart();
+  const { items, removeItem, updateQuantity, total, clearCart } = useCart();
+  const hasPhysical = items.some((i) => i.type === "physical");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("+27 ");
@@ -16,6 +17,9 @@ export default function CartPage() {
   const [stateProvince, setStateProvince] = useState("");
   const [newsletterOptIn, setNewsletterOptIn] = useState(false);
   const [notes, setNotes] = useState("");
+  const [shippingAddressLine1, setShippingAddressLine1] = useState("");
+  const [shippingCity, setShippingCity] = useState("");
+  const [shippingPostalCode, setShippingPostalCode] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [error, setError] = useState("");
 
@@ -59,6 +63,7 @@ export default function CartPage() {
         body: JSON.stringify({
           items, email, name, couponCode: coupon?.code,
           whatsapp, country, stateProvince, notes, newsletterOptIn,
+          shippingAddressLine1, shippingCity, shippingPostalCode,
         }),
       });
       const json = await res.json();
@@ -106,8 +111,32 @@ export default function CartPage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold text-navy dark:text-white">{item.name}</p>
-                    <p className="text-sm text-gold">R{item.price.toLocaleString("en-ZA")}</p>
+                    <p className="text-sm text-gold">
+                      R{item.price.toLocaleString("en-ZA")}
+                      {(item.quantity || 1) > 1 && <span className="text-navy/50 dark:text-white/50"> × {item.quantity} = R{(item.price * (item.quantity || 1)).toLocaleString("en-ZA")}</span>}
+                    </p>
                   </div>
+                  {item.type === "physical" && (
+                    <div className="flex shrink-0 items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => updateQuantity(item.productId, (item.quantity || 1) - 1)}
+                        className="h-7 w-7 border border-gold/20 text-navy hover:border-gold dark:text-white"
+                        aria-label={`Decrease quantity of ${item.name}`}
+                      >
+                        −
+                      </button>
+                      <span className="w-6 text-center text-sm">{item.quantity || 1}</span>
+                      <button
+                        type="button"
+                        onClick={() => updateQuantity(item.productId, (item.quantity || 1) + 1)}
+                        className="h-7 w-7 border border-gold/20 text-navy hover:border-gold dark:text-white"
+                        aria-label={`Increase quantity of ${item.name}`}
+                      >
+                        +
+                      </button>
+                    </div>
+                  )}
                   <button
                     onClick={() => removeItem(item.productId)}
                     className="text-xs font-semibold uppercase tracking-wide text-navy/40 hover:text-red-600 dark:text-white/40"
@@ -230,6 +259,52 @@ export default function CartPage() {
                   />
                 </div>
               </div>
+              {hasPhysical && (
+                <>
+                  <div>
+                    <label htmlFor="cart-address" className="mb-1 block text-xs font-semibold text-navy/70 dark:text-white/70">
+                      Delivery Address
+                    </label>
+                    <input
+                      id="cart-address"
+                      type="text"
+                      required
+                      placeholder="Street address"
+                      value={shippingAddressLine1}
+                      onChange={(e) => setShippingAddressLine1(e.target.value)}
+                      className="w-full border border-gold/20 px-3 py-2 text-sm outline-none focus:border-gold"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label htmlFor="cart-city" className="mb-1 block text-xs font-semibold text-navy/70 dark:text-white/70">
+                        City
+                      </label>
+                      <input
+                        id="cart-city"
+                        type="text"
+                        required
+                        value={shippingCity}
+                        onChange={(e) => setShippingCity(e.target.value)}
+                        className="w-full border border-gold/20 px-3 py-2 text-sm outline-none focus:border-gold"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="cart-postal" className="mb-1 block text-xs font-semibold text-navy/70 dark:text-white/70">
+                        Postal Code
+                      </label>
+                      <input
+                        id="cart-postal"
+                        type="text"
+                        required
+                        value={shippingPostalCode}
+                        onChange={(e) => setShippingPostalCode(e.target.value)}
+                        className="w-full border border-gold/20 px-3 py-2 text-sm outline-none focus:border-gold"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
               <div>
                 <label htmlFor="cart-notes" className="mb-1 block text-xs font-semibold text-navy/70 dark:text-white/70">
                   Notes or Payment Suggestions <span className="font-normal text-navy/40 dark:text-white/40">(optional)</span>

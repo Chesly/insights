@@ -17,7 +17,7 @@ export default async function InvoicePage({
 
   const number = invoiceNumber(order);
   const date = new Date(order.createdAt).toLocaleDateString("en-ZA", { year: "numeric", month: "long", day: "numeric" });
-  const subtotal = order.items.reduce((s, i) => s + i.price, 0);
+  const subtotal = order.items.reduce((s, i) => s + i.price * (i.quantity || 1), 0);
 
   return (
     <div className="bg-white py-10 print:py-0 dark:bg-white">
@@ -68,18 +68,31 @@ export default async function InvoicePage({
             </div>
           </div>
 
+          {order.shippingAddressLine1 && (
+            <div className="mt-4 text-sm">
+              <p className="text-xs font-semibold uppercase tracking-wide text-navy/50">Deliver To</p>
+              <p className="mt-1 text-navy/70">
+                {order.shippingAddressLine1}, {order.shippingCity} {order.shippingPostalCode}
+              </p>
+            </div>
+          )}
+
           <table className="mt-8 w-full border-collapse text-left text-sm">
             <thead>
               <tr className="border-b border-navy/10 text-xs font-semibold uppercase tracking-wide text-navy/50">
                 <th className="pb-2">Item</th>
+                <th className="pb-2 text-right">Qty</th>
                 <th className="pb-2 text-right">Price</th>
+                <th className="pb-2 text-right">Total</th>
               </tr>
             </thead>
             <tbody>
               {order.items.map((item) => (
                 <tr key={item.productId} className="border-b border-navy/5">
                   <td className="py-3 text-navy">{item.name}</td>
+                  <td className="py-3 text-right text-navy">{item.quantity || 1}</td>
                   <td className="py-3 text-right text-navy">R{item.price.toFixed(2)}</td>
+                  <td className="py-3 text-right text-navy">R{(item.price * (item.quantity || 1)).toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>

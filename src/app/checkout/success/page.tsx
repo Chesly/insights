@@ -84,7 +84,9 @@ function CheckoutSuccessContent() {
               <p className="text-3xl">🎉</p>
               <h1 className="mt-4 text-xl font-bold text-navy dark:text-white">Thank you — your order is complete!</h1>
               <p className="mt-2 text-sm text-navy/60 dark:text-white/60">
-                A copy of your download link{state.downloads.length > 1 ? "s" : ""} has also been emailed to you.
+                {state.downloads.length > 0
+                  ? `A copy of your download link${state.downloads.length > 1 ? "s" : ""} has also been emailed to you.`
+                  : "A confirmation has been emailed to you — we'll be in touch with delivery updates."}
               </p>
               {state.downloads.length > 0 && (
                 <ul className="mt-6 space-y-2 text-left">
