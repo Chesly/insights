@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Answer = "yes" | "no" | "unsure" | "na";
 
@@ -85,6 +85,24 @@ function selectOnFocus(e: React.FocusEvent<HTMLInputElement>) {
   e.target.select();
 }
 
+// Per-tender fields (cleared by "Start a new tender") persist here...
+const DRAFT_KEY = "tenderCalc.draft.v1";
+// ...while who's using the tool persists separately and survives a reset,
+// so a returning visitor never has to retype their own details.
+const PROFILE_KEY = "tenderCalc.profile.v1";
+
+interface Draft {
+  tName: string; tRef: string; tOrg: string; tClose: string;
+  answers: Record<string, Answer>;
+  rev: number; months: number; direct: Record<string, number>; overhead: Record<string, number>;
+  cont: number; minMargin: number; daysToPay: number; targetMargin: number;
+  decision: "follow" | "bid" | "nobid"; reason: string;
+}
+
+interface Profile {
+  yourCompany: string; decidedBy: string; leadName: string; leadEmail: string;
+}
+
 export default function TenderCalculator() {
   const [tName, setTName] = useState("");
   const [tRef, setTRef] = useState("");
@@ -106,6 +124,7 @@ export default function TenderCalculator() {
   const [reason, setReason] = useState("");
   const [decidedBy, setDecidedBy] = useState("");
   const [reasonError, setReasonError] = useState(false);
+  const [yourCompany, setYourCompany] = useState("");
 
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [leadName, setLeadName] = useState("");
@@ -113,6 +132,61 @@ export default function TenderCalculator() {
   const [leadNewsletter, setLeadNewsletter] = useState(false);
   const [leadStatus, setLeadStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [leadError, setLeadError] = useState("");
+
+  const [hydrated, setHydrated] = useState(false);
+  const [showRestored, setShowRestored] = useState(false);
+
+  // Restore a saved draft/profile once on mount. Runs before the save
+  // effects below start writing (they bail out until `hydrated` is true),
+  // so this never gets clobbered by the initial blank render.
+  useEffect(() => {
+    try {
+      const rawProfile = localStorage.getItem(PROFILE_KEY);
+      if (rawProfile) {
+        const p: Partial<Profile> = JSON.parse(rawProfile);
+        if (p.yourCompany) setYourCompany(p.yourCompany);
+        if (p.decidedBy) setDecidedBy(p.decidedBy);
+        if (p.leadName) setLeadName(p.leadName);
+        if (p.leadEmail) setLeadEmail(p.leadEmail);
+      }
+      const rawDraft = localStorage.getItem(DRAFT_KEY);
+      if (rawDraft) {
+        const d: Partial<Draft> = JSON.parse(rawDraft);
+        if (d.tName) setTName(d.tName);
+        if (d.tRef) setTRef(d.tRef);
+        if (d.tOrg) setTOrg(d.tOrg);
+        if (d.tClose) setTClose(d.tClose);
+        if (d.answers) setAnswers(d.answers);
+        if (d.rev) setRev(d.rev);
+        if (d.months) setMonths(d.months);
+        if (d.direct) setDirect(d.direct);
+        if (d.overhead) setOverhead(d.overhead);
+        if (d.cont !== undefined) setCont(d.cont);
+        if (d.minMargin !== undefined) setMinMargin(d.minMargin);
+        if (d.daysToPay !== undefined) setDaysToPay(d.daysToPay);
+        if (d.targetMargin !== undefined) setTargetMargin(d.targetMargin);
+        if (d.decision) setDecision(d.decision);
+        if (d.reason) setReason(d.reason);
+        if (d.tName || d.rev || (d.answers && Object.keys(d.answers).length > 0)) setShowRestored(true);
+      }
+    } catch {
+      // Corrupt or blocked storage (private browsing) — just start blank.
+    }
+    setHydrated(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const draft: Draft = { tName, tRef, tOrg, tClose, answers, rev, months, direct, overhead, cont, minMargin, daysToPay, targetMargin, decision, reason };
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); } catch { /* private browsing — draft just won't persist */ }
+  }, [hydrated, tName, tRef, tOrg, tClose, answers, rev, months, direct, overhead, cont, minMargin, daysToPay, targetMargin, decision, reason]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const profile: Profile = { yourCompany, decidedBy, leadName, leadEmail };
+    try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch { /* private browsing — profile just won't persist */ }
+  }, [hydrated, yourCompany, decidedBy, leadName, leadEmail]);
 
   function toggle(cid: string, v: Answer) {
     setAnswers((prev) => {
@@ -187,10 +261,11 @@ export default function TenderCalculator() {
 
     const sections: { heading: string; rows: [string, string][] }[] = [];
 
-    if (tName || tRef || tOrg || tClose) {
+    if (yourCompany || tName || tRef || tOrg || tClose) {
       sections.push({
         heading: "The tender",
         rows: [
+          ...(yourCompany ? ([["Your company", yourCompany]] as [string, string][]) : []),
           ["Name", tName || "—"],
           ["Reference", tRef || "—"],
           ["Issuing organisation", tOrg || "—"],
@@ -257,17 +332,50 @@ export default function TenderCalculator() {
     setAnswers({});
     setRev(0); setMonths(12); setDirect({}); setOverhead({});
     setCont(5); setMinMargin(15); setDaysToPay(30); setTargetMargin(20);
-    setDecision("follow"); setReason(""); setDecidedBy(""); setReasonError(false);
+    setDecision("follow"); setReason(""); setReasonError(false);
+    // Your company / decided-by / email-me details are deliberately kept —
+    // only the tender-specific fields reset, per DRAFT_KEY above.
+    try { localStorage.removeItem(DRAFT_KEY); } catch { /* private browsing */ }
+    setShowRestored(false);
     window.scrollTo(0, 0);
+  }
+
+  function buildWhatsAppText(): string {
+    const lines: string[] = [`*${tName || "Tender bid/no-bid result"}*`];
+    if (scoreResult.pct !== null && b) lines.push(`Score: ${scoreResult.pct}/100 — ${b.l}`);
+    if (rev > 0) {
+      lines.push(`Tender price: ${R(rev)}`);
+      lines.push(`Estimated margin: ${pctFmt(pricingResult.margin)}`);
+    }
+    const decisionLabel = decision === "follow" ? (b ? b.l : "Not yet scored") : decision === "bid" ? "Bidding (override)" : "Not bidding (override)";
+    lines.push(`Decision: ${decisionLabel}`);
+    lines.push("");
+    lines.push("Scored free with the Bid/No-Bid Tender Calculator:");
+    lines.push("https://insights.chesly.tech/calculators/tender-bid-no-bid");
+    return lines.join("\n");
   }
 
   return (
     <div>
+      {/* Restored draft notice */}
+      {showRestored && (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border border-gold/30 bg-gold/10 px-4 py-3 print:hidden">
+          <p className="text-sm text-navy dark:text-white">Welcome back — we restored your unfinished tender.</p>
+          <button type="button" onClick={handleReset} className="text-xs font-semibold uppercase tracking-wide text-navy underline underline-offset-2 dark:text-white">
+            Not this one? Start fresh
+          </button>
+        </div>
+      )}
+
       {/* 1. Tender */}
       <section className="border-b border-navy/10 py-8 dark:border-white/10">
         <h2 className="text-lg font-bold text-navy dark:text-white">1. The tender</h2>
         <p className="mt-1 text-sm text-navy/60 dark:text-white/50">Used on your printed decision record.</p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Your company <span className="font-normal text-navy/40 dark:text-white/40">(remembered for next time)</span></label>
+            <input className={inputCls()} value={yourCompany} onChange={(e) => setYourCompany(e.target.value)} placeholder="Your company name" />
+          </div>
           <div>
             <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Tender name</label>
             <input className={inputCls()} value={tName} onChange={(e) => setTName(e.target.value)} placeholder="Cleaning services — Regional Offices" />
@@ -496,7 +604,7 @@ export default function TenderCalculator() {
           </div>
         )}
         <div className="mt-4 max-w-sm">
-          <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Decision made by</label>
+          <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Decision made by <span className="font-normal text-navy/40 dark:text-white/40">(remembered for next time)</span></label>
           <input className={inputCls()} value={decidedBy} onChange={(e) => setDecidedBy(e.target.value)} placeholder="Name and role" />
         </div>
 
@@ -507,6 +615,14 @@ export default function TenderCalculator() {
           <button type="button" onClick={handleReset} className="border border-navy px-4 py-2 text-xs font-semibold uppercase tracking-wide text-navy transition-colors hover:bg-navy/5 dark:border-white dark:text-white dark:hover:bg-white/10">
             Start a new tender
           </button>
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(buildWhatsAppText())}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="border border-green-700 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-green-700 transition-colors hover:bg-green-700 hover:text-white"
+          >
+            Share on WhatsApp
+          </a>
         </div>
 
         {/* Optional — get a copy by email */}
@@ -548,7 +664,7 @@ export default function TenderCalculator() {
           )}
         </div>
 
-        <p className="mt-3 text-xs text-navy/50 dark:text-white/40">Nothing you type here is sent anywhere unless you choose to email yourself a copy above. Otherwise it stays in this browser tab until you close it — print to PDF to keep it.</p>
+        <p className="mt-3 text-xs text-navy/50 dark:text-white/40">Nothing you type here is sent anywhere unless you choose to email yourself a copy above. Everything is remembered in this browser only, so you can pick up where you left off next time — &ldquo;Start a new tender&rdquo; clears this tender&rsquo;s details but keeps your company and decision-maker filled in for the next one.</p>
       </section>
 
       {/* Sticky verdict bar */}
