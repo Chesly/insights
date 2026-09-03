@@ -315,9 +315,9 @@ export const lcdKhayaConfig = {
   // Real photography, hosted on ImageKit (same CDN pattern as the rest of
   // Chesly.Tech's client sites — see next.config.mjs remotePatterns).
   heroSlides: [
-    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/driving_school_2.jpg", alt: "LCD Khaya driving lesson in progress" },
+    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/branded_truck_lady.jpg", alt: "LCD Khaya branded vehicle with instructor" },
     { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/driving_school_3.jpg", alt: "LCD Khaya learner driver on the road" },
-    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/driving_school_1.jpg", alt: "LCD Khaya driving lesson" }
+    { src: "https://ik.imagekit.io/mkvu8hdr5/lcd/branded_truck_learner.jpg", alt: "LCD Khaya branded vehicle with learner driver" }
   ] as { src: string; alt: string }[],
 
   // Background photo behind every interior page's breadcrumb/title strip
