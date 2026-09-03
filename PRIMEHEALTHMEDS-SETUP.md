@@ -77,17 +77,29 @@ goods catalog — toolkits, PDFs, instant delivery, no stock).
    once ready, and add a `middleware.ts` host-rewrite (neither exists yet
    for LCD Khaya either — this is shared future work, not started).
 
-## Deliberately not built yet
+## Agreed, not yet built (do next session — see CLAUDE.md rule 5, no credit spent on these until asked)
 
-- **Customer accounts** (shopper login/order history) — checkout today is
+- **Admin bulk actions on `/admin/products`** — select multiple products in
+  the table and publish/unpublish/delete them together, instead of one row
+  at a time. Matters once the real ~200-product catalog is loaded.
+- **VAT-inclusive pricing** — switch product prices shown on the storefront
+  to already include SA's 15% VAT (the retail-display norm here), rather
+  than adding a separate tax column. Small change, confirmed direction,
+  not yet implemented.
+
+## Deliberately not built (decided against for now, not just deferred)
+
+- **Customer accounts** (shopper login/order history) — checkout stays
   guest-checkout by email, same as the existing digital-downloads flow.
-  Prime Health Meds asked about this ("login and lock out as a client");
-  it's a real feature (auth, an order-history view scoped to the signed-in
-  shopper) but a separate, sizeable piece of work — worth its own pass
-  once the product catalog itself is live and in use.
+  Confirmed with Chesly this isn't needed for Prime Health Meds — it
+  stays available as a future platform feature for whichever client
+  actually needs it, not built here speculatively.
+
+## Still open / needs a decision before building
+
 - **Prescription upload** — `requires_prescription` is a flag admins can
   set per product, but there's no upload-a-prescription flow at checkout
   yet. Needs a decision on how Prime Health Meds actually wants to
   receive/verify prescriptions before building it.
-- **Bulk CSV import** for the ~200-product catalog — not built; see point 2
-  above.
+- **Bulk CSV import** for the ~200-product catalog — not built; see "Real
+  catalog" above. Worth it once a real WooCommerce export is in hand.
