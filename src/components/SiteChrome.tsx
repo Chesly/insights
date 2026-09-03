@@ -17,12 +17,16 @@ const HIDDEN_PREFIXES = ["/admin", "/ct-login", "/register", "/invoice", "/lcdkh
 export default function SiteChrome({
   children,
   settings,
+  forceHideChrome,
 }: {
   children: React.ReactNode
   settings: Record<string, string>
+  // Set by the root layout when proxy.ts's rewrite for lcdkhaya.co.za has
+  // masked the real path from usePathname() below — see layout.tsx.
+  forceHideChrome?: boolean
 }) {
   const pathname = usePathname()
-  const hideChrome = HIDDEN_PREFIXES.some((p) => pathname?.startsWith(p))
+  const hideChrome = forceHideChrome || HIDDEN_PREFIXES.some((p) => pathname?.startsWith(p))
 
   if (hideChrome) {
     return <>{children}</>

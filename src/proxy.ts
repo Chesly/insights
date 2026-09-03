@@ -19,7 +19,17 @@ export async function proxy(request: NextRequest) {
   ) {
     const url = request.nextUrl.clone()
     url.pathname = `/lcdkhaya${pathname}`
-    return NextResponse.rewrite(url)
+    // A rewrite masks the destination path from the browser (and from
+    // client-side usePathname()) by design — the URL bar and anything
+    // reading it client-side still see the original "/", never
+    // "/lcdkhaya/...". SiteChrome's pathname-based check for whether to
+    // hide the Insights header therefore never fires here, so both
+    // headers rendered. This header is the one thing that actually
+    // survives the rewrite through to the server components below —
+    // read in the root layout to tell SiteChrome the real story.
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set('x-lcdkhaya-host', '1')
+    return NextResponse.rewrite(url, { request: { headers: requestHeaders } })
   }
 
   // Everything below only matters for /admin/* — skip the Supabase round

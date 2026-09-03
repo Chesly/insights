@@ -115,6 +115,7 @@ export const siteConfig = {
     { label: "Insights", href: "/insights" },
     { label: "Let's Have ☕", href: "/coffee" },
     { label: "Business Tools", href: "/tools" },
+    { label: "Calculators", href: "/calculators" },
     { label: "Did You Know?", href: "/facts" },
     { label: "Contact", href: "/contact" }
   ] as NavLink[],
@@ -136,6 +137,7 @@ export const siteConfig = {
     resources: [
       { label: "Insights", href: "/insights" },
       { label: "Business Tools", href: "/tools" },
+      { label: "Calculators", href: "/calculators" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms of Use", href: "/terms" },
       { label: "Disclaimer", href: "/disclaimer" },

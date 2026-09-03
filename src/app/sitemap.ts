@@ -5,6 +5,7 @@ import { getAllAuthors } from "@/lib/authors";
 import { getAllDownloads } from "@/lib/downloads";
 import { getAllFacts } from "@/lib/facts";
 import { slugify } from "@/lib/types";
+import { CALCULATORS } from "@/lib/calculators";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, tags, authors, downloads, facts] = await Promise.all([
@@ -19,6 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: siteConfig.url, changeFrequency: "daily", priority: 1 },
     { url: `${siteConfig.url}/insights`, changeFrequency: "daily", priority: 0.9 },
     { url: `${siteConfig.url}/tools`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${siteConfig.url}/calculators`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${siteConfig.url}/facts`, changeFrequency: "daily", priority: 0.6 },
     { url: `${siteConfig.url}/spaza-support`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${siteConfig.url}/category`, changeFrequency: "weekly", priority: 0.7 },
@@ -61,6 +63,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7
   }));
 
+  const calculatorRoutes: MetadataRoute.Sitemap = CALCULATORS.map((c) => ({
+    url: `${siteConfig.url}/calculators/${c.slug}`,
+    changeFrequency: "monthly",
+    priority: 0.6
+  }));
+
   const factRoutes: MetadataRoute.Sitemap = facts.map((f) => ({
     url: `${siteConfig.url}/facts/${f.slug}`,
     lastModified: f.updated_at,
@@ -68,5 +76,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5
   }));
 
-  return [...staticRoutes, ...categoryRoutes, ...tagRoutes, ...authorRoutes, ...postRoutes, ...toolRoutes, ...factRoutes];
+  return [...staticRoutes, ...categoryRoutes, ...tagRoutes, ...authorRoutes, ...postRoutes, ...toolRoutes, ...calculatorRoutes, ...factRoutes];
 }
