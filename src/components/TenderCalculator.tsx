@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Answer = "yes" | "no" | "unsure" | "na";
 
@@ -77,6 +77,32 @@ function inputCls() {
   return "w-full rounded-sm border border-gold/25 bg-white px-3 py-2 text-sm text-navy outline-none focus:border-gold dark:border-gold/30 dark:bg-navy dark:text-white";
 }
 
+// Number inputs default to 0. Without this, clicking in and typing "5000"
+// inserts into the existing "0" (giving "05000") instead of replacing it —
+// the extra zeros users were having to delete by hand. Selecting the whole
+// value on focus means any keystroke replaces it instead.
+function selectOnFocus(e: React.FocusEvent<HTMLInputElement>) {
+  e.target.select();
+}
+
+// Per-tender fields (cleared by "Start a new tender") persist here...
+const DRAFT_KEY = "tenderCalc.draft.v1";
+// ...while who's using the tool persists separately and survives a reset,
+// so a returning visitor never has to retype their own details.
+const PROFILE_KEY = "tenderCalc.profile.v1";
+
+interface Draft {
+  tName: string; tRef: string; tOrg: string; tClose: string;
+  answers: Record<string, Answer>;
+  rev: number; months: number; direct: Record<string, number>; overhead: Record<string, number>;
+  cont: number; minMargin: number; daysToPay: number; targetMargin: number;
+  decision: "follow" | "bid" | "nobid"; reason: string;
+}
+
+interface Profile {
+  yourCompany: string; decidedBy: string; leadName: string; leadEmail: string;
+}
+
 export default function TenderCalculator() {
   const [tName, setTName] = useState("");
   const [tRef, setTRef] = useState("");
@@ -98,6 +124,69 @@ export default function TenderCalculator() {
   const [reason, setReason] = useState("");
   const [decidedBy, setDecidedBy] = useState("");
   const [reasonError, setReasonError] = useState(false);
+  const [yourCompany, setYourCompany] = useState("");
+
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [leadName, setLeadName] = useState("");
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadNewsletter, setLeadNewsletter] = useState(false);
+  const [leadStatus, setLeadStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [leadError, setLeadError] = useState("");
+
+  const [hydrated, setHydrated] = useState(false);
+  const [showRestored, setShowRestored] = useState(false);
+
+  // Restore a saved draft/profile once on mount. Runs before the save
+  // effects below start writing (they bail out until `hydrated` is true),
+  // so this never gets clobbered by the initial blank render.
+  useEffect(() => {
+    try {
+      const rawProfile = localStorage.getItem(PROFILE_KEY);
+      if (rawProfile) {
+        const p: Partial<Profile> = JSON.parse(rawProfile);
+        if (p.yourCompany) setYourCompany(p.yourCompany);
+        if (p.decidedBy) setDecidedBy(p.decidedBy);
+        if (p.leadName) setLeadName(p.leadName);
+        if (p.leadEmail) setLeadEmail(p.leadEmail);
+      }
+      const rawDraft = localStorage.getItem(DRAFT_KEY);
+      if (rawDraft) {
+        const d: Partial<Draft> = JSON.parse(rawDraft);
+        if (d.tName) setTName(d.tName);
+        if (d.tRef) setTRef(d.tRef);
+        if (d.tOrg) setTOrg(d.tOrg);
+        if (d.tClose) setTClose(d.tClose);
+        if (d.answers) setAnswers(d.answers);
+        if (d.rev) setRev(d.rev);
+        if (d.months) setMonths(d.months);
+        if (d.direct) setDirect(d.direct);
+        if (d.overhead) setOverhead(d.overhead);
+        if (d.cont !== undefined) setCont(d.cont);
+        if (d.minMargin !== undefined) setMinMargin(d.minMargin);
+        if (d.daysToPay !== undefined) setDaysToPay(d.daysToPay);
+        if (d.targetMargin !== undefined) setTargetMargin(d.targetMargin);
+        if (d.decision) setDecision(d.decision);
+        if (d.reason) setReason(d.reason);
+        if (d.tName || d.rev || (d.answers && Object.keys(d.answers).length > 0)) setShowRestored(true);
+      }
+    } catch {
+      // Corrupt or blocked storage (private browsing) — just start blank.
+    }
+    setHydrated(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const draft: Draft = { tName, tRef, tOrg, tClose, answers, rev, months, direct, overhead, cont, minMargin, daysToPay, targetMargin, decision, reason };
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); } catch { /* private browsing — draft just won't persist */ }
+  }, [hydrated, tName, tRef, tOrg, tClose, answers, rev, months, direct, overhead, cont, minMargin, daysToPay, targetMargin, decision, reason]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const profile: Profile = { yourCompany, decidedBy, leadName, leadEmail };
+    try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch { /* private browsing — profile just won't persist */ }
+  }, [hydrated, yourCompany, decidedBy, leadName, leadEmail]);
 
   function toggle(cid: string, v: Answer) {
     setAnswers((prev) => {
@@ -165,23 +254,128 @@ export default function TenderCalculator() {
     window.print();
   }
 
+  function buildResultsPayload() {
+    const summaryLines: string[] = [];
+    if (scoreResult.pct !== null && b) summaryLines.push(`Score: ${scoreResult.pct}/100 — ${b.l}`);
+    if (tName) summaryLines.push(`Tender: ${tName}`);
+
+    const sections: { heading: string; rows: [string, string][] }[] = [];
+
+    if (yourCompany || tName || tRef || tOrg || tClose) {
+      sections.push({
+        heading: "The tender",
+        rows: [
+          ...(yourCompany ? ([["Your company", yourCompany]] as [string, string][]) : []),
+          ["Name", tName || "—"],
+          ["Reference", tRef || "—"],
+          ["Issuing organisation", tOrg || "—"],
+          ["Closing date", tClose || "—"],
+        ],
+      });
+    }
+
+    if (scoreResult.strengths.length > 0) {
+      sections.push({ heading: "Strengths", rows: scoreResult.strengths.map((s) => ["✓", s] as [string, string]) });
+    }
+    if (scoreResult.risks.length > 0) {
+      sections.push({ heading: "Risks and gaps", rows: scoreResult.risks.map((s) => ["!", s] as [string, string]) });
+    }
+
+    sections.push({
+      heading: "Price and profitability",
+      rows: [
+        ["Tender price", R(rev)],
+        ["Total direct cost", R(pricingResult.d)],
+        ["Total overhead", R(pricingResult.o)],
+        [`Contingency (${cont}%)`, R(pricingResult.cont)],
+        ["Total estimated cost", R(pricingResult.total)],
+        ["Gross profit", R(pricingResult.gp)],
+        ["Gross margin", pctFmt(pricingResult.margin)],
+        ["Markup on cost", pctFmt(pricingResult.markup)],
+        [`Price for a ${targetMargin}% margin`, R(pricingResult.suggested)],
+        ["Cash you must carry before payment", R(pricingResult.exposure)],
+      ],
+    });
+
+    const decisionRows: [string, string][] = [
+      ["Final decision", decision === "follow" ? "Accept the recommendation" : decision === "bid" ? "Override — bidding anyway" : "Override — not bidding"],
+    ];
+    if (reason) decisionRows.push(["Reason", reason]);
+    if (decidedBy) decisionRows.push(["Decided by", decidedBy]);
+    sections.push({ heading: "Decision", rows: decisionRows });
+
+    return { calculatorTitle: "Bid/No-Bid Tender Calculator", summaryLines, sections };
+  }
+
+  async function handleEmailSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLeadStatus("sending");
+    setLeadError("");
+    try {
+      const res = await fetch("/api/public/calculators/tender-bid-no-bid/results", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: leadName, email: leadEmail, newsletterOptIn: leadNewsletter, ...buildResultsPayload() }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Something went wrong.");
+      setLeadStatus("sent");
+    } catch (err) {
+      setLeadStatus("error");
+      setLeadError(err instanceof Error ? err.message : "Something went wrong — please try again.");
+    }
+  }
+
   function handleReset() {
     if (!confirm("Clear everything and start a new tender?")) return;
     setTName(""); setTRef(""); setTOrg(""); setTClose("");
     setAnswers({});
     setRev(0); setMonths(12); setDirect({}); setOverhead({});
     setCont(5); setMinMargin(15); setDaysToPay(30); setTargetMargin(20);
-    setDecision("follow"); setReason(""); setDecidedBy(""); setReasonError(false);
+    setDecision("follow"); setReason(""); setReasonError(false);
+    // Your company / decided-by / email-me details are deliberately kept —
+    // only the tender-specific fields reset, per DRAFT_KEY above.
+    try { localStorage.removeItem(DRAFT_KEY); } catch { /* private browsing */ }
+    setShowRestored(false);
     window.scrollTo(0, 0);
+  }
+
+  function buildWhatsAppText(): string {
+    const lines: string[] = [`*${tName || "Tender bid/no-bid result"}*`];
+    if (scoreResult.pct !== null && b) lines.push(`Score: ${scoreResult.pct}/100 — ${b.l}`);
+    if (rev > 0) {
+      lines.push(`Tender price: ${R(rev)}`);
+      lines.push(`Estimated margin: ${pctFmt(pricingResult.margin)}`);
+    }
+    const decisionLabel = decision === "follow" ? (b ? b.l : "Not yet scored") : decision === "bid" ? "Bidding (override)" : "Not bidding (override)";
+    lines.push(`Decision: ${decisionLabel}`);
+    lines.push("");
+    lines.push("Scored free with the Bid/No-Bid Tender Calculator:");
+    lines.push("https://insights.chesly.tech/calculators/tender-bid-no-bid");
+    return lines.join("\n");
   }
 
   return (
     <div>
+      {/* Restored draft notice */}
+      {showRestored && (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border border-gold/30 bg-gold/10 px-4 py-3 print:hidden">
+          <p className="text-sm text-navy dark:text-white">Welcome back — we restored your unfinished tender.</p>
+          <button type="button" onClick={handleReset} className="text-xs font-semibold uppercase tracking-wide text-navy underline underline-offset-2 dark:text-white">
+            Not this one? Start fresh
+          </button>
+        </div>
+      )}
+
       {/* 1. Tender */}
       <section className="border-b border-navy/10 py-8 dark:border-white/10">
         <h2 className="text-lg font-bold text-navy dark:text-white">1. The tender</h2>
         <p className="mt-1 text-sm text-navy/60 dark:text-white/50">Used on your printed decision record.</p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Your company <span className="font-normal text-navy/40 dark:text-white/40">(remembered for next time)</span></label>
+            <input className={inputCls()} value={yourCompany} onChange={(e) => setYourCompany(e.target.value)} placeholder="Your company name" />
+          </div>
           <div>
             <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Tender name</label>
             <input className={inputCls()} value={tName} onChange={(e) => setTName(e.target.value)} placeholder="Cleaning services — Regional Offices" />
@@ -287,11 +481,11 @@ export default function TenderCalculator() {
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Tender price (your bid, excl. VAT)</label>
-            <input type="number" min={0} step={1000} className={inputCls()} value={rev} onChange={(e) => setRev(Number(e.target.value) || 0)} />
+            <input type="number" min={0} step={1000} className={inputCls()} value={rev} onChange={(e) => setRev(Number(e.target.value) || 0)} onFocus={selectOnFocus} />
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Contract duration (months)</label>
-            <input type="number" min={1} step={1} className={inputCls()} value={months} onChange={(e) => setMonths(Number(e.target.value) || 1)} />
+            <input type="number" min={1} step={1} className={inputCls()} value={months} onChange={(e) => setMonths(Number(e.target.value) || 1)} onFocus={selectOnFocus} />
           </div>
         </div>
 
@@ -301,7 +495,7 @@ export default function TenderCalculator() {
             {DIRECT_COSTS.map(([id, label]) => (
               <div key={id}>
                 <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">{label}</label>
-                <input type="number" min={0} step={500} className={inputCls()} value={direct[id] || 0} onChange={(e) => setDirect((p) => ({ ...p, [id]: Number(e.target.value) || 0 }))} />
+                <input type="number" min={0} step={500} className={inputCls()} value={direct[id] || 0} onChange={(e) => setDirect((p) => ({ ...p, [id]: Number(e.target.value) || 0 }))} onFocus={selectOnFocus} />
               </div>
             ))}
           </div>
@@ -313,7 +507,7 @@ export default function TenderCalculator() {
             {OVERHEAD_COSTS.map(([id, label]) => (
               <div key={id}>
                 <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">{label}</label>
-                <input type="number" min={0} step={500} className={inputCls()} value={overhead[id] || 0} onChange={(e) => setOverhead((p) => ({ ...p, [id]: Number(e.target.value) || 0 }))} />
+                <input type="number" min={0} step={500} className={inputCls()} value={overhead[id] || 0} onChange={(e) => setOverhead((p) => ({ ...p, [id]: Number(e.target.value) || 0 }))} onFocus={selectOnFocus} />
               </div>
             ))}
           </div>
@@ -324,19 +518,19 @@ export default function TenderCalculator() {
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Contingency held back (% of cost)</label>
-              <input type="number" min={0} max={50} step={0.5} className={inputCls()} value={cont} onChange={(e) => setCont(Number(e.target.value) || 0)} />
+              <input type="number" min={0} max={50} step={0.5} className={inputCls()} value={cont} onChange={(e) => setCont(Number(e.target.value) || 0)} onFocus={selectOnFocus} />
             </div>
             <div>
               <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Minimum acceptable margin (%)</label>
-              <input type="number" min={0} max={90} step={0.5} className={inputCls()} value={minMargin} onChange={(e) => setMinMargin(Number(e.target.value) || 0)} />
+              <input type="number" min={0} max={90} step={0.5} className={inputCls()} value={minMargin} onChange={(e) => setMinMargin(Number(e.target.value) || 0)} onFocus={selectOnFocus} />
             </div>
             <div>
               <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Days until client pays (from invoice)</label>
-              <input type="number" min={0} step={5} className={inputCls()} value={daysToPay} onChange={(e) => setDaysToPay(Number(e.target.value) || 0)} />
+              <input type="number" min={0} step={5} className={inputCls()} value={daysToPay} onChange={(e) => setDaysToPay(Number(e.target.value) || 0)} onFocus={selectOnFocus} />
             </div>
             <div>
               <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Target margin for suggested price (%)</label>
-              <input type="number" min={0} max={90} step={0.5} className={inputCls()} value={targetMargin} onChange={(e) => setTargetMargin(Number(e.target.value) || 0)} />
+              <input type="number" min={0} max={90} step={0.5} className={inputCls()} value={targetMargin} onChange={(e) => setTargetMargin(Number(e.target.value) || 0)} onFocus={selectOnFocus} />
             </div>
           </div>
           <p className="mt-2 text-xs text-navy/50 dark:text-white/40">Suggested price works backwards from your target margin, including contingency. Use it as a floor, not a quote.</p>
@@ -410,7 +604,7 @@ export default function TenderCalculator() {
           </div>
         )}
         <div className="mt-4 max-w-sm">
-          <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Decision made by</label>
+          <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Decision made by <span className="font-normal text-navy/40 dark:text-white/40">(remembered for next time)</span></label>
           <input className={inputCls()} value={decidedBy} onChange={(e) => setDecidedBy(e.target.value)} placeholder="Name and role" />
         </div>
 
@@ -421,8 +615,56 @@ export default function TenderCalculator() {
           <button type="button" onClick={handleReset} className="border border-navy px-4 py-2 text-xs font-semibold uppercase tracking-wide text-navy transition-colors hover:bg-navy/5 dark:border-white dark:text-white dark:hover:bg-white/10">
             Start a new tender
           </button>
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(buildWhatsAppText())}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="border border-green-700 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-green-700 transition-colors hover:bg-green-700 hover:text-white"
+          >
+            Share on WhatsApp
+          </a>
         </div>
-        <p className="mt-3 text-xs text-navy/50 dark:text-white/40">Nothing you type here is sent anywhere. It stays in this browser tab until you close it. Print to PDF to keep it.</p>
+
+        {/* Optional — get a copy by email */}
+        <div className="mt-4 border border-gold/20 bg-gold/5 p-4 print:hidden">
+          {leadStatus === "sent" ? (
+            <p className="text-sm font-semibold text-navy dark:text-white">✓ Sent — check {leadEmail} for a copy of these results.</p>
+          ) : !showEmailForm ? (
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-navy/70 dark:text-white/70">Want a copy of these results in your inbox? Totally optional.</p>
+              <button
+                type="button"
+                onClick={() => setShowEmailForm(true)}
+                className="border border-gold px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-gold transition-colors hover:bg-gold hover:text-white"
+              >
+                Email me these results
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleEmailSubmit} className="space-y-2">
+              <p className="text-sm font-semibold text-navy dark:text-white">Email me these results</p>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <input required placeholder="Your name" value={leadName} onChange={(e) => setLeadName(e.target.value)} className={inputCls()} />
+                <input required type="email" placeholder="Email address" value={leadEmail} onChange={(e) => setLeadEmail(e.target.value)} className={inputCls()} />
+              </div>
+              <label className="flex items-start gap-2 text-xs text-navy/70 dark:text-white/70">
+                <input type="checkbox" checked={leadNewsletter} onChange={(e) => setLeadNewsletter(e.target.checked)} className="mt-0.5" />
+                Also send me occasional tips and new tools <span className="font-normal text-navy/40 dark:text-white/40">(optional)</span>
+              </label>
+              {leadStatus === "error" && <p className="text-xs text-red-700">{leadError}</p>}
+              <div className="flex gap-2 pt-1">
+                <button type="button" onClick={() => setShowEmailForm(false)} className="border border-navy/20 px-3 py-1.5 text-xs font-semibold text-navy hover:bg-navy/5 dark:border-white/20 dark:text-white">
+                  Cancel
+                </button>
+                <button type="submit" disabled={leadStatus === "sending"} className="flex-1 bg-gold px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white hover:bg-gold-dark disabled:opacity-60">
+                  {leadStatus === "sending" ? "Sending…" : "Send my results"}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+
+        <p className="mt-3 text-xs text-navy/50 dark:text-white/40">Nothing you type here is sent anywhere unless you choose to email yourself a copy above. Everything is remembered in this browser only, so you can pick up where you left off next time — &ldquo;Start a new tender&rdquo; clears this tender&rsquo;s details but keeps your company and decision-maker filled in for the next one.</p>
       </section>
 
       {/* Sticky verdict bar */}

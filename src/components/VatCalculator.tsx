@@ -17,6 +17,14 @@ function inputCls() {
   return "w-full rounded-sm border border-gold/25 bg-white px-3 py-2 text-sm text-navy outline-none focus:border-gold dark:border-gold/30 dark:bg-navy dark:text-white";
 }
 
+// Number inputs default to 0. Without this, clicking in and typing inserts
+// into the existing "0" (giving e.g. "01000") instead of replacing it —
+// the extra zeros users were having to delete by hand. Selecting the whole
+// value on focus means any keystroke replaces it instead.
+function selectOnFocus(e: React.FocusEvent<HTMLInputElement>) {
+  e.target.select();
+}
+
 export default function VatCalculator() {
   const [mode, setMode] = useState<"add" | "remove">("add");
   const [amount, setAmount] = useState<number>(0);
@@ -78,6 +86,7 @@ export default function VatCalculator() {
             className={inputCls()}
             value={rate}
             onChange={(e) => setRate(Number(e.target.value) || 0)}
+            onFocus={selectOnFocus}
           />
           {rate !== VAT_RATE && (
             <p className="mt-1 text-xs text-amber-700">
@@ -98,6 +107,7 @@ export default function VatCalculator() {
           className={`${inputCls()} text-lg font-semibold`}
           value={amount}
           onChange={(e) => setAmount(Number(e.target.value) || 0)}
+          onFocus={selectOnFocus}
           placeholder="0.00"
         />
       </div>
