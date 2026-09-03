@@ -326,7 +326,7 @@ export const lcdKhayaConfig = {
   pageHeroImage: "https://ik.imagekit.io/mkvu8hdr5/lcd/smiley-woman-posing-from-inside-her-car.jpg",
 
   // Main image for the About page's intro section.
-  aboutImage: "https://ik.imagekit.io/mkvu8hdr5/lcd/565686614_33053550694244006_8770830755126644720_n.jpg",
+  aboutImage: "https://ik.imagekit.io/mkvu8hdr5/lcd/Elsidio_Our_manager?updatedAt=1788443240503.jpg",
 
   // Background for the homepage's "Did You Know" strip.
   didYouKnowImage: "https://ik.imagekit.io/mkvu8hdr5/lcd/driving_2.jpg",
