@@ -39,7 +39,7 @@ const FAQS = [
   { question: "What profit margin should a South African SME target on a tender?", answer: "There is no single correct figure, but a margin that survives only if nothing goes wrong is not a margin. Set a written minimum before you price, hold a contingency of at least five per cent of cost, and treat any margin close to that floor as a no-bid rather than a stretch." },
   { question: "Is this calculator legal or financial advice?", answer: "No. It is a planning and organisation tool. It does not verify your compliance status and does not replace the tender document, your accountant or your attorney. Confirm every requirement against the tender document itself before submitting." },
   { question: "Can I override the recommendation?", answer: "Yes, and sometimes you should — a first reference in a sector you want long-term can justify a thin margin. The calculator only asks you to write the reason down. Six months later, that one line is the difference between a strategic decision you can learn from and a mistake you will repeat." },
-  { question: "Is my data stored anywhere?", answer: "No. Everything stays in your browser tab and disappears when you close it. Nothing is uploaded, and there is no signup. Print to PDF if you want to keep the record." }
+  { question: "Is my data stored anywhere?", answer: "By default, no — everything stays in your browser tab and disappears when you close it. There is no signup. If you choose to use the optional \"Email me these results\" button at the end, we store your name, email and the results you generated so we can send them to you, and — only if you tick the box — send you occasional tips and new tools. That's the only case anything leaves your browser." }
 ];
 
 const CRITERIA_NOTES = [
