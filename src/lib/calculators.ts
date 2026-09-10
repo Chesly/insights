@@ -37,5 +37,13 @@ export const CALCULATORS: CalculatorMeta[] = [
     cardTitle: "Retention Calculator",
     description:
       "Work out retention withheld, net payment due and VAT on any progress claim, and track when the retained amount gets released."
+  },
+  {
+    slug: "barcode-qr-generator",
+    icon: "🔳",
+    title: "Free QR Code & Barcode Generator",
+    cardTitle: "QR & Barcode Generator",
+    description:
+      "Turn any link, text or product code into a downloadable QR code or barcode — CODE128, EAN-13, UPC and more, generated instantly in your browser."
   }
 ];
