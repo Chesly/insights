@@ -26,6 +26,10 @@ export async function POST(req: NextRequest) {
   const stateProvince = body.stateProvince ? String(body.stateProvince).trim() : null;
   const notes = body.notes ? String(body.notes).trim() : null;
   const newsletterOptIn = Boolean(body.newsletterOptIn);
+  // Meta click ids + first-touch UTMs, captured client-side at checkout time
+  // (see lib/meta-events.ts) — stored so the Purchase event fired from
+  // lib/orders.ts once the webhook confirms payment still has them to send.
+  const adAttribution = body.adAttribution && typeof body.adAttribution === "object" ? body.adAttribution : null;
 
   if (items.length === 0) {
     return NextResponse.json({ error: "Your cart is empty." }, { status: 400 });
@@ -81,6 +85,7 @@ export async function POST(req: NextRequest) {
     state_province: stateProvince,
     notes,
     newsletter_opt_in: newsletterOptIn,
+    ad_attribution: adAttribution,
   });
   if (insertError) {
     return NextResponse.json({ error: insertError.message }, { status: 400 });

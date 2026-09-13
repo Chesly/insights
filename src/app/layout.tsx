@@ -4,6 +4,7 @@ import "./globals.css";
 import SiteChrome from "@/components/SiteChrome";
 import Analytics from "@/components/Analytics";
 import TrackingScripts from "@/components/TrackingScripts";
+import MetaPixelRouteTracker from "@/components/MetaPixelRouteTracker";
 import HeadTags from "@/components/HeadTags";
 import CustomHeadCode from "@/components/CustomHeadCode";
 import CustomFooterCode from "@/components/CustomFooterCode";
@@ -85,6 +86,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <TrackingScripts />
+        <MetaPixelRouteTracker />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-gold focus:px-4 focus:py-2 focus:text-white"

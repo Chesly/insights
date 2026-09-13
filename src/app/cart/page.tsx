@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useCart } from "@/lib/cart/CartContext";
 import PageHero from "@/components/PageHero";
 import { COUNTRIES } from "@/lib/countries";
+import { EV, getClickIds, readAttribution, track } from "@/lib/meta-events";
 
 export default function CartPage() {
   const { items, removeItem, total, clearCart } = useCart();
@@ -52,6 +53,9 @@ export default function CartPage() {
     e.preventDefault();
     setStatus("submitting");
     setError("");
+    // Fired before the redirect, not after — Paystack takes the browser
+    // away from this page next, so there is no later moment to fire it from.
+    void track(EV.INITIATE_CHECKOUT, { identity: { email }, params: { value: finalTotal, currency: "ZAR" } });
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -59,6 +63,10 @@ export default function CartPage() {
         body: JSON.stringify({
           items, email, name, couponCode: coupon?.code,
           whatsapp, country, stateProvince, notes, newsletterOptIn,
+          // Stamped onto the order so lib/orders.ts can fire Purchase with
+          // real Event Match Quality once the webhook confirms payment —
+          // by then there's no browser cookie jar left to read these from.
+          adAttribution: { ...getClickIds(), ...readAttribution() },
         }),
       });
       const json = await res.json();

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { track, EV } from "@/lib/meta-events";
 
 type Answer = "yes" | "no" | "unsure" | "na";
 
@@ -232,6 +233,38 @@ export default function TenderCalculator() {
     return { d, o, base, cont: contAmt, total, gp, margin, markup, suggested, exposure, months: m };
   }, [direct, overhead, rev, months, cont, targetMargin, daysToPay]);
 
+  // --- Meta Ads funnel tracking (see lib/meta-events.ts) — each track()
+  // call is a no-op until the visitor has accepted the cookie banner, and
+  // each of these fires at most once per page load. ----------------------
+  const trackedStart = useRef(false);
+  const trackedComplete = useRef(false);
+  const trackedPriced = useRef(false);
+
+  useEffect(() => {
+    void track(EV.VIEW_CONTENT, {
+      params: { content_name: "tender-bid-no-bid", content_category: "calculator" },
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!trackedStart.current && Object.keys(answers).length > 0) {
+      trackedStart.current = true;
+      void track(EV.CALC_STARTED);
+    }
+    if (!trackedComplete.current && scoreResult.answered >= scoreResult.total) {
+      trackedComplete.current = true;
+      void track(EV.CALC_COMPLETED, { params: { score: scoreResult.pct } });
+    }
+  }, [answers, scoreResult]);
+
+  useEffect(() => {
+    if (!trackedPriced.current && rev > 0) {
+      trackedPriced.current = true;
+      void track(EV.CALC_PRICED, { params: { margin_pct: Math.round(pricingResult.margin * 10) / 10 } });
+    }
+  }, [rev, pricingResult.margin]);
+
   const deadline = useMemo(() => {
     if (!tClose) return null;
     const d = new Date(tClose + "T23:59:59");
@@ -320,6 +353,10 @@ export default function TenderCalculator() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Something went wrong.");
       setLeadStatus("sent");
+      void track(EV.LEAD, {
+        identity: { email: leadEmail },
+        params: { value: 750, currency: "ZAR", content_name: "tender-bid-no-bid" },
+      });
     } catch (err) {
       setLeadStatus("error");
       setLeadError(err instanceof Error ? err.message : "Something went wrong — please try again.");
