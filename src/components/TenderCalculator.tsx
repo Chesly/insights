@@ -467,6 +467,33 @@ export default function TenderCalculator() {
         </div>
       </section>
 
+      {/* Peak-value moment — per the Sep 2026 Meta launch plan: the ask
+          was buried after pricing/decision below, where paid traffic
+          never reaches it. Surfaced here instead, the moment a score
+          exists, without gating anything or removing the fuller form
+          further down (same state — this just jumps you to it). */}
+      {scoreResult.pct !== null && leadStatus !== "sent" && (
+        <div className="border-y border-gold/30 bg-gold/10 px-1 py-5 print:hidden">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-navy dark:text-white">
+              <span className="font-mono text-lg font-extrabold text-gold-dark dark:text-gold-light">{scoreResult.pct}/100</span>
+              {b && <span className="ml-2 font-semibold">{b.l}.</span>}
+              <span className="ml-2 text-navy/70 dark:text-white/70">Email me this decision record so I have it when the team asks why.</span>
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setShowEmailForm(true);
+                document.getElementById("email-results-form")?.scrollIntoView({ behavior: "smooth", block: "center" });
+              }}
+              className="shrink-0 border border-gold bg-gold px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-gold-dark"
+            >
+              Email me this decision record
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 3. Why */}
       <section className="border-b border-navy/10 py-8 dark:border-white/10">
         <h2 className="text-lg font-bold text-navy dark:text-white">3. Why the calculator says this</h2>
@@ -662,8 +689,9 @@ export default function TenderCalculator() {
           </a>
         </div>
 
-        {/* Optional — get a copy by email */}
-        <div className="mt-4 border border-gold/20 bg-gold/5 p-4 print:hidden">
+        {/* Optional — get a copy by email. Also the scroll target for the
+            earlier peak-value prompt right after section 2. */}
+        <div id="email-results-form" className="mt-4 scroll-mt-24 border border-gold/20 bg-gold/5 p-4 print:hidden">
           {leadStatus === "sent" ? (
             <p className="text-sm font-semibold text-navy dark:text-white">✓ Sent — check {leadEmail} for a copy of these results.</p>
           ) : !showEmailForm ? (
