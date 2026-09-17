@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { NextRequest, NextResponse } from 'next/server'
-import { revalidatePath } from 'next/cache'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -23,11 +22,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     .select('site')
     .single()
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
-
-  // Revalidate whichever client site's pages show its testimonials —
-  // currently just LCD Khaya's homepage, but this stays correct as more
-  // sites adopt the same shared table.
-  if (data?.site === 'lcdkhaya') revalidatePath('/lcdkhaya')
 
   return NextResponse.json({ data })
 }

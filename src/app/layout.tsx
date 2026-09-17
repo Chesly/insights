@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import "./globals.css";
 import SiteChrome from "@/components/SiteChrome";
 import Analytics from "@/components/Analytics";
@@ -62,12 +61,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Branding/footer/social/contact fields editable from Admin > Settings
   // override their siteConfig.ts defaults — see lib/settings.ts.
   const settings = await getAllSiteSettings();
-  // proxy.ts rewrites lcdkhaya.co.za requests to /lcdkhaya/* but a rewrite
-  // masks the destination path from the browser, so client-side
-  // usePathname() in SiteChrome still sees "/" and never matches its
-  // /lcdkhaya prefix check. This header is the one signal that survives
-  // the rewrite through to here — read it and force chrome off explicitly.
-  const isLcdkhayaHost = (await headers()).get("x-lcdkhaya-host") === "1";
 
   return (
     <html lang="en-ZA" className="scroll-smooth" data-scroll-behavior="smooth">
@@ -93,7 +86,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         >
           Skip to main content
         </a>
-        <SiteChrome settings={settings} forceHideChrome={isLcdkhayaHost}>{children}</SiteChrome>
+        <SiteChrome settings={settings}>{children}</SiteChrome>
         <Analytics />
         <CustomFooterCode />
       </body>
