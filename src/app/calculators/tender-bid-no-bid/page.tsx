@@ -3,6 +3,7 @@ import { siteConfig } from "@/lib/siteConfig";
 import PageHero from "@/components/PageHero";
 import TenderCalculator from "@/components/TenderCalculator";
 import ProductsTeaser from "@/components/ProductsTeaser";
+import TrackedCtaLink from "@/components/TrackedCtaLink";
 import FaqAnswer from "@/components/FaqAnswer";
 import { breadcrumbSchema, faqSchema, howToSchema, webApplicationSchema } from "@/lib/schema";
 
@@ -138,12 +139,13 @@ export default function TenderBidNoBidCalculatorPage() {
               model built as reusable formulas, a compliance register that flags expiring documents before they cost
               you a bid, a submission checklist, and a printable decision record.
             </p>
-            <a
+            <TrackedCtaLink
               href="/tools/south-african-tender-toolkit"
+              placement="inline"
               className="mt-4 inline-block border border-gold bg-gold px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:bg-gold-dark"
             >
               Get the Tender Toolkit
-            </a>
+            </TrackedCtaLink>
           </section>
 
           {/* Why SMEs over-bid */}

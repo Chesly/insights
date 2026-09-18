@@ -3,6 +3,7 @@ import { createDownloadToken, FREE_TOKEN_CONFIG, PAID_TOKEN_CONFIG } from "./dow
 import { sendEmail } from "./email";
 import { siteConfig } from "./siteConfig";
 import { invoiceNumber } from "./invoice";
+import { sendServerEvent } from "./meta/server";
 
 interface OrderItem {
   productId: string;
@@ -71,6 +72,43 @@ export async function fulfillOrder(
     .from("orders")
     .update({ status: "paid", paid_at: new Date().toISOString() })
     .eq("id", order.id);
+
+  // Meta Purchase — fired here, server-side, rather than from the
+  // /checkout/success redirect page: a shopper who closes the tab before
+  // the redirect completes still counts, since this runs off whichever of
+  // the webhook or the redirect-verify route reaches fulfillment first.
+  // Skipped for genuinely free orders (nothing was paid, so nothing to
+  // attribute to the ad spend). ad_attribution — the fbp/fbc/UTMs captured
+  // client-side at checkout (see lib/meta-events.ts) — was stamped onto
+  // the order in /api/checkout, since this code path has no cookies of
+  // its own to read.
+  if (!isFreeOrder && order.amount > 0) {
+    const attribution = (order.ad_attribution ?? {}) as {
+      fbp?: string;
+      fbc?: string;
+      utm_source?: string;
+      utm_medium?: string;
+      utm_campaign?: string;
+      utm_content?: string;
+      fbclid?: string;
+      landing_path?: string;
+      referrer?: string;
+    };
+    sendServerEvent({
+      eventName: "Purchase",
+      eventSourceUrl: `${siteConfig.url}/checkout/success`,
+      identity: { email: order.customer_email },
+      fbp: attribution.fbp,
+      fbc: attribution.fbc,
+      attribution,
+      customData: {
+        value: order.amount,
+        currency: "ZAR",
+        content_ids: items.map((i) => i.productId),
+        content_name: items.map((i) => i.name).join(", "),
+      },
+    }).catch(() => {});
+  }
 
   const downloads = await Promise.all(
     items.map(async (item) => {

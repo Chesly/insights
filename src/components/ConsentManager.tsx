@@ -16,7 +16,7 @@ function injectScript(id: string, src: string, extraAttrs?: Record<string, strin
   document.head.appendChild(s);
 }
 
-function injectTracking(gtmId?: string, clarityId?: string) {
+function injectTracking(gtmId?: string, clarityId?: string, metaPixelId?: string) {
   if (gtmId && !document.getElementById("gtm-script")) {
     const s = document.createElement("script");
     s.id = "gtm-script";
@@ -29,14 +29,26 @@ function injectTracking(gtmId?: string, clarityId?: string) {
     s.text = `(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","${clarityId}");`;
     document.head.appendChild(s);
   }
+  // Meta Pixel — gated behind the same consent as everything else here.
+  // meta-events.ts (lib/meta-events.ts) checks the same localStorage key
+  // before it will fire a browser or server-side event, so nothing about
+  // a visitor reaches Meta until they've accepted below.
+  if (metaPixelId && !document.getElementById("meta-pixel-script")) {
+    const s = document.createElement("script");
+    s.id = "meta-pixel-script";
+    s.text = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${metaPixelId}');fbq('track','PageView');`;
+    document.head.appendChild(s);
+  }
 }
 
 export default function ConsentManager({
   gtmId,
   clarityId,
+  metaPixelId,
 }: {
   gtmId?: string;
   clarityId?: string;
+  metaPixelId?: string;
 }) {
   const [consent, setConsent] = useState<Consent>(null);
   const [checked, setChecked] = useState(false);
@@ -47,19 +59,19 @@ export default function ConsentManager({
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === "granted" || stored === "rejected") {
       setConsent(stored);
-      if (stored === "granted") injectTracking(gtmId, clarityId);
+      if (stored === "granted") injectTracking(gtmId, clarityId, metaPixelId);
     }
     setChecked(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!checked || consent) return null;
-  if (!gtmId && !clarityId) return null; // nothing to ask consent for
+  if (!gtmId && !clarityId && !metaPixelId) return null; // nothing to ask consent for
 
   const acceptAll = () => {
     localStorage.setItem(STORAGE_KEY, "granted");
     setConsent("granted");
-    injectTracking(gtmId, clarityId);
+    injectTracking(gtmId, clarityId, metaPixelId);
   };
 
   const rejectNonEssential = () => {

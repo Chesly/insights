@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/cart/CartContext";
 import { COUNTRIES } from "@/lib/countries";
+import { EV, track } from "@/lib/meta-events";
 
 type Tier = "free" | "premium" | "paid";
 
@@ -155,6 +156,9 @@ export default function DownloadButton({
           if (inCart) return; // already added — just go straight to cart
           e.preventDefault();
           addItem({ productId: id, slug, name, price, thumbnailUrl });
+          void track(EV.ADD_TO_CART, {
+            params: { value: price, currency: "ZAR", content_ids: [id], content_name: name },
+          });
           window.location.href = "/cart";
         }}
         className="mt-6 inline-flex items-center justify-center gap-1.5 border border-gold bg-gold px-4 py-2 text-center text-xs font-semibold uppercase tracking-wide text-white hover:bg-gold-dark transition-colors"

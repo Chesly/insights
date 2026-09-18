@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { fulfillOrder } from "@/lib/orders";
-import { fulfillBooking } from "@/lib/lcdkhaya/bookings";
 
 // POST — Paystack calls this server-to-server the moment a payment
 // succeeds, independent of whether the customer's browser ever makes it
@@ -31,12 +30,7 @@ export async function POST(req: NextRequest) {
 
   if (event.event === "charge.success") {
     const reference = event.data?.reference;
-    // LCD Khaya bookings live in their own table with their own
-    // fulfillment (confirmation email, not download tokens) — see
-    // lib/lcdkhaya/bookings.ts — so route by the reference prefix set
-    // when the transaction was initialized.
-    if (reference?.startsWith("lcdkhaya_")) await fulfillBooking(reference);
-    else if (reference) await fulfillOrder(reference);
+    if (reference) await fulfillOrder(reference);
   }
 
   // Paystack just needs a 200 to know the webhook was received — it

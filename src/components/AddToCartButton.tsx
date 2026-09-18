@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCart } from "@/lib/cart/CartContext";
 import type { DownloadItem } from "@/lib/downloads";
+import { EV, track } from "@/lib/meta-events";
 
 // Compact CTA for product-card grids (ProductsTeaser, shop grid) — mirrors
 // DownloadButton's paid-tier cart logic but skips its modal-driven free/
@@ -23,6 +24,9 @@ export default function AddToCartButton({ item, className = "" }: { item: Downlo
           if (inCart) return;
           e.preventDefault();
           addItem({ productId: item.id, slug: item.slug, name: item.name, price: item.price!, thumbnailUrl: item.thumbnailUrl });
+          void track(EV.ADD_TO_CART, {
+            params: { value: item.price, currency: "ZAR", content_ids: [item.id], content_name: item.name },
+          });
           window.location.href = "/cart";
         }}
         className={`${baseClass} ${className}`}

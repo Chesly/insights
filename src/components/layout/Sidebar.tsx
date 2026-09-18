@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import {
   LayoutDashboard, FileText, FolderOpen, Image, Download,
   Mail, MessageSquare, Search, Settings, Users, LogOut,
-  ChevronRight, Globe, Tag, UserCircle, Star, Link2Off, Receipt, Lightbulb, Quote
+  ChevronRight, Globe, Tag, UserCircle, Star, Link2Off, Receipt, Lightbulb, Quote, Megaphone
 } from 'lucide-react'
 
 const NAV = [
@@ -30,6 +30,7 @@ const NAV = [
     { label: 'Comments', href: '/admin/comments', icon: MessageSquare },
     { label: 'Reviews', href: '/admin/reviews', icon: Star },
     { label: 'Testimonials', href: '/admin/testimonials', icon: Quote },
+    { label: 'Ad Performance', href: '/admin/ads', icon: Megaphone },
   ]},
   { group: 'System', items: [
     { label: 'SEO', href: '/admin/seo', icon: Search },
