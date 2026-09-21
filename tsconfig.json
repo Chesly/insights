@@ -34,7 +34,6 @@
     ".next/dev/types/**/*.ts"
   ],
     "exclude": [
-    "node_modules",
-    "timeline-travel"
+    "node_modules"
   ]
 }
