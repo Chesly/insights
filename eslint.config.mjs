@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Fully separate project with its own tooling — see timeline-travel/.
+    "timeline-travel/**",
   ]),
 ]);
 

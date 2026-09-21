@@ -10,8 +10,6 @@ import CustomFooterCode from "@/components/CustomFooterCode";
 import { siteConfig } from "@/lib/siteConfig";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
 import { getAllSiteSettings } from "@/lib/settings";
-import { IS_TIMELINE_TRAVEL } from "@/lib/timelinetravel/site";
-import TimelineTravelRootLayout, { timelineTravelMetadata } from "./timelinetravel-layout";
 
 // Without this, Next.js treats the whole layout as static and freezes it
 // at build time — meaning settings-driven content (the consent banner,
@@ -20,8 +18,6 @@ import TimelineTravelRootLayout, { timelineTravelMetadata } from "./timelinetrav
 export const revalidate = 3600;
 
 export async function generateMetadata(): Promise<Metadata> {
-  if (IS_TIMELINE_TRAVEL) return timelineTravelMetadata();
-
   return {
     metadataBase: new URL(siteConfig.url),
     title: {
@@ -64,14 +60,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // Separate deployment, separate component tree entirely — every
-  // request this deployment gets IS Timeline Travel (see
-  // lib/timelinetravel/site.ts), so branch before touching any of the
-  // Insights-specific settings/schema/chrome logic below.
-  if (IS_TIMELINE_TRAVEL) {
-    return <TimelineTravelRootLayout>{children}</TimelineTravelRootLayout>;
-  }
-
   // Branding/footer/social/contact fields editable from Admin > Settings
   // override their siteConfig.ts defaults — see lib/settings.ts.
   const settings = await getAllSiteSettings();

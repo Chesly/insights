@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-white text-[#0F3D3E] antialiased;
+}
+
+.container-page {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+}
