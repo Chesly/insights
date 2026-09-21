@@ -428,8 +428,9 @@ CREATE POLICY "Admins can manage settings" ON public.site_settings FOR ALL USING
 INSERT INTO public.site_settings (key, value) VALUES
   ('whatsapp_number', '+27714759998'),
   ('whatsapp_message', 'Hello Timeline Travel, I would like assistance with planning my trip.'),
-  ('social_facebook', ''),
-  ('social_instagram', ''),
+  ('social_facebook', 'https://facebook.com/timelinetravelagency'),
+  ('social_instagram', 'https://instagram.com/timeline_travel'),
+  ('social_x', 'https://x.com/timelinetravelsa'),
   ('social_youtube', ''),
   ('social_linkedin', ''),
   ('contact_phone', '+27 71 475 9998'),
