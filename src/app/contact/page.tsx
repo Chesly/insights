@@ -4,8 +4,12 @@ import { getAllSiteSettings } from "@/lib/settings";
 import PageHero from "@/components/PageHero";
 import SocialLinks from "@/components/SocialLinks";
 import ContactForm from "@/components/ContactForm";
+import { IS_TIMELINE_TRAVEL } from "@/lib/timelinetravel/site";
+import TimelineTravelContactPage, { timelineTravelContactMetadata } from "../timelinetravel-contact";
 
 export async function generateMetadata(): Promise<Metadata> {
+  if (IS_TIMELINE_TRAVEL) return timelineTravelContactMetadata();
+
   const settings = await getAllSiteSettings();
   return {
     title: settings.contact_page_title || siteConfig.pages.contact.title,
@@ -16,6 +20,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export const revalidate = 3600;
 
 export default async function ContactPage() {
+  if (IS_TIMELINE_TRAVEL) return <TimelineTravelContactPage />;
+
   const settings = await getAllSiteSettings();
   const email = settings.contact_email || siteConfig.contact.email;
   const phone = settings.contact_phone || siteConfig.contact.phone;

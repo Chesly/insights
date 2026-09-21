@@ -124,9 +124,106 @@ CREATE POLICY "Admins manage pages" ON public.pages FOR ALL USING (
 -- airline/luggage/liability clauses) live here as ONE page, linked
 -- from every tour, rather than duplicated per tour.
 INSERT INTO public.pages (title, slug, status) VALUES
-  ('Booking Terms & Conditions', 'booking-terms', 'draft'),
   ('Privacy Policy', 'privacy-policy', 'draft'),
   ('Terms & Conditions', 'terms-and-conditions', 'draft');
+
+-- Real content, straight from the client's own supplied documents —
+-- published, not draft, since it's already-approved copy, not a
+-- placeholder awaiting review.
+INSERT INTO public.pages (title, slug, status, body) VALUES
+(
+  'About Us',
+  'about',
+  'published',
+  $page$<h2>Company Overview</h2>
+<p>Timeline Travel is a South African Destination Management Company (DMC) dedicated to delivering professional, reliable, and cost-effective travel management solutions for businesses, government institutions, organizations, groups, and individual travelers.</p>
+<p>We specialize in simplifying travel through strategic planning, supplier negotiations, travel coordination, accommodation management, transportation logistics, visa assistance, travel reporting, and destination experiences.</p>
+<p><strong>Our mission is simple: to make travel easier, safer, more efficient, and more rewarding for every client we serve.</strong></p>
+<p>Whether arranging executive business travel, coordinating conferences and events, planning group tours, or creating unforgettable leisure experiences, Timeline Travel provides a complete end-to-end travel solution.</p>
+
+<h2>Our Vision</h2>
+<p>To become Africa's most trusted travel management and destination services partner.</p>
+
+<h2>Our Mission</h2>
+<p>To provide seamless travel solutions that save our clients time, reduce costs, improve travel experiences, and create lasting value through innovation, service excellence, and trusted partnerships.</p>
+
+<h2>Our Core Values</h2>
+<ul>
+<li><strong>Excellence</strong> — We pursue exceptional service in everything we do.</li>
+<li><strong>Integrity</strong> — We operate honestly, transparently, and ethically.</li>
+<li><strong>Reliability</strong> — Clients can depend on us before, during, and after every trip.</li>
+<li><strong>Innovation</strong> — We embrace modern travel technologies and smarter travel solutions.</li>
+<li><strong>Customer-Centricity</strong> — Our clients remain at the center of every decision.</li>
+<li><strong>Safety</strong> — The wellbeing of travelers is our highest priority.</li>
+<li><strong>Accountability</strong> — We take ownership of our commitments and deliver on our promises.</li>
+</ul>
+
+<h2>Why Choose Timeline Travel?</h2>
+<p><strong>Dedicated Travel Expertise</strong> — Our experienced team manages every detail so clients can focus on what matters most.</p>
+<p><strong>Cost Savings</strong> — We negotiate with global suppliers to secure competitive rates and maximize value.</p>
+<p><strong>Time Efficiency</strong> — We reduce the administrative burden associated with travel planning and coordination.</p>
+<p><strong>24/7 Support</strong> — Our travelers receive emergency travel assistance whenever they need it.</p>
+<p><strong>Tailor-Made Solutions</strong> — Every organization and traveler has unique requirements. We build customized travel solutions accordingly.</p>
+<p><strong>Technology Driven</strong> — We utilize travel tracking, reporting, and management tools that improve visibility and control.</p>
+
+<h2>Our Promise</h2>
+<ul>
+<li>Professional Service</li>
+<li>Transparent Communication</li>
+<li>Competitive Pricing</li>
+<li>Travel Compliance</li>
+<li>Reliable Supplier Networks</li>
+<li>Timely Responses</li>
+<li>Personalized Attention</li>
+<li>Safe Travel Experiences</li>
+<li>End-to-End Support</li>
+</ul>
+
+<h2>What Makes Us Different?</h2>
+<p>Many travel companies focus on bookings. Timeline Travel focuses on outcomes. We help organizations reduce travel administration, improve employee productivity, control travel spending, enhance traveler safety, improve reporting and accountability, and deliver better travel experiences. Our clients gain a strategic travel partner rather than simply a booking provider.</p>$page$
+),
+(
+  'Booking Terms & Conditions',
+  'booking-terms',
+  'published',
+  $page$<p>Timeline Travel — Reg: 2013/085216/07</p>
+
+<h2>1. Undertaking</h2>
+<p>Timeline Travel undertakes to provide all services offered subject to the terms and conditions set out herein, which terms and conditions are accepted by the passenger.</p>
+
+<h2>2. Definition</h2>
+<p><strong>Passenger</strong> means: individuals, groups, companies or other legal persons using the services offered by Timeline Travel, and includes the agents of passengers.</p>
+<p><strong>Services</strong> means: the provision of accommodation and/or transportation and/or meals as offered by Timeline Travel and accepted by the passenger.</p>
+
+<h2>3. Terms of Payment</h2>
+<p>3.1 On confirmation of services, a deposit of 25% of the quoted tour price is required. (For tours that include the Blue Train and/or private game reserves and lodges, a different schedule of deposits, payments and cancellation fees applies — this will be provided when applicable.) Full payment plus rooming list is required 45 days before commencement of services.</p>
+<p>Bookings made within 45 days of commencement of services must be accompanied by full payment of the tour plus rooming list. Where circumstances do not permit the timeous receipt of funds, explicit confirmation of transfer of funds will enable us to reserve services.</p>
+<p>3.2 If payments are made in negotiable foreign currency, the payer is responsible for any short payment resulting from exchange rate fluctuations. The exchange rate applied by Timeline Travel's official bankers on receipt of monies will be accepted as the applicable rate.</p>
+<p>3.3 If the required deposit or final payment is not received by the due date, Timeline Travel reserves the right to withdraw services.</p>
+
+<h2>4. Cancellations</h2>
+<p><strong>COVID-19 cancellation:</strong> If the passenger is precluded from traveling by pandemic-related travel restrictions in either South Africa or their country of origin, or a member of the traveling party contracts/tests positive for COVID-19 (confirmed by a doctor or positive test notification), a free postponement of up to 12 months or a full refund will apply. Proof (doctor's note, test result, government notice or similar) must be submitted to qualify.</p>
+<p>4.1 Cancellations made more than 48 hours prior to arrival will not normally result in cancellation fees. Timeline Travel reserves the right to recover any costs incurred or charges received from suppliers up to the date of cancellation. Where services are cancelled 48 hours or less prior to arrival, the following cancellation fees apply:</p>
+<ul>
+<li>2 days before commencement of services: 25% of the total quoted tour price due.</li>
+<li>1 day before commencement of services: 50% of the total quoted tour price due.</li>
+<li>15 hours or less before commencement of services: 100% of the total quoted tour price due.</li>
+</ul>
+<p>We recommend that passengers take adequate personal cancellation insurance cover before departure from home.</p>
+<p>4.2 For tours that include services from suppliers with more stringent policies (e.g. National Parks Board, Blue Train, private lodges and others), different cancellation fees will be enforceable and will be provided when applicable.</p>
+
+<h2>5. Airlines</h2>
+<p>In the event of cancellation or failure, for any reason, to use confirmed space as ticketed, 25% of the applicable airfare will be forfeited. A change of reservation constitutes a cancellation. Extension of ticket validity is not permitted, except where a passenger is hospitalised due to illness or in the event of death of an immediate family member. All airfare reservations are arranged subject to the conditions imposed by the respective airline.</p>
+
+<h2>6. Luggage</h2>
+<p>One suitcase and one overnight bag per person is allowed. Timeline Travel accepts no responsibility for loss or damage to luggage or personal property from whatsoever cause arising. Passengers are advised to take up adequate insurance cover.</p>
+
+<h2>7. Responsibility</h2>
+<p>Timeline Travel carries comprehensive passenger liability insurance, details of which will be made available on request. Timeline Travel is not responsible for any damages sustained by any passenger as a result of any act or omission whatsoever of any hotel, airline or other person, notwithstanding that Timeline Travel acted as agent of such hotel, airline or other person.</p>
+
+<h2>8. Law</h2>
+<p>The law of the Republic of South Africa shall govern the relationship between Timeline Travel and the passenger, and the courts of the Republic of South Africa shall have sole jurisdiction in respect of any claims and/or disputes which may arise between Timeline Travel and the passenger or agent.</p>$page$
+);
 
 -- ── POSTS  (doubles as "Travel Tips / Articles") ─────────────
 CREATE TABLE public.posts (

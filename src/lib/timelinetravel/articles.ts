@@ -6,9 +6,12 @@ export type Article = {
   title: string;
   slug: string;
   excerpt: string | null;
+  body: string | null;
   featuredImage: string | null;
   publishedAt: string | null;
   categoryName: string | null;
+  seoTitle: string | null;
+  metaDescription: string | null;
   faq: { question: string; answer: string }[];
   relatedTourIds: string[];
 };
@@ -20,9 +23,12 @@ function rowToArticle(row: any): Article {
     title: row.title,
     slug: row.slug,
     excerpt: row.excerpt,
+    body: row.body,
     featuredImage: row.featured_image,
     publishedAt: row.published_at,
     categoryName: row.categories?.name ?? null,
+    seoTitle: row.seo_title,
+    metaDescription: row.meta_description,
     faq: row.faq || [],
     relatedTourIds: row.related_tour_ids || [],
   };
@@ -52,4 +58,19 @@ export const getArticleBySlug = cache(async (slug: string): Promise<Article | nu
     .maybeSingle();
   if (error || !data) return null;
   return rowToArticle(data);
+});
+
+// Sidebar rail on the article page (see components/timelinetravel — the
+// pattern mirrors src/app/insights/[slug]/page.tsx's Related Articles).
+export const getRelatedArticles = cache(async (excludeSlug: string, limit = 3): Promise<Article[]> => {
+  const supabase = createPublicClient();
+  const { data, error } = await supabase
+    .from("posts")
+    .select(ARTICLE_SELECT)
+    .eq("status", "published")
+    .neq("slug", excludeSlug)
+    .order("published_at", { ascending: false })
+    .limit(limit);
+  if (error || !data) return [];
+  return data.map(rowToArticle);
 });

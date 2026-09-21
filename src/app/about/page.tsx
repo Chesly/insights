@@ -3,10 +3,14 @@ import { siteConfig } from "@/lib/siteConfig";
 import { getAllSiteSettings } from "@/lib/settings";
 import PageHero from "@/components/PageHero";
 import Newsletter from "@/components/Newsletter";
+import { IS_TIMELINE_TRAVEL } from "@/lib/timelinetravel/site";
+import TimelineTravelAboutPage, { timelineTravelAboutMetadata } from "../timelinetravel-about";
 
 export const revalidate = 3600;
 
 export async function generateMetadata(): Promise<Metadata> {
+  if (IS_TIMELINE_TRAVEL) return timelineTravelAboutMetadata();
+
   const settings = await getAllSiteSettings();
   return {
     title: settings.about_hero_title || siteConfig.pages.about.title,
@@ -27,6 +31,8 @@ const DEFAULT_IMAGES = {
 };
 
 export default async function AboutPage() {
+  if (IS_TIMELINE_TRAVEL) return <TimelineTravelAboutPage />;
+
   const s = await getAllSiteSettings();
 
   return (

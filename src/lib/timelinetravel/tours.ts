@@ -121,6 +121,18 @@ export const getFeaturedTours = cache(async (): Promise<Tour[]> => {
   return featured.length > 0 ? featured : all.slice(0, 4);
 });
 
+export const getToursByIds = cache(async (ids: string[]): Promise<Tour[]> => {
+  if (ids.length === 0) return [];
+  const supabase = createPublicClient();
+  const { data, error } = await supabase
+    .from("tours")
+    .select(TOUR_SELECT)
+    .in("id", ids)
+    .eq("published", true);
+  if (error || !data) return [];
+  return data.map(rowToTour);
+});
+
 export const getTourBySlug = cache(async (slug: string): Promise<Tour | null> => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
