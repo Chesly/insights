@@ -13,10 +13,14 @@ import CalculatorsTeaser from "@/components/CalculatorsTeaser";
 import DidYouKnowCard from "@/components/DidYouKnowCard";
 import { getTodaysFact } from "@/lib/facts";
 import { getAllSiteSettings } from "@/lib/settings";
+import { IS_TIMELINE_TRAVEL } from "@/lib/timelinetravel/site";
+import TimelineTravelHomePage from "./timelinetravel-home";
 
 export const revalidate = 300;
 
 export default async function HomePage() {
+  if (IS_TIMELINE_TRAVEL) return <TimelineTravelHomePage />;
+
   // Single blended fetch — Insights and Let's Have Coffee together, so the
   // homepage reads like a magazine front page ("what's the next valuable
   // thing to read") rather than two separate silos. Every row below is

@@ -228,16 +228,19 @@ CREATE POLICY "Editors can manage services" ON public.services FOR ALL USING (
   EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('super_admin','admin','editor'))
 );
 
-INSERT INTO public.services (title, slug, display_order) VALUES
-  ('Corporate Travel Management', 'corporate-travel', 1),
-  ('Group Travel', 'group-travel', 2),
-  ('Leisure Travel', 'leisure-travel', 3),
-  ('Flights & Accommodation', 'flights-accommodation', 4),
-  ('MICE / Events', 'mice-events', 5),
-  ('Visa Assistance', 'visa-assistance', 6),
-  ('Airport Transfers', 'airport-transfers', 7),
-  ('Travel Insurance', 'travel-insurance', 8),
-  ('Destination Management', 'destination-management', 9);
+-- Published by default — these 9 are structural nav items straight from
+-- the client's own service list (profile doc + build spec), not draft
+-- editorial content awaiting review.
+INSERT INTO public.services (title, slug, display_order, published) VALUES
+  ('Corporate Travel Management', 'corporate-travel', 1, true),
+  ('Group Travel', 'group-travel', 2, true),
+  ('Leisure Travel', 'leisure-travel', 3, true),
+  ('Flights & Accommodation', 'flights-accommodation', 4, true),
+  ('MICE / Events', 'mice-events', 5, true),
+  ('Visa Assistance', 'visa-assistance', 6, true),
+  ('Airport Transfers', 'airport-transfers', 7, true),
+  ('Travel Insurance', 'travel-insurance', 8, true),
+  ('Destination Management', 'destination-management', 9, true);
 
 -- ── TOURS ────────────────────────────────────────────────────
 -- Modelled on the 9 real packages supplied: these are flexible-date
@@ -398,6 +401,7 @@ CREATE TABLE public.newsletter_subscribers (
   email           TEXT UNIQUE NOT NULL,
   full_name       TEXT,
   status          TEXT DEFAULT 'active' CHECK (status IN ('active','unsubscribed','bounced')),
+  segment         TEXT DEFAULT 'general',
   source          TEXT DEFAULT 'website',
   subscribed_at   TIMESTAMPTZ DEFAULT NOW(),
   unsubscribed_at TIMESTAMPTZ

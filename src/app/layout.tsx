@@ -10,6 +10,8 @@ import CustomFooterCode from "@/components/CustomFooterCode";
 import { siteConfig } from "@/lib/siteConfig";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
 import { getAllSiteSettings } from "@/lib/settings";
+import { IS_TIMELINE_TRAVEL } from "@/lib/timelinetravel/site";
+import TimelineTravelRootLayout, { timelineTravelMetadata } from "./timelinetravel-layout";
 
 // Without this, Next.js treats the whole layout as static and freezes it
 // at build time — meaning settings-driven content (the consent banner,
@@ -17,47 +19,59 @@ import { getAllSiteSettings } from "@/lib/settings";
 // at the moment of the last deploy, not what's actually in the CMS now.
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
-  title: {
-    default: siteConfig.seo.defaultTitle,
-    template: siteConfig.seo.titleTemplate
-  },
-  description: siteConfig.seo.defaultDescription,
-  keywords: siteConfig.seo.defaultKeywords,
-  authors: [{ name: siteConfig.owner.name, url: siteConfig.owner.url }],
-  creator: siteConfig.owner.name,
-  publisher: siteConfig.shortName,
-  icons: {
-    icon: siteConfig.branding.favicon,
-    shortcut: siteConfig.branding.favicon,
-    apple: siteConfig.branding.favicon
-  },
-  manifest: `${siteConfig.url}/manifest.webmanifest`,
-  openGraph: {
-    type: "website",
-    locale: siteConfig.locale,
-    url: siteConfig.url,
-    siteName: siteConfig.name,
-    title: siteConfig.name,
-    description: siteConfig.description,
-    images: [{ url: `${siteConfig.url}/opengraph-image`, width: 1200, height: 630, alt: siteConfig.name }]
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: siteConfig.seo.twitterHandle,
-    title: siteConfig.name,
-    description: siteConfig.description,
-    images: [`${siteConfig.url}/opengraph-image`]
-  },
-  alternates: {
-    canonical: siteConfig.url,
-    types: { "application/rss+xml": `${siteConfig.url}/rss.xml` }
-  },
-  robots: { index: true, follow: true, googleBot: { index: true, follow: true } }
-};
+export async function generateMetadata(): Promise<Metadata> {
+  if (IS_TIMELINE_TRAVEL) return timelineTravelMetadata();
+
+  return {
+    metadataBase: new URL(siteConfig.url),
+    title: {
+      default: siteConfig.seo.defaultTitle,
+      template: siteConfig.seo.titleTemplate
+    },
+    description: siteConfig.seo.defaultDescription,
+    keywords: siteConfig.seo.defaultKeywords,
+    authors: [{ name: siteConfig.owner.name, url: siteConfig.owner.url }],
+    creator: siteConfig.owner.name,
+    publisher: siteConfig.shortName,
+    icons: {
+      icon: siteConfig.branding.favicon,
+      shortcut: siteConfig.branding.favicon,
+      apple: siteConfig.branding.favicon
+    },
+    manifest: `${siteConfig.url}/manifest.webmanifest`,
+    openGraph: {
+      type: "website",
+      locale: siteConfig.locale,
+      url: siteConfig.url,
+      siteName: siteConfig.name,
+      title: siteConfig.name,
+      description: siteConfig.description,
+      images: [{ url: `${siteConfig.url}/opengraph-image`, width: 1200, height: 630, alt: siteConfig.name }]
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: siteConfig.seo.twitterHandle,
+      title: siteConfig.name,
+      description: siteConfig.description,
+      images: [`${siteConfig.url}/opengraph-image`]
+    },
+    alternates: {
+      canonical: siteConfig.url,
+      types: { "application/rss+xml": `${siteConfig.url}/rss.xml` }
+    },
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true } }
+  };
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Separate deployment, separate component tree entirely — every
+  // request this deployment gets IS Timeline Travel (see
+  // lib/timelinetravel/site.ts), so branch before touching any of the
+  // Insights-specific settings/schema/chrome logic below.
+  if (IS_TIMELINE_TRAVEL) {
+    return <TimelineTravelRootLayout>{children}</TimelineTravelRootLayout>;
+  }
+
   // Branding/footer/social/contact fields editable from Admin > Settings
   // override their siteConfig.ts defaults — see lib/settings.ts.
   const settings = await getAllSiteSettings();
