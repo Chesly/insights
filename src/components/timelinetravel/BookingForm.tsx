@@ -3,11 +3,29 @@
 import { useState } from "react";
 import type { Tour, TourPriceTier } from "@/lib/timelinetravel/tours";
 
+// Redirects the browser to PayFast by building a real <form> and
+// submitting it — PayFast's process endpoint only accepts a POST with
+// its signed fields, not a GET/fetch redirect.
+function redirectToPayfast(processUrl: string, fields: Record<string, string>) {
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = processUrl;
+  for (const [key, value] of Object.entries(fields)) {
+    if (value === undefined || value === null) continue;
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = key;
+    input.value = String(value);
+    form.appendChild(input);
+  }
+  document.body.appendChild(form);
+  form.submit();
+}
+
 export default function BookingForm({ tour }: { tour: Tour }) {
   const [tierId, setTierId] = useState<string>(tour.priceTiers[0]?.id || "");
   const [travellers, setTravellers] = useState(tour.minPax || 1);
-  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
-  const [reference, setReference] = useState<string | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "redirecting" | "error">("idle");
 
   const selectedTier: TourPriceTier | undefined = tour.priceTiers.find((t) => t.id === tierId) || tour.priceTiers[0];
   const total = selectedTier ? selectedTier.pricePerPerson * travellers : null;
@@ -17,7 +35,8 @@ export default function BookingForm({ tour }: { tour: Tour }) {
     const form = new FormData(e.currentTarget);
     setStatus("loading");
     try {
-      const res = await fetch("/api/timelinetravel/bookings", {
+      // Step 1: create the pending booking (its own, separate write).
+      const bookingRes = await fetch("/api/timelinetravel/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -34,25 +53,40 @@ export default function BookingForm({ tour }: { tour: Tour }) {
           currency: selectedTier?.currency || "ZAR",
         }),
       });
-      const data = await res.json();
-      if (res.ok) {
-        setReference(data.bookingReference);
-        setStatus("done");
-      } else {
+      const bookingData = await bookingRes.json();
+      if (!bookingRes.ok) {
         setStatus("error");
+        return;
       }
+
+      // Step 2: initiate payment for that booking — a separate call, so
+      // the booking exists (and is visible to Andrew) even if PayFast
+      // itself is unreachable right now.
+      const checkoutRes = await fetch("/api/timelinetravel/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookingReference: bookingData.bookingReference }),
+      });
+      const checkoutData = await checkoutRes.json();
+      if (!checkoutRes.ok) {
+        setStatus("error");
+        return;
+      }
+
+      setStatus("redirecting");
+      redirectToPayfast(checkoutData.processUrl, checkoutData.fields);
     } catch {
       setStatus("error");
     }
   }
 
-  if (status === "done") {
+  if (status === "redirecting") {
     return (
       <div id="book" className="border border-[#0F3D3E]/10 bg-[#FAF8F3] p-8">
-        <h3 className="text-lg font-bold text-[#0F3D3E]">Booking Received</h3>
+        <h3 className="text-lg font-bold text-[#0F3D3E]">Redirecting to PayFast...</h3>
         <p className="mt-2 text-sm text-[#0F3D3E]/70">
-          Reference <strong>{reference}</strong>. Timeline Travel will be in touch shortly to confirm availability
-          and arrange payment.
+          Your booking has been saved. You&apos;re being redirected to PayFast to complete payment — please don&apos;t
+          close this window.
         </p>
       </div>
     );

@@ -440,7 +440,7 @@ CREATE TABLE public.bookings (
   notes               TEXT,
   amount              NUMERIC(10,2) NOT NULL,
   currency            TEXT NOT NULL DEFAULT 'ZAR',
-  paystack_reference  TEXT UNIQUE,
+  payment_reference   TEXT UNIQUE, -- PayFast's pf_payment_id, set once the ITN confirms payment
   payment_status      TEXT NOT NULL DEFAULT 'pending' CHECK (payment_status IN ('pending','paid','failed')),
   booking_status      TEXT NOT NULL DEFAULT 'pending' CHECK (booking_status IN ('pending','confirmed','cancelled')),
   created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
