@@ -1,10 +1,14 @@
+"use client";
+
+import { useState, useRef } from "react";
 import Link from "next/link";
 import type { Post } from "@/lib/types";
 
 interface Props {
   posts: Post[];
-  currentPage: number;
-  totalPages: number;
+  initialCount: number;
+  perLoad: number;
+  hasFeatured: boolean;
   basePath?: string;
 }
 
@@ -12,11 +16,24 @@ interface Props {
 // browse by category already have dedicated /category/[slug] pages;
 // duplicating that as a wall of buttons here was exactly the kind of
 // clutter the confirmed design direction asked to remove.
-//
-// `posts` is already the current page's slice — sliced server-side by the
-// caller — so this renders one page's worth and links to the others by
-// real URL (?page=N) rather than revealing more posts via client state.
-export default function BlogListing({ posts, currentPage, totalPages, basePath = "/insights" }: Props) {
+export default function BlogListing({ posts, initialCount, perLoad, basePath = "/insights" }: Props) {
+  const [visible, setVisible] = useState(initialCount);
+  const [loading, setLoading] = useState(false);
+  const loaderRef = useRef<HTMLDivElement>(null);
+
+  const shown = posts.slice(0, visible);
+  const hasMore = visible < posts.length;
+  const remaining = posts.length - visible;
+
+  const loadMore = () => {
+    setLoading(true);
+    // Small delay for perceived smoothness
+    setTimeout(() => {
+      setVisible(v => v + perLoad);
+      setLoading(false);
+    }, 300);
+  };
+
   if (posts.length === 0) {
     return (
       <section className="container-page py-10">
@@ -31,50 +48,73 @@ export default function BlogListing({ posts, currentPage, totalPages, basePath =
     <section className="container-page py-10">
       {/* Grid — 3 cols desktop, 2 tablet, 1 mobile, per the confirmed reference layout */}
       <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-3">
-        {posts.map((post, i) => (
+        {shown.map((post, i) => (
           <ArticleCard key={post.slug} post={post} priority={i < 3} basePath={basePath} />
         ))}
       </div>
 
-      {/* Numbered pagination — Previous / page numbers / Next, each a real
-          link to its own crawlable ?page=N URL. */}
-      {totalPages > 1 && (
-        <nav aria-label="Articles pagination" className="mt-12 flex items-center justify-center gap-2">
-          <Link
-            href={currentPage > 1 ? `${basePath}?page=${currentPage - 1}` : basePath}
-            aria-disabled={currentPage <= 1}
-            className={`px-3 py-2 text-sm font-semibold ${
-              currentPage <= 1
-                ? "pointer-events-none text-navy/30 dark:text-white/30"
-                : "text-navy hover:text-gold dark:text-white"
-            }`}
+      {/* Load More */}
+      {hasMore && (
+        <div ref={loaderRef} className="mt-12 flex flex-col items-center gap-3">
+          {/* Progress indicator */}
+          <div className="flex items-center gap-3 text-xs text-navy/40 dark:text-white/30">
+            <span>Showing {shown.length} of {posts.length} articles</span>
+          </div>
+          {/* Progress bar */}
+          <div className="w-48 h-0.5 bg-navy/10 dark:bg-white/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gold transition-all duration-500"
+              style={{ width: `${(shown.length / posts.length) * 100}%` }}
+            />
+          </div>
+
+          <button
+            onClick={loadMore}
+            disabled={loading}
+            className="mt-2 group flex items-center gap-3 border border-gold px-8 py-3 text-sm font-bold uppercase tracking-widest text-gold transition-all hover:bg-gold hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold disabled:opacity-50"
           >
-            ← Previous
-          </Link>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <Link
-              key={p}
-              href={p === 1 ? basePath : `${basePath}?page=${p}`}
-              aria-current={p === currentPage ? "page" : undefined}
-              className={`flex h-9 w-9 items-center justify-center text-sm font-semibold ${
-                p === currentPage ? "bg-gold text-navy" : "text-navy hover:text-gold dark:text-white"
-              }`}
-            >
-              {p}
-            </Link>
-          ))}
-          <Link
-            href={`${basePath}?page=${Math.min(currentPage + 1, totalPages)}`}
-            aria-disabled={currentPage >= totalPages}
-            className={`px-3 py-2 text-sm font-semibold ${
-              currentPage >= totalPages
-                ? "pointer-events-none text-navy/30 dark:text-white/30"
-                : "text-navy hover:text-gold dark:text-white"
-            }`}
+            {loading ? (
+              <>
+                <LoadingSpinner />
+                Loading…
+              </>
+            ) : (
+              <>
+                Load {Math.min(perLoad, remaining)} More
+                <span className="text-[10px] font-normal opacity-60">
+                  ({remaining} remaining)
+                </span>
+              </>
+            )}
+          </button>
+
+          {/* Quick jump — appears after 24+ articles shown */}
+          {shown.length >= 24 && (
+            <p className="text-xs text-navy/30 dark:text-white/20 mt-1">
+              Looking for something specific?{" "}
+              <a href="/search" className="text-gold underline">Search articles</a>
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* End of results */}
+      {!hasMore && (
+        <div className="mt-10 text-center">
+          <div className="flex items-center gap-3 justify-center mb-4">
+            <span className="h-px w-16 bg-gold/20" />
+            <span className="text-xs text-navy/30 dark:text-white/20 uppercase tracking-widest">
+              All {posts.length} articles loaded
+            </span>
+            <span className="h-px w-16 bg-gold/20" />
+          </div>
+          <a
+            href="/search"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-gold underline"
           >
-            Next →
-          </Link>
-        </nav>
+            Search all articles →
+          </a>
+        </div>
       )}
     </section>
   );
@@ -146,5 +186,14 @@ function ArticleCard({ post, priority, basePath }: { post: Post; priority: boole
         </div>
       </div>
     </Link>
+  );
+}
+
+function LoadingSpinner() {
+  return (
+    <svg className="h-4 w-4 animate-spin text-gold" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
   );
 }
