@@ -4,13 +4,6 @@ import { getAllFacts } from "@/lib/facts";
 import { siteConfig } from "@/lib/siteConfig";
 import { getAllSiteSettings } from "@/lib/settings";
 
-// Random selection on every request (not cached like most pages) — the
-// pool is meant to grow toward 250+, and showing the same fixed order
-// every visit would make repeat visitors see nothing new. getAllFacts()
-// itself is still cached, so this doesn't add extra database load, only
-// a fresh shuffle per request.
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Did You Know? South African Facts",
   description:
@@ -18,21 +11,27 @@ export const metadata: Metadata = {
   alternates: { canonical: `${siteConfig.url}/facts` },
 };
 
-const FACTS_SHOWN = 23;
+// A stable, paginated archive of every published fact rather than a
+// random subset re-shuffled on each visit — a listing whose contents
+// change on every load is bad for search-engine indexing consistency
+// (each fact already has its own crawlable /facts/[slug] page; the
+// index just needs to reliably surface all of them). 24 divides evenly
+// into both the 2-col and 3-col breakpoints below, so the last row
+// never looks lopsided.
+const PAGE_SIZE = 24;
 
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-export default async function FactsIndexPage() {
+export default async function FactsIndexPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page: pageParam } = await searchParams;
   const [allFacts, settings] = await Promise.all([getAllFacts(), getAllSiteSettings()]);
-  const facts = shuffle(allFacts).slice(0, FACTS_SHOWN);
   const heroImage = settings.facts_hero_image;
+
+  const totalPages = Math.max(1, Math.ceil(allFacts.length / PAGE_SIZE));
+  const page = Math.min(Math.max(1, Number(pageParam) || 1), totalPages);
+  const facts = allFacts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <div>
@@ -78,6 +77,40 @@ export default async function FactsIndexPage() {
               </Link>
             ))}
           </div>
+        )}
+
+        {totalPages > 1 && (
+          <nav aria-label="Facts pagination" className="mt-12 flex items-center justify-center gap-2">
+            <Link
+              href={`/facts${page > 1 ? `?page=${page - 1}` : ""}`}
+              aria-disabled={page <= 1}
+              className={`px-3 py-2 text-sm font-semibold ${
+                page <= 1 ? "pointer-events-none text-navy/30 dark:text-white/30" : "text-navy hover:text-gold dark:text-white"
+              }`}
+            >
+              ← Previous
+            </Link>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <Link
+                key={p}
+                href={p === 1 ? "/facts" : `/facts?page=${p}`}
+                className={`flex h-9 w-9 items-center justify-center text-sm font-semibold ${
+                  p === page ? "bg-gold text-navy" : "text-navy hover:text-gold dark:text-white"
+                }`}
+              >
+                {p}
+              </Link>
+            ))}
+            <Link
+              href={`/facts?page=${Math.min(page + 1, totalPages)}`}
+              aria-disabled={page >= totalPages}
+              className={`px-3 py-2 text-sm font-semibold ${
+                page >= totalPages ? "pointer-events-none text-navy/30 dark:text-white/30" : "text-navy hover:text-gold dark:text-white"
+              }`}
+            >
+              Next →
+            </Link>
+          </nav>
         )}
       </div>
     </div>
