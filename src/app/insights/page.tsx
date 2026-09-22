@@ -5,27 +5,54 @@ import PageHero from "@/components/PageHero";
 import BlogListing from "@/components/BlogListing";
 import ProductsTeaser from "@/components/ProductsTeaser";
 
-export const metadata: Metadata = {
-  title: "Articles — AI, Websites, Design & Growth",
-  description: `Practical insights on AI, websites, SEO, GEO, and South African business growth from ${siteConfig.shortName}.`,
-  alternates: { canonical: `${siteConfig.url}/insights` },
-  openGraph: {
-    title: `Articles | ${siteConfig.shortName}`,
-    description: `Practical insights on AI, websites, SEO, and South African business growth.`,
-    url: `${siteConfig.url}/insights`,
-    type: "website",
-  },
-};
+// Same page size the "Load More" button used to reveal 12 at a time —
+// kept identical so the reading experience (posts per screenful) doesn't
+// change, only how the rest get to the browser.
+const PAGE_SIZE = 12;
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}): Promise<Metadata> {
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+  const canonical = page > 1 ? `${siteConfig.url}/insights?page=${page}` : `${siteConfig.url}/insights`;
+
+  return {
+    title: "Articles — AI, Websites, Design & Growth",
+    description: `Practical insights on AI, websites, SEO, GEO, and South African business growth from ${siteConfig.shortName}.`,
+    alternates: { canonical },
+    openGraph: {
+      title: `Articles | ${siteConfig.shortName}`,
+      description: `Practical insights on AI, websites, SEO, and South African business growth.`,
+      url: `${siteConfig.url}/insights`,
+      type: "website",
+    },
+  };
+}
 
 export const revalidate = 3600;
 
-export default async function BlogIndexPage() {
+export default async function BlogIndexPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page: pageParam } = await searchParams;
   const posts = await getPostsBySection("insights");
 
   // One post carries the whole "Featured" slot — the rest is a plain,
-  // uncluttered listing below a divider, per the confirmed design.
+  // uncluttered listing below a divider, per the confirmed design. Shown
+  // only on page 1: repeating the same featured card on every paginated
+  // page would read as duplicate content to search engines and would be
+  // repetitive for a reader paging through.
   const featured = posts.find((p) => p.featured) || posts[0];
   const rest = featured ? posts.filter((p) => p.slug !== featured.slug) : posts;
+
+  const totalPages = Math.max(1, Math.ceil(rest.length / PAGE_SIZE));
+  const page = Math.min(Math.max(1, Number(pageParam) || 1), totalPages);
+  const pagePosts = rest.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <div>
@@ -36,14 +63,14 @@ export default async function BlogIndexPage() {
         backgroundImage="https://ik.imagekit.io/mkvu8hdr5/insights.jpg"
       />
 
-      {featured && (
+      {featured && page === 1 && (
         <section className="container-page pt-10">
           <FeaturedPost post={featured} />
           <div className="mt-10 h-px bg-gold/20" />
         </section>
       )}
 
-      <BlogListing posts={rest} initialCount={12} perLoad={12} hasFeatured={Boolean(featured)} basePath="/insights" />
+      <BlogListing posts={pagePosts} currentPage={page} totalPages={totalPages} basePath="/insights" />
 
       <ProductsTeaser />
     </div>

@@ -5,26 +5,53 @@ import PageHero from "@/components/PageHero";
 import BlogListing from "@/components/BlogListing";
 import ProductsTeaser from "@/components/ProductsTeaser";
 
-export const metadata: Metadata = {
-  title: "Let's Have Coffee — Thoughtful Conversations",
-  description:
-    "Warm, thoughtful conversations about the ideas shaping South Africa, business, technology, and society — no politics, no final answers, just good questions.",
-  alternates: { canonical: `${siteConfig.url}/coffee` },
-  openGraph: {
-    title: `Let's Have Coffee | ${siteConfig.shortName}`,
+// Same page size the "Load More" button used to reveal 12 at a time —
+// kept identical so the reading experience (posts per screenful) doesn't
+// change, only how the rest get to the browser.
+const PAGE_SIZE = 12;
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}): Promise<Metadata> {
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+  const canonical = page > 1 ? `${siteConfig.url}/coffee?page=${page}` : `${siteConfig.url}/coffee`;
+
+  return {
+    title: "Let's Have Coffee — Thoughtful Conversations",
     description:
-      "Thoughtful conversations about the ideas shaping South Africa, business, technology, and society.",
-    url: `${siteConfig.url}/coffee`,
-    type: "website",
-  },
-};
+      "Warm, thoughtful conversations about the ideas shaping South Africa, business, technology, and society — no politics, no final answers, just good questions.",
+    alternates: { canonical },
+    openGraph: {
+      title: `Let's Have Coffee | ${siteConfig.shortName}`,
+      description:
+        "Thoughtful conversations about the ideas shaping South Africa, business, technology, and society.",
+      url: `${siteConfig.url}/coffee`,
+      type: "website",
+    },
+  };
+}
 
 export const revalidate = 3600;
 
-export default async function CoffeeIndexPage() {
+export default async function CoffeeIndexPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page: pageParam } = await searchParams;
   const posts = await getPostsBySection("coffee");
+  // Featured card shown only on page 1 — see /insights/page.tsx for the
+  // same judgment call and why (duplicate-content risk + repetitiveness
+  // on later pages).
   const featured = posts.find((p) => p.featured) || posts[0];
   const rest = featured ? posts.filter((p) => p.slug !== featured.slug) : posts;
+
+  const totalPages = Math.max(1, Math.ceil(rest.length / PAGE_SIZE));
+  const page = Math.min(Math.max(1, Number(pageParam) || 1), totalPages);
+  const pagePosts = rest.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <div>
@@ -41,14 +68,14 @@ export default async function CoffeeIndexPage() {
         </div>
       )}
 
-      {featured && (
+      {featured && page === 1 && (
         <section className="container-page pt-10">
           <FeaturedPost post={featured} />
           <div className="mt-10 h-px bg-gold/20" />
         </section>
       )}
 
-      <BlogListing posts={rest} initialCount={12} perLoad={12} hasFeatured={Boolean(featured)} basePath="/coffee" />
+      <BlogListing posts={pagePosts} currentPage={page} totalPages={totalPages} basePath="/coffee" />
 
       <ProductsTeaser />
     </div>
