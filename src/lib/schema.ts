@@ -10,7 +10,15 @@ export function organizationSchema() {
     "@type": "Organization",
     "@id": `${siteConfig.url}/#organization`,
     name: siteConfig.shortName,
+    alternateName: "Chesly.Tech",
     url: siteConfig.owner.url,
+    parentOrganization: {
+      "@type": "Organization",
+      "@id": "https://www.digitalizedart.tech/#organization",
+      name: "Digitalized Art (Pty) Ltd",
+      legalName: "Digitalized Art (Pty) Ltd",
+      url: "https://www.digitalizedart.tech/"
+    },
     logo: { "@type": "ImageObject", url: siteConfig.branding.logoHeader },
     image: siteConfig.branding.logoHeader,
     founder: {
