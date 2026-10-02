@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { track, EV } from "@/lib/meta-events";
+import { printReport, shareReport, type PdfReport } from "@/lib/client-report";
 
 type Answer = "yes" | "no" | "unsure" | "na";
 
@@ -278,13 +279,21 @@ export default function TenderCalculator() {
 
   const b = scoreResult.pct !== null ? band(scoreResult.pct) : null;
 
+  function tenderReport(): PdfReport {
+    const payload=buildResultsPayload();
+    return {
+      title:"Bid/No-Bid Tender Decision Record",
+      subtitle:tName || tRef || "South African tender assessment",
+      summary:payload.summaryLines.length?payload.summaryLines:["Tender decision record"],
+      sections:payload.sections,
+      footer:"Decision-support record only. Check the tender document and issuing organisation's requirements before submitting a bid."
+    };
+  }
+
   function handlePrint() {
-    if (decision !== "follow" && !reason.trim()) {
-      setReasonError(true);
-      return;
-    }
+    if (decision !== "follow" && !reason.trim()) { setReasonError(true); return; }
     setReasonError(false);
-    window.print();
+    if(!printReport(tenderReport())) window.print();
   }
 
   function buildResultsPayload() {
@@ -378,20 +387,8 @@ export default function TenderCalculator() {
   }
 
   async function handleShareTender() {
-    const text = buildWhatsAppText();
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: tName || "Tender bid/no-bid result",
-          text,
-          url: "https://insights.chesly.tech/calculators/tender-bid-no-bid",
-        });
-        return;
-      }
-    } catch (err) {
-      if ((err as Error).name === "AbortError") return;
-    }
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
+    const text=buildWhatsAppText();
+    await shareReport(tenderReport(),"tender-bid-no-bid-decision.pdf",text,"https://insights.chesly.tech/calculators/tender-bid-no-bid");
   }
 
   function buildWhatsAppText(): string {
