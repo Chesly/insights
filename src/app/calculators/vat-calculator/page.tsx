@@ -41,7 +41,7 @@ const FAQS = [
   {
     question: "Do I have to charge VAT on my invoices?",
     answer:
-      "Only if you are a VAT vendor registered with SARS. Registration is compulsory once your taxable turnover exceeds R1 million in any consecutive twelve-month period, and voluntary from R50,000. An unregistered business must not charge VAT or issue a VAT invoice."
+      "Only if you are a VAT vendor registered with SARS. From 1 April 2026, registration is compulsory when taxable supplies exceed R2.3 million in any consecutive twelve-month period (or are expected to exceed it under the applicable rules). Voluntary registration is available in qualifying circumstances from R120,000 of taxable supplies. An unregistered business must not charge VAT or issue a VAT invoice."
   },
   {
     question: "What must a valid South African VAT invoice show?",
