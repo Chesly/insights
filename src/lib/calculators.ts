@@ -15,35 +15,31 @@ export interface CalculatorMeta {
 
 export const CALCULATORS: CalculatorMeta[] = [
   {
-    slug: "funding-readiness-assessment",
-    icon: "💼",
-    title: "South African Funding Readiness Assessment",
-    cardTitle: "Funding Readiness",
-    description:
-      "Check how prepared your business is to approach South African small-business funders, identify your biggest gaps, and get a practical next-step plan."
-  },
-  {
     slug: "tender-bid-no-bid",
     icon: "📋",
-    title: "Bid/No-Bid Tender Calculator",
-    cardTitle: "Bid or No-Bid?",
-    description:
-      "Score any South African tender out of 100 before you commit two weeks to it, with a full profitability model in rand and a printable decision record."
+    title: "Tender Bid/No-Bid Calculator",
+    cardTitle: "Tender Bid/No-Bid Calculator",
+    description: "Score a South African tender before you commit resources, test profitability and cash exposure, and create a shareable decision record."
+  },
+  {
+    slug: "funding-readiness-assessment",
+    icon: "💼",
+    title: "South African Business Funding Readiness Calculator",
+    cardTitle: "Funding Readiness Calculator",
+    description: "Check how prepared your business is to approach a funder, identify the biggest gaps, and get a practical action plan before you apply."
   },
   {
     slug: "vat-calculator",
     icon: "🧮",
     title: "South African VAT Calculator",
     cardTitle: "VAT Calculator",
-    description:
-      "Add or remove 15% VAT from any amount in seconds — inclusive or exclusive, with the working shown so you can check it."
+    description: "Add or remove South African VAT from an amount, see the VAT portion and keep a clear calculation record."
   },
   {
     slug: "retention-calculator",
     icon: "🏗️",
     title: "Retention & Progress Payment Calculator",
-    cardTitle: "Retention Calculator",
-    description:
-      "Work out retention withheld, net payment due and VAT on any progress claim, and track when the retained amount gets released."
+    cardTitle: "Retention & Progress Payment Calculator",
+    description: "Model retention withheld, net progress payments, VAT, payment exposure and expected retention releases using your contract terms."
   }
 ];
