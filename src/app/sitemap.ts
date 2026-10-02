@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/siteConfig";
-import { getAllPosts, getAllTags } from "@/lib/posts";
+import { getAllPosts, getPopularTags } from "@/lib/posts";
 import { getAllAuthors } from "@/lib/authors";
 import { getAllDownloads } from "@/lib/downloads";
 import { getAllFacts } from "@/lib/facts";
@@ -10,7 +10,7 @@ import { CALCULATORS } from "@/lib/calculators";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, tags, authors, downloads, facts] = await Promise.all([
     getAllPosts(false, ["insights", "coffee"]),
-    getAllTags(),
+    getPopularTags(1000),
     getAllAuthors(),
     getAllDownloads(),
     getAllFacts(),
@@ -38,8 +38,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6
   }));
 
-  const tagRoutes: MetadataRoute.Sitemap = tags.map((t) => ({
-    url: `${siteConfig.url}/tag/${slugify(t)}`,
+  // Keep thin one-article tag archives out of the sitemap. They add little search value.
+  const tagRoutes: MetadataRoute.Sitemap = tags.filter((t) => t.count >= 2).map((t) => ({
+    url: `${siteConfig.url}/tag/${slugify(t.tag)}`,
     changeFrequency: "weekly",
     priority: 0.4
   }));
