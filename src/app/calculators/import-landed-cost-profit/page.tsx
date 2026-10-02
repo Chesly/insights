@@ -1,0 +1,24 @@
+import type { Metadata } from "next";
+import { siteConfig } from "@/lib/siteConfig";
+import PageHero from "@/components/PageHero";
+import ImportLandedCostCalculator from "@/components/ImportLandedCostCalculator";
+import ProductsTeaser from "@/components/ProductsTeaser";
+import { breadcrumbSchema, faqSchema, webApplicationSchema } from "@/lib/schema";
+const URL=`${siteConfig.url}/calculators/import-landed-cost-profit`;
+export const metadata:Metadata={title:"Import Landed Cost & Profit Calculator South Africa",description:"Calculate MOQ order cost, customs duty, import VAT, freight, clearing costs, landed cost per unit and profit for goods imported into South Africa.",alternates:{canonical:URL},openGraph:{title:"South Africa Import Landed Cost & Profit Calculator",description:"Before you order from China or another overseas supplier, estimate the real landed cost per unit and your potential profit.",url:URL,type:"website"}};
+const FAQ=[
+ {question:"What does MOQ mean?",answer:"MOQ means Minimum Order Quantity. It is the smallest quantity a supplier is willing to sell in one order. A low unit price can therefore still require a large minimum cash outlay."},
+ {question:"Does every imported product have the same customs duty?",answer:"No. The rate depends on the product's tariff classification, origin and other customs rules. Some goods are duty free while others can attract percentage, specific, compound, anti-dumping or other duties."},
+ {question:"How does South African import VAT work?",answer:"South Africa's standard VAT rate is 15%. For goods originating outside the Southern African Customs Union, SARS generally calculates import VAT on the customs value plus a 10% uplift plus non-rebated duties. Confirm the treatment for your shipment."},
+ {question:"Is freight included in the customs value?",answer:"Customs valuation is governed by specific valuation rules and is not simply the same as this calculator's total landed cost. Use the customs value accepted for your shipment and confirm it with your clearing agent when necessary."},
+ {question:"Is this a SARS customs assessment?",answer:"No. It is a planning calculator for testing an import business case before you order. The actual customs assessment depends on classification, valuation, origin and the facts of the shipment."}
+];
+export default function Page(){return <div>
+ <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(breadcrumbSchema([{name:"Home",url:siteConfig.url},{name:"Calculators",url:`${siteConfig.url}/calculators`},{name:"Import Landed Cost & Profit Calculator",url:URL}]))}}/>
+ <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(webApplicationSchema({name:"Import Landed Cost & Profit Calculator South Africa",url:URL,description:"Estimate MOQ, import taxes and duties, total landed cost and gross profit for products imported into South Africa.",applicationCategory:"FinanceApplication",featureList:["MOQ calculation","Currency conversion","Customs duty estimate","South African import VAT estimate","Freight and clearing costs","Landed cost per unit","Gross profit and margin","Shareable report"]}))}}/>
+ <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(faqSchema(FAQ))}}/>
+ <PageHero title="What will that import really cost you in South Africa?" subtitle="Start with the supplier price and MOQ. Add freight, customs, import VAT, clearing and local delivery — then see the real landed cost per unit and whether your selling price still makes money." breadcrumbs={[{label:"Home",href:"/"},{label:"Calculators",href:"/calculators"},{label:"Import Landed Cost"}]}/>
+ <main className="container-page py-10"><div className="mx-auto max-w-3xl"><ImportLandedCostCalculator/>
+ <section className="mt-12 border-t border-navy/10 pt-8 dark:border-white/10"><h2 className="text-xl font-bold text-navy dark:text-white">Why the cheap supplier price can be misleading</h2><p className="mt-3 leading-relaxed text-navy/70 dark:text-white/70">A supplier may quote an attractive unit price but require hundreds of units. That MOQ changes the cash needed before the goods even leave the supplier. Freight, customs duty, import VAT, clearing and delivery then change the true cost again. The useful number for a reseller is the landed cost per sellable unit — and the margin left after that cost.</p></section>
+ <section className="mt-8"><h2 className="text-xl font-bold text-navy dark:text-white">Frequently asked questions</h2><div className="mt-4 space-y-3">{FAQ.map(x=><details key={x.question} className="border border-navy/10 p-4 dark:border-white/10"><summary className="cursor-pointer font-semibold text-navy dark:text-white">{x.question}</summary><p className="mt-3 text-sm leading-relaxed text-navy/70 dark:text-white/70">{x.answer}</p></details>)}</div></section>
+ </div></main><ProductsTeaser/></div>}
