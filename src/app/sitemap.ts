@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/siteConfig";
-import { getAllPosts, getPopularTags } from "@/lib/posts";
+import { getAllPosts, getAllCategories, getPopularTags } from "@/lib/posts";
 import { getAllAuthors } from "@/lib/authors";
 import { getAllDownloads } from "@/lib/downloads";
 import { getAllFacts } from "@/lib/facts";
@@ -8,8 +8,9 @@ import { slugify } from "@/lib/types";
 import { CALCULATORS } from "@/lib/calculators";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [posts, tags, authors, downloads, facts] = await Promise.all([
+  const [posts, categories, tags, authors, downloads, facts] = await Promise.all([
     getAllPosts(false, ["insights", "coffee"]),
+    getAllCategories(),
     getPopularTags(1000),
     getAllAuthors(),
     getAllDownloads(),
@@ -32,7 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteConfig.url}/disclaimer`, changeFrequency: "yearly", priority: 0.2 }
   ];
 
-  const categoryRoutes: MetadataRoute.Sitemap = siteConfig.categories.map((c) => ({
+  const categoryRoutes: MetadataRoute.Sitemap = categories.map((c) => ({
     url: `${siteConfig.url}/category/${slugify(c)}`,
     changeFrequency: "weekly",
     priority: 0.6
