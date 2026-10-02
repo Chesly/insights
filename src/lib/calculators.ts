@@ -31,9 +31,9 @@ export const CALCULATORS: CalculatorMeta[] = [
   {
     slug: "import-landed-cost-profit",
     icon: "🚢",
-    title: "Import Landed Cost & Profit Calculator — South Africa",
-    cardTitle: "Import Landed Cost & Profit Calculator",
-    description: "Test an overseas supplier order from MOQ to South African landed cost per unit, then see whether your planned selling price still makes money."
+    title: "South Africa Import Cost & Profit Calculator",
+    cardTitle: "Import Cost & Profit Calculator",
+    description: "Buying from China or overseas? Calculate MOQ, shipping, customs, import VAT, landed cost per unit and profit before you place the order."
   },
   {
     slug: "vat-calculator",
