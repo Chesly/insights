@@ -46,6 +46,7 @@ const nextConfig = {
       { source: "/insights/purchase-order-funding-cost-south-africa", destination: "/insights/how-much-does-purchase-order-funding-cost", permanent: true },
       { source: "/insights/how-to-register-on-etender-portal", destination: "/insights/national-etender-portal-registration", permanent: true },
       { source: "/insights/common-mistakes-purchase-order-funding", destination: "/insights/purchase-order-funding-rejected", permanent: true },
+      { source: "/insights/step-by-step-guide-how-register-import-export", destination: "/insights/how-get-import-export-code-south-africa", permanent: true },
       // A batch of post slugs were originally saved with inconsistent
       // capitalization (e.g. "What-is-purchase-order-funding"), which
       // broke every other post's internal link to them since every link

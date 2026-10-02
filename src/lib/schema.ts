@@ -50,12 +50,7 @@ export function websiteSchema() {
     url: siteConfig.url,
     description: siteConfig.description,
     inLanguage: siteConfig.language,
-    publisher: { "@id": `${siteConfig.url}/#organization` },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${siteConfig.url}/search?q={search_term_string}`,
-      "query-input": "required name=search_term_string"
-    }
+    publisher: { "@id": `${siteConfig.url}/#organization` }
   };
 }
 
@@ -138,7 +133,6 @@ export function personSchema(author: Author) {
     description: author.bio,
     image: author.image,
     url: `${siteConfig.url}/author/${author.slug}`,
-    email: author.email,
     knowsAbout: author.expertise,
     worksFor: { "@id": `${siteConfig.url}/#organization` },
     sameAs: Object.values(author.social).filter(Boolean)

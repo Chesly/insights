@@ -44,10 +44,10 @@ export const siteConfig = {
   name: "Chesly.Tech Insights",
   shortName: "Chesly.Tech",
   heroKicker: "Chesly.Tech Insights",
-  tagline: "AI, Technology & SEO Insights",
-  topCategoryLine: "AI • Technology • SEO • Startups • Digital Marketing",
+  tagline: "Business, AI & Practical Tools",
+  topCategoryLine: "Business • AI • Money • Technology • Practical Tools",
   description:
-    "AI startups, technology, SEO and digital marketing insights with a South African perspective.",
+    "Practical South African business insights, calculators and tools covering money, funding, tenders, AI, technology and everyday decisions.",
   companyName: "Chesly.Tech",
   copyright: `© ${new Date().getFullYear()} Chesly.Tech. All Rights Reserved.`,
   url: "https://insights.chesly.tech",
@@ -123,7 +123,7 @@ export const siteConfig = {
   // ── Footer ───────────────────────────────────────────────────────────────
   footer: {
     about:
-      "Chesly.Tech is a Johannesburg-based creative studio and AI-first technology publication helping South African businesses build a modern digital presence. We cover AI, startups, SEO/GEO, and digital marketing — and design and build the websites, brands, and content that put businesses on the map.",
+      "Chesly.Tech Insights is the practical knowledge and business-tools platform of Chesly.Tech. We publish South Africa-first guides, calculators and downloadable tools covering business, money, funding, tenders, AI, technology and everyday decisions.",
     ctaButton: { label: "Visit Chesly.Tech", href: "https://chesly.tech/" },
     firstColumnWidthPx: 380,
     services: [
@@ -158,7 +158,7 @@ export const siteConfig = {
   // ── Newsletter ───────────────────────────────────────────────────────────
   newsletter: {
     title: "Stay Ahead of the Curve",
-    description: "Weekly AI, SEO and South African tech insights — straight to your inbox.",
+    description: "Practical South African business, money, AI and technology insights — straight to your inbox.",
     fields: {
       name: { label: "Full Name", placeholder: "Jane Dlamini" },
       email: { label: "Email Address", placeholder: "you@email.com" },
@@ -171,10 +171,10 @@ export const siteConfig = {
 
   // ── SEO Defaults ─────────────────────────────────────────────────────────
   seo: {
-    defaultTitle: "Chesly.Tech Insights | AI, Tech & SEO Insights from South Africa",
+    defaultTitle: "Chesly.Tech Insights | Business, AI & Practical Tools from South Africa",
     titleTemplate: "%s | Chesly.Tech Insights",
     defaultDescription:
-      "AI, startups, technology, SEO, GEO, and digital marketing insights with a South Africa-first perspective — from Chesly.Tech.",
+      "Practical South African business insights, calculators and tools covering money, funding, tenders, AI, technology and everyday decisions — from Chesly.Tech.",
     defaultKeywords: [
       "AI South Africa",
       "technology news South Africa",
@@ -277,7 +277,7 @@ export const siteConfig = {
     "Finance"
   ],
   /** Curated subset shown as the slim category row on the homepage hero */
-  topCategories: ["AI", "Technology", "SEO", "Startups", "Digital Marketing"],
+  topCategories: ["Business", "Finance", "Artificial Intelligence", "South Africa", "Technology"],
   featuredTags: [
     "AI",
     "SEO",

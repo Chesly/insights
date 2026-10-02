@@ -25,10 +25,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const label = await getTagLabel(slug);
+  const posts = await getPostsByTag(slug);
   return {
     title: `#${label}`,
     description: `Articles tagged ${label} on ${siteConfig.shortName}.`,
-    alternates: { canonical: `${siteConfig.url}/tag/${slug}` }
+    alternates: { canonical: `${siteConfig.url}/tag/${slug}` },
+    // A tag archive with only one article is navigationally useful but too thin to index.
+    robots: posts.length < 2 ? { index: false, follow: true } : undefined
   };
 }
 
