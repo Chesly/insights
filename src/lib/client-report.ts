@@ -16,7 +16,7 @@ export function printReport(r:PdfReport){
 
 export async function shareReport(r:PdfReport,fileName:string,shareText:string,url:string){
  const html=reportHtml(r);
- const file=new File([html],[fileName.replace(/\.pdf$/i,"")+".html"],{type:"text/html"});
+ const file=new File([html],fileName.replace(/\.pdf$/i,"")+".html",{type:"text/html"});
  try{
   if(navigator.share&&navigator.canShare?.({files:[file]})){await navigator.share({title:r.title,text:shareText,url,files:[file]});return "file";}
   if(navigator.share){await navigator.share({title:r.title,text:shareText,url});return "text";}
