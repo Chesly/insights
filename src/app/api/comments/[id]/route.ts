@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { getSessionProfile, isAllowedElevatedAccess } from '@/lib/auth/session'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -30,6 +30,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   // Refresh the live post page immediately, instead of waiting up to an
   // hour for its normal cache to expire — moderators expect to see the
   // result of approving/removing a comment right away.
+  revalidateTag('comments', 'max')
   if (data?.post) {
     revalidatePath(`/${data.post.section === 'coffee' ? 'coffee' : 'insights'}/${data.post.slug}`)
   }
@@ -49,5 +50,6 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
   const { error } = await supabase.from('comments').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+  revalidateTag('comments', 'max')
   return NextResponse.json({ ok: true })
 }
