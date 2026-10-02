@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { printReport, shareReport, type PdfReport } from "@/lib/client-report";
 
 const VAT_RATE = 0.15;
 
@@ -34,7 +35,7 @@ export default function RetentionCalculator() {
   const [retentionCapPct, setRetentionCapPct] = useState<number>(5);
   const [retentionHeldToDate, setRetentionHeldToDate] = useState<number>(0);
   const [claimValue, setClaimValue] = useState<number>(0);
-  const [daysToPay, setDaysToPay] = useState<number>(30);
+  const [daysToPay, setDaysToPay] = useState<number>(30);\n  const [firstReleasePct, setFirstReleasePct] = useState<number>(50);
 
   const result = useMemo(() => {
     const cap = contractValue * (retentionCapPct / 100);
@@ -55,13 +56,23 @@ export default function RetentionCalculator() {
     const exposure = claimValue * (daysToPay / 30);
 
     return { cap, retentionThisClaim, netBeforeVat, vat, payable, cumulativeRetention, capReached, firstRelease, finalRelease, exposure };
-  }, [contractValue, retentionPct, retentionCapPct, retentionHeldToDate, claimValue, daysToPay]);
+  }, [contractValue, retentionPct, retentionCapPct, retentionHeldToDate, claimValue, daysToPay, firstReleasePct]);
+
+  function buildReport(): PdfReport {
+    return { title:"Retention & Progress Payment Calculation", summary:[`Amount payable this claim: ${R(result.payable)}`,`Retention held this claim: ${R(result.retentionThisClaim)}`,`Cumulative retention: ${R(result.cumulativeRetention)}`], sections:[
+      {heading:"Contract assumptions",rows:[["Contract value",R(contractValue)],["Retention per claim",pctFmt(retentionPct)],["Retention cap",pctFmt(retentionCapPct)],["Retention already held",R(retentionHeldToDate)],["First release assumption",pctFmt(firstReleasePct)],["Payment period",daysToPay+" days"]]},
+      {heading:"This progress claim",rows:[["Certified value",R(claimValue)],["Retention withheld",R(result.retentionThisClaim)],["Net before VAT",R(result.netBeforeVat)],["VAT",R(result.vat)],["Amount payable",R(result.payable)]]},
+      {heading:"Retention position",rows:[["Cumulative retention",R(result.cumulativeRetention)],["First expected release",R(result.firstRelease)],["Remaining expected release",R(result.finalRelease)]]}
+    ],footer:"This calculator models the terms you enter. Your signed contract and payment certificate govern the actual retention percentage, cap, VAT treatment and release mechanism." };
+  }
+  function saveResult(){if(!printReport(buildReport()))window.print();}
+  async function shareResult(){await shareReport(buildReport(),"retention-progress-payment.pdf",`Progress payment: ${R(result.payable)} payable; ${R(result.cumulativeRetention)} retention held.`,"https://insights.chesly.tech/calculators/retention-calculator");}
 
   return (
     <div>
       <section className="border-b border-navy/10 py-8 dark:border-white/10">
         <h2 className="text-lg font-bold text-navy dark:text-white">1. Contract and retention terms</h2>
-        <p className="mt-1 text-sm text-navy/60 dark:text-white/50">From the contract or the payment certificate — usually JBCC, NEC or the tender&rsquo;s own conditions of contract.</p>
+        <p className="mt-1 text-sm text-navy/60 dark:text-white/50">Enter the retention terms from your signed contract or payment certificate. Different contracts can use different percentages, caps and release mechanisms.</p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Total contract value (excl. VAT)</label>
@@ -74,7 +85,7 @@ export default function RetentionCalculator() {
           <div>
             <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Retention cap (% of contract value)</label>
             <input type="number" min={0} max={20} step={0.5} className={inputCls()} value={retentionCapPct} onChange={(e) => setRetentionCapPct(Number(e.target.value) || 0)} onFocus={selectOnFocus} />
-            <p className="mt-1 text-xs text-navy/50 dark:text-white/40">Most SA building contracts stop withholding once total retention reaches this cap, commonly 5%.</p>
+            <p className="mt-1 text-xs text-navy/50 dark:text-white/40">Use the cap stated in your contract. Do not assume a standard percentage applies to every project.</p>
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold text-navy/60 dark:text-white/50">Retention already held to date</label>
@@ -122,7 +133,7 @@ export default function RetentionCalculator() {
 
       <section className="py-8">
         <h2 className="text-lg font-bold text-navy dark:text-white">3. Where the retention stands</h2>
-        <p className="mt-1 text-sm text-navy/60 dark:text-white/50">Retention is not lost — it&rsquo;s released in two moieties, typically half at practical completion and half at the end of the defects liability period.</p>
+        <p className="mt-1 text-sm text-navy/60 dark:text-white/50">This models the release split you entered above. Check the contract for the actual release events, certification requirements and timing.</p>
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
           <div className="border border-navy/10 p-4 dark:border-white/10">
             <div className="text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-white/40">Cumulative retention held</div>
@@ -130,15 +141,15 @@ export default function RetentionCalculator() {
             <div className="mt-1 text-xs text-navy/50 dark:text-white/40">of a {pctFmt(retentionCapPct)} cap ({R(result.cap)})</div>
           </div>
           <div className="border border-navy/10 p-4 dark:border-white/10">
-            <div className="text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-white/40">First release — practical completion</div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-white/40">First expected release</div>
             <div className="mt-1 font-mono text-2xl font-extrabold text-navy dark:text-white">{R(result.firstRelease)}</div>
           </div>
           <div className="border border-navy/10 p-4 dark:border-white/10">
-            <div className="text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-white/40">Final release — end of defects liability period</div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-white/40">Remaining expected release</div>
             <div className="mt-1 font-mono text-2xl font-extrabold text-navy dark:text-white">{R(result.finalRelease)}</div>
           </div>
         </div>
-        <p className="mt-4 text-xs text-navy/50 dark:text-white/40">
+        {claimValue > 0 && <div className="mt-5 flex flex-wrap gap-2 print:hidden"><button type="button" onClick={saveResult} className="border border-gold bg-gold px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white">Save / print calculation</button><button type="button" onClick={shareResult} className="border border-green-700 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-green-700">Share result</button></div>}\n        <p className="mt-4 text-xs text-navy/50 dark:text-white/40">
           Nothing you type here is sent anywhere — this runs entirely in your browser tab.
         </p>
       </section>
