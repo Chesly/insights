@@ -145,6 +145,7 @@ export default async function DownloadDetailPage({
             label={item.tier === "paid" ? "Buy Now" : "Download"}
             tier={item.tier}
             storeUrl={item.storeUrl}
+            hasDeliverable={Boolean(item.fileUrl || item.bundleFiles.length > 0)}
           />
         </aside>
       </div>
