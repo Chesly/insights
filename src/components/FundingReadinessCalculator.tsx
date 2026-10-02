@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { printReport, shareReport, type PdfReport } from "@/lib/client-report";
 
 type Answer = "yes" | "partial" | "no" | "na";
 type Check = { id:string; group:string; title:string; detail:string; weight:number; critical?:boolean; fix:string; allowNA?:boolean };
@@ -38,15 +39,25 @@ export default function FundingReadinessCalculator(){
  },[answers]);
  const complete=answered===CHECKS.length;
  const band=result.score>=85?"Strong preparation":result.score>=70?"Good base — close the gaps":result.score>=50?"Needs work before applying":"Build the foundation first";
+ function buildReport():PdfReport {
+  return {
+   title:"Funding Readiness Assessment",
+   subtitle:"South African small-business preparation report",
+   summary:[`Readiness score: ${result.score}/100`,band],
+   sections:[
+    {heading:"Priority action plan",rows:result.gaps.length?result.gaps.slice(0,8).map((g,i)=>[`${i+1}. ${g.title}`,g.fix] as [string,string]):[["Status","No major preparation gaps were flagged by your answers. Check the exact funder's current criteria before applying."]]},
+    {heading:"Assessment",rows:CHECKS.map(q=>[q.title,answers[q.id]==="yes"?"Ready":answers[q.id]==="partial"?"Partly ready":answers[q.id]==="na"?"Not applicable":"Gap"])}
+   ],
+   footer:"This is a preparation score, not an approval prediction. Each funder applies its own eligibility, affordability and due-diligence rules."
+  };
+ }
  async function shareResult(){
   const gapText=result.gaps.slice(0,3).map((g,i)=>`${i+1}. ${g.title}`).join("\n");
-  const text=`*South African Funding Readiness Assessment*\nScore: ${result.score}/100 — ${band}\n${gapText?"\nPriority gaps:\n"+gapText+"\n":""}\nFree assessment: https://insights.chesly.tech/calculators/funding-readiness-assessment`;
-  try {
-   if (navigator.share) { await navigator.share({title:"Funding Readiness Assessment",text,url:"https://insights.chesly.tech/calculators/funding-readiness-assessment"}); setShareStatus("Shared."); return; }
-  } catch(e) { if ((e as Error).name==="AbortError") return; }
-  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,"_blank","noopener,noreferrer");
+  const text=`Funding Readiness: ${result.score}/100 — ${band}${gapText?"\nPriority gaps:\n"+gapText:""}`;
+  const mode=await shareReport(buildReport(),"funding-readiness-report.pdf",text,"https://insights.chesly.tech/calculators/funding-readiness-assessment");
+  if(mode!=="cancelled")setShareStatus(mode==="file"?"Report shared.":"Result shared. Use Save / Print for a PDF copy.");
  }
- function printResult(){ window.print(); }
+ function printResult(){ if(!printReport(buildReport())) window.print(); }
 
  return <div className="space-y-5">
   <div className="border border-navy/10 bg-white p-5 dark:border-white/10 dark:bg-white/5">
