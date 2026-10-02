@@ -26,7 +26,8 @@ const CHECKS: Check[] = [
 const VALUE: Record<Answer,number> = { yes:1, partial:.5, no:0, na:0 };
 
 export default function FundingReadinessCalculator(){
- const [answers,setAnswers]=useState<Record<string,Answer>>({});\n const [shareStatus,setShareStatus]=useState("");
+ const [answers,setAnswers]=useState<Record<string,Answer>>({});
+ const [shareStatus,setShareStatus]=useState("");
  const groups=[...new Set(CHECKS.map(c=>c.group))];
  const answered=CHECKS.filter(c=>answers[c.id]).length;
  const result=useMemo(()=>{
