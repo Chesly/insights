@@ -1,11 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getPageBySlug } from "@/lib/pages";
+import { siteConfig } from "@/lib/siteConfig";
 
-// Catch-all for pages created in /admin/pages that don't have their own
-// dedicated route file (like /terms or /privacy do). Next.js only falls
-// through to this when no more specific static route matches, so it
-// can't shadow any existing page.
 export async function generateMetadata({
   params,
 }: {
@@ -14,9 +11,22 @@ export async function generateMetadata({
   const { slug } = await params;
   const page = await getPageBySlug(slug);
   if (!page) return {};
+
+  const url = `${siteConfig.url}/${slug}`;
+  const title = page.seo_title || page.title;
+  const description = page.meta_description || undefined;
+
   return {
-    title: page.seo_title || page.title,
-    description: page.meta_description,
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "website",
+      url,
+      title,
+      description,
+      siteName: siteConfig.name,
+    },
   };
 }
 
