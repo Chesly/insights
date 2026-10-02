@@ -1,12 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { generateSlug, estimateReadTime } from '@/lib/utils'
 import { getSessionProfile, isAllowedElevatedAccess } from '@/lib/auth/session'
 
 function revalidatePost(post: { slug?: string | null; section?: string | null } | null) {
   if (!post) return
   const section = post.section === 'coffee' ? 'coffee' : 'insights'
+  revalidateTag('posts', 'max')
   revalidatePath('/')
   revalidatePath(`/${section}`)
   if (post.slug) revalidatePath(`/${section}/${post.slug}`)
