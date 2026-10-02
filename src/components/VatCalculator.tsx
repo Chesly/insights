@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { printReport, shareReport, type PdfReport } from "@/lib/client-report";
 
 const VAT_RATE = 15;
 
@@ -43,6 +44,18 @@ export default function VatCalculator() {
     const vat = incl - excl;
     return { excl, vat, incl };
   }, [amount, mode, rate]);
+
+  function buildReport(): PdfReport {
+    return {
+      title: "South African VAT Calculation",
+      subtitle: mode === "add" ? "VAT added to an exclusive amount" : "VAT extracted from an inclusive amount",
+      summary: [`Amount excluding VAT: ${R(result.excl)}`, `VAT (${rate}%): ${R(result.vat)}`, `Amount including VAT: ${R(result.incl)}`],
+      sections: [{ heading: "Calculation", rows: [["Input amount", R(amount)], ["VAT rate", rate + "%"], ["Excluding VAT", R(result.excl)], ["VAT portion", R(result.vat)], ["Including VAT", R(result.incl)]] }],
+      footer: "Calculation aid only. Confirm the applicable VAT treatment and rate for the transaction."
+    };
+  }
+  function saveResult(){ if(!printReport(buildReport())) window.print(); }
+  async function shareResult(){ await shareReport(buildReport(),"south-african-vat-calculation.pdf",`VAT calculation: ${R(result.excl)} excl. + ${R(result.vat)} VAT = ${R(result.incl)} incl.`,"https://insights.chesly.tech/calculators/vat-calculator"); }
 
   return (
     <div>
@@ -133,7 +146,7 @@ export default function VatCalculator() {
         </table>
       </div>
 
-      <p className="mt-3 text-xs text-navy/50 dark:text-white/40">
+      {amount > 0 && <div className="mt-4 flex flex-wrap gap-2 print:hidden"><button type="button" onClick={saveResult} className="border border-gold bg-gold px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white">Save / print calculation</button><button type="button" onClick={shareResult} className="border border-green-700 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-green-700">Share result</button></div>}\n\n      <p className="mt-3 text-xs text-navy/50 dark:text-white/40">
         Nothing you type here is sent anywhere — this runs entirely in your browser tab.
       </p>
     </div>
