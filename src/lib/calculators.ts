@@ -29,6 +29,13 @@ export const CALCULATORS: CalculatorMeta[] = [
     description: "Check how prepared your business is to approach a funder, identify the biggest gaps, and get a practical action plan before you apply."
   },
   {
+    slug: "import-landed-cost-profit",
+    icon: "🚢",
+    title: "Import Landed Cost & Profit Calculator — South Africa",
+    cardTitle: "Import Landed Cost & Profit Calculator",
+    description: "Test an overseas supplier order from MOQ to South African landed cost per unit, then see whether your planned selling price still makes money."
+  },
+  {
     slug: "vat-calculator",
     icon: "🧮",
     title: "South African VAT Calculator",
