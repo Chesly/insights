@@ -133,7 +133,6 @@ export function personSchema(author: Author) {
     description: author.bio,
     image: author.image,
     url: `${siteConfig.url}/author/${author.slug}`,
-    email: author.email,
     knowsAbout: author.expertise,
     worksFor: { "@id": `${siteConfig.url}/#organization` },
     sameAs: Object.values(author.social).filter(Boolean)
