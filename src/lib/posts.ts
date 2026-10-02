@@ -1,4 +1,4 @@
-import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import readingTime from "reading-time";
 import { createPublicClient } from "./supabase/public";
 import type { Post } from "./types";
@@ -73,7 +73,7 @@ function rowToPost(row: any): Post {
   };
 }
 
-const fetchPostsRaw = cache(async (
+const fetchPostsRaw = unstable_cache(async (
   includeDrafts: boolean,
   sections: ("insights" | "coffee")[]
 ): Promise<Post[]> => {
@@ -84,7 +84,7 @@ const fetchPostsRaw = cache(async (
   const { data, error } = await query;
   if (error || !data) return [];
   return data.map(rowToPost);
-});
+}, ["public-posts"], { revalidate: 900, tags: ["posts"] });
 
 export async function getAllPosts(
   includeDrafts = false,
@@ -93,7 +93,7 @@ export async function getAllPosts(
   return fetchPostsRaw(includeDrafts, sections);
 }
 
-export async function getPostBySlug(slug: string): Promise<Post | null> {
+const fetchPostBySlug = unstable_cache(async (slug: string): Promise<Post | null> => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("posts_with_categories")
@@ -103,6 +103,10 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     .maybeSingle();
   if (error || !data) return null;
   return rowToPost(data);
+}, ["public-post-by-slug"], { revalidate: 900, tags: ["posts"] });
+
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  return fetchPostBySlug(slug);
 }
 
 export async function getPostsBySection(section: "insights" | "coffee"): Promise<Post[]> {
