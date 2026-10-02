@@ -205,15 +205,23 @@ export async function getPostsByAuthor(authorSlug: string): Promise<Post[]> {
 /** All published posts in a series, ordered by their part number (posts
     sharing the same number — a data-entry gap — fall back to publish date
     so the order is at least stable). */
+const fetchSeriesPosts = unstable_cache(
+  async (seriesId: string): Promise<Post[]> => {
+    const supabase = createPublicClient();
+    const { data, error } = await supabase
+      .from("posts_with_categories")
+      .select("*")
+      .eq("series_id", seriesId)
+      .eq("status", "published")
+      .order("series_order", { ascending: true })
+      .order("published_at", { ascending: true });
+    if (error || !data) return [];
+    return data.map(rowToPost);
+  },
+  ["public-series-posts"],
+  { revalidate: 900, tags: ["posts"] }
+);
+
 export async function getSeriesPosts(seriesId: string): Promise<Post[]> {
-  const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("posts_with_categories")
-    .select("*")
-    .eq("series_id", seriesId)
-    .eq("status", "published")
-    .order("series_order", { ascending: true })
-    .order("published_at", { ascending: true });
-  if (error || !data) return [];
-  return data.map(rowToPost);
+  return fetchSeriesPosts(seriesId);
 }
