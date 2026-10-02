@@ -15,6 +15,14 @@ export interface CalculatorMeta {
 
 export const CALCULATORS: CalculatorMeta[] = [
   {
+    slug: "funding-readiness-assessment",
+    icon: "💼",
+    title: "South African Funding Readiness Assessment",
+    cardTitle: "Funding Readiness",
+    description:
+      "Check how prepared your business is to approach South African small-business funders, identify your biggest gaps, and get a practical next-step plan."
+  },
+  {
     slug: "tender-bid-no-bid",
     icon: "📋",
     title: "Bid/No-Bid Tender Calculator",
