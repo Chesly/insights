@@ -41,6 +41,11 @@ const nextConfig = {
       { source: "/downloads/:slug", destination: "/tools/:slug", permanent: true },
       { source: "/blog", destination: "/insights", permanent: true },
       { source: "/blog/:slug", destination: "/insights/:slug", permanent: true },
+      // Consolidated duplicate articles: preserve any existing links/search
+      // equity while keeping one canonical page for each search intent.
+      { source: "/insights/purchase-order-funding-cost-south-africa", destination: "/insights/how-much-does-purchase-order-funding-cost", permanent: true },
+      { source: "/insights/how-to-register-on-etender-portal", destination: "/insights/national-etender-portal-registration", permanent: true },
+      { source: "/insights/common-mistakes-purchase-order-funding", destination: "/insights/purchase-order-funding-rejected", permanent: true },
       // A batch of post slugs were originally saved with inconsistent
       // capitalization (e.g. "What-is-purchase-order-funding"), which
       // broke every other post's internal link to them since every link
