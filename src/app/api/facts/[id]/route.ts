@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { getSessionProfile, isAllowedElevatedAccess } from '@/lib/auth/session'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -52,6 +52,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     .select()
     .single()
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+  revalidateTag('facts', 'max')
   revalidatePath('/')
   revalidatePath('/facts')
   if (data?.slug) revalidatePath(`/facts/${data.slug}`)
@@ -70,6 +71,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
 
   const { error } = await supabase.from('facts').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+  revalidateTag('facts', 'max')
   revalidatePath('/')
   revalidatePath('/facts')
   if (existing?.slug) revalidatePath(`/facts/${existing.slug}`)
