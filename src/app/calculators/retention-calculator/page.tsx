@@ -43,7 +43,7 @@ const FAQS = [
   {
     question: "Do I charge VAT on the full claim, or only on the amount after retention?",
     answer:
-      "VAT is charged on the net amount actually payable — the claim value less the retention withheld — not on the full claim value. The retained portion becomes liable for VAT only when it is actually paid out on release, not at the time it is withheld."
+      "For construction retentions, SARS time-of-supply rules determine when output VAT on the retention amount must be accounted for. SARS guidance states that this is generally at the earliest of an invoice being issued for the retention amount, the retention becoming due for payment, or the contractor recovering the retention. The exact treatment depends on the contract and invoicing facts, so confirm the applicable time of supply for your transaction."
   },
   {
     question: "Why does retention matter for cash flow?",
@@ -77,7 +77,7 @@ export default function RetentionCalculatorPage() {
               featureList: [
                 "Retention withheld per progress claim",
                 "Retention cap tracking",
-                "VAT on net payment due",
+                "VAT planning based on the entered claim and retention assumptions",
                 "Cash-flow exposure per claim",
                 "First and final retention release amounts"
               ]
@@ -141,7 +141,7 @@ export default function RetentionCalculatorPage() {
             <ul className="mt-3 space-y-1.5 text-sm text-navy/75 dark:text-white/70">
               <li>Retention withheld this claim: R480,000 × 5% = R24,000</li>
               <li>Net before VAT: R480,000 − R24,000 = R456,000</li>
-              <li>VAT at 15%: R68,400</li>
+              <li>Illustrative VAT on the net-before-VAT amount at 15%: R68,400 — actual output-tax timing for the retained amount depends on the SARS time-of-supply rules and your contract/invoicing facts</li>
               <li>Amount actually paid: R524,400</li>
             </ul>
             <p className="mt-3 text-sm leading-relaxed text-navy/75 dark:text-white/70">
