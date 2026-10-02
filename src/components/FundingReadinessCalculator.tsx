@@ -25,7 +25,7 @@ const CHECKS: Check[] = [
 const VALUE: Record<Answer,number> = { yes:1, partial:.5, no:0, na:0 };
 
 export default function FundingReadinessCalculator(){
- const [answers,setAnswers]=useState<Record<string,Answer>>({});
+ const [answers,setAnswers]=useState<Record<string,Answer>>({});\n const [shareStatus,setShareStatus]=useState("");
  const groups=[...new Set(CHECKS.map(c=>c.group))];
  const answered=CHECKS.filter(c=>answers[c.id]).length;
  const result=useMemo(()=>{
@@ -38,6 +38,15 @@ export default function FundingReadinessCalculator(){
  },[answers]);
  const complete=answered===CHECKS.length;
  const band=result.score>=85?"Strong preparation":result.score>=70?"Good base — close the gaps":result.score>=50?"Needs work before applying":"Build the foundation first";
+ async function shareResult(){
+  const gapText=result.gaps.slice(0,3).map((g,i)=>`${i+1}. ${g.title}`).join("\n");
+  const text=`*South African Funding Readiness Assessment*\nScore: ${result.score}/100 — ${band}\n${gapText?"\nPriority gaps:\n"+gapText+"\n":""}\nFree assessment: https://insights.chesly.tech/calculators/funding-readiness-assessment`;
+  try {
+   if (navigator.share) { await navigator.share({title:"Funding Readiness Assessment",text,url:"https://insights.chesly.tech/calculators/funding-readiness-assessment"}); setShareStatus("Shared."); return; }
+  } catch(e) { if ((e as Error).name==="AbortError") return; }
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,"_blank","noopener,noreferrer");
+ }
+ function printResult(){ window.print(); }
 
  return <div className="space-y-5">
   <div className="border border-navy/10 bg-white p-5 dark:border-white/10 dark:bg-white/5">
@@ -59,7 +68,7 @@ export default function FundingReadinessCalculator(){
    <div className="mt-2 flex flex-wrap items-end gap-4"><p className="font-mono text-5xl font-extrabold text-navy dark:text-white">{result.score}<span className="text-xl">/100</span></p><p className="pb-1 text-lg font-bold text-navy dark:text-white">{band}</p></div>
    <p className="mt-4 text-sm leading-relaxed text-navy/70 dark:text-white/70">This is a readiness assessment, not an approval prediction. Every funder and programme applies its own eligibility rules, due diligence and affordability tests.</p>
    {result.gaps.length>0&&<div className="mt-6"><h3 className="font-bold text-navy dark:text-white">Your priority action plan</h3><ol className="mt-3 space-y-3">{result.gaps.slice(0,6).map((g,i)=><li key={g.id} className="flex gap-3 text-sm text-navy/70 dark:text-white/70"><strong className="font-mono text-gold">{i+1}.</strong><span><b className="text-navy dark:text-white">{g.title}</b><br/>{g.fix}</span></li>)}</ol></div>}
-   <div className="mt-6 flex flex-wrap gap-3"><Link href="/tools/income-expense-tracker-south-african-edition" className="bg-gold px-4 py-3 text-xs font-bold uppercase tracking-wide text-white">Improve financial records</Link><Link href="/insights/what-is-purchase-order-funding" className="border border-gold px-4 py-3 text-xs font-bold uppercase tracking-wide text-gold">Explore funding guides</Link><button type="button" onClick={()=>setAnswers({})} className="border border-navy/20 px-4 py-3 text-xs font-bold uppercase tracking-wide text-navy dark:border-white/20 dark:text-white">Start again</button></div>
+   <div className="mt-6 flex flex-wrap gap-3 print:hidden"><button type="button" onClick={printResult} className="border border-navy bg-navy px-4 py-3 text-xs font-bold uppercase tracking-wide text-white dark:border-white dark:bg-white dark:text-navy">Save / print result</button><button type="button" onClick={shareResult} className="border border-green-700 px-4 py-3 text-xs font-bold uppercase tracking-wide text-green-700 hover:bg-green-700 hover:text-white">Share result</button><Link href="/tools/income-expense-tracker-south-african-edition" className="bg-gold px-4 py-3 text-xs font-bold uppercase tracking-wide text-white">Improve financial records</Link><Link href="/insights/what-is-purchase-order-funding" className="border border-gold px-4 py-3 text-xs font-bold uppercase tracking-wide text-gold">Explore funding guides</Link><button type="button" onClick={()=>setAnswers({})} className="border border-navy/20 px-4 py-3 text-xs font-bold uppercase tracking-wide text-navy dark:border-white/20 dark:text-white">Start again</button></div>
   </section>}
  </div>;
 }
