@@ -123,15 +123,15 @@ export default function DownloadButton({
     }
   };
 
-  if (tier === "paid") {
-    if (!hasDeliverable && !storeUrl) {
-      return (
-        <button disabled className="mt-6 inline-flex items-center justify-center gap-1.5 border border-gold/30 bg-gold/5 px-4 py-2 text-center text-xs font-semibold uppercase tracking-wide text-gold/60 cursor-not-allowed">
-          Coming Soon
-        </button>
-      );
-    }
+  if (!hasDeliverable && !storeUrl) {
+    return (
+      <button disabled className="mt-6 inline-flex items-center justify-center gap-1.5 border border-gold/30 bg-gold/5 px-4 py-2 text-center text-xs font-semibold uppercase tracking-wide text-gold/60 cursor-not-allowed">
+        Coming Soon
+      </button>
+    );
+  }
 
+  if (tier === "paid") {
     if (storeUrl) {
       return (
         <a
