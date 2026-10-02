@@ -1,11 +1,8 @@
 # Chesly.Tech Insights
 
-An AI-first technology publication covering AI, startups, SEO/GEO, web design, and
-South African business — built with Next.js 16, TypeScript, and MDX, and optimized
-for both traditional search (Google, Bing) and AI answer engines (Google AI
-Overviews, ChatGPT Search, Perplexity, Gemini, Claude).
+Chesly.Tech Insights helps people make clearer decisions about business, money, technology, and everyday life. It brings together straightforward South African articles, free calculators, downloadable guides, and ready-to-use business tools.
 
-Owned and published by **Chesly Silaule** ([chesly.tech](https://chesly.tech)).
+Created and published by **Chesly Silaule** through [Chesly.Tech](https://chesly.tech). Chesly.Tech Insights is operated by **Digitalized Art (Pty) Ltd**, the registered South African business behind Chesly.Tech ([digitalizedart.tech](https://digitalizedart.tech)).
 
 ## Tech stack
 
