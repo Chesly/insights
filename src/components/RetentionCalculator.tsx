@@ -62,7 +62,7 @@ export default function RetentionCalculator() {
   function buildReport(): PdfReport {
     return { title:"Retention & Progress Payment Calculation", summary:[`Amount payable this claim: ${R(result.payable)}`,`Retention held this claim: ${R(result.retentionThisClaim)}`,`Cumulative retention: ${R(result.cumulativeRetention)}`], sections:[
       {heading:"Contract assumptions",rows:[["Contract value",R(contractValue)],["Retention per claim",pctFmt(retentionPct)],["Retention cap",pctFmt(retentionCapPct)],["Retention already held",R(retentionHeldToDate)],["First release assumption",pctFmt(firstReleasePct)],["Payment period",daysToPay+" days"]]},
-      {heading:"This progress claim",rows:[["Certified value",R(claimValue)],["Retention withheld",R(result.retentionThisClaim)],["Net before VAT",R(result.netBeforeVat)],["VAT",R(result.vat)],["Amount payable",R(result.payable)]]},
+      {heading:"This progress claim",rows:[["Certified value",R(claimValue)],["Retention withheld",R(result.retentionThisClaim)],["Net before VAT",R(result.netBeforeVat)],["Illustrative VAT on net amount",R(result.vat)],["Amount payable",R(result.payable)]]},
       {heading:"Retention position",rows:[["Cumulative retention",R(result.cumulativeRetention)],["First expected release",R(result.firstRelease)],["Remaining expected release",R(result.finalRelease)]]}
     ],footer:"This calculator models the terms you enter. Your signed contract and payment certificate govern the actual retention percentage, cap, VAT treatment and release mechanism." };
   }
@@ -114,13 +114,13 @@ export default function RetentionCalculator() {
               <tr className="border-b border-navy/10 dark:border-white/10"><td className="py-2">Value certified this claim</td><td className="py-2 text-right font-bold">{R(claimValue)}</td></tr>
               <tr className="border-b border-navy/10 dark:border-white/10"><td className="py-2">Retention withheld this claim ({retentionPct}%)</td><td className="py-2 text-right text-red-700">-{R(result.retentionThisClaim)}</td></tr>
               <tr className="border-b border-navy/10 bg-navy/5 font-bold dark:border-white/10 dark:bg-white/5"><td className="py-2">Net before VAT</td><td className="py-2 text-right">{R(result.netBeforeVat)}</td></tr>
-              <tr className="border-b border-navy/10 dark:border-white/10"><td className="py-2">VAT (15%)</td><td className="py-2 text-right">{R(result.vat)}</td></tr>
+              <tr className="border-b border-navy/10 dark:border-white/10"><td className="py-2">Illustrative VAT on net amount (15%)</td><td className="py-2 text-right">{R(result.vat)}</td></tr>
               <tr className="bg-navy/5 dark:bg-white/5"><td className="p-3 font-bold text-navy dark:text-white">Amount payable this claim</td><td className="p-3 text-right font-mono text-lg font-extrabold text-navy dark:text-white">{R(result.payable)}</td></tr>
             </tbody>
           </table>
         </div>
 
-        {result.capReached && retentionPct > 0 && (
+        <p className="mt-3 text-xs leading-relaxed text-navy/55 dark:text-white/45">VAT timing: the figure above is a cash-flow illustration, not a determination of the VAT time of supply. For construction retentions, confirm the timing against the contract, invoice and payment facts.</p>\n\n        {result.capReached && retentionPct > 0 && (
           <p className="mt-3 border-l-4 border-green-700 bg-green-50 px-3 py-2 text-sm dark:bg-green-950/20">
             Retention cap reached — no further retention should be withheld on future claims. Check the certificate matches this.
           </p>
