@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidateTag } from 'next/cache'
 import { getSessionProfile, isAllowedElevatedAccess } from '@/lib/auth/session'
 
 export async function GET() {
@@ -27,5 +28,6 @@ export async function PUT(req: NextRequest) {
 
   const { error } = await supabase.from('site_settings').upsert(rows, { onConflict: 'key' })
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+  revalidateTag('site-settings', 'max')
   return NextResponse.json({ data: body })
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { revalidateTag } from "next/cache";
 
 const VALID_STATUSES = ["pending", "approved", "rejected"];
 
@@ -23,5 +24,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const { error } = await service.from("profiles").update({ status }).eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+  revalidateTag('authors', 'max');
   return NextResponse.json({ ok: true });
 }

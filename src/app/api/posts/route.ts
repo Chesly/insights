@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { generateSlug, estimateReadTime } from '@/lib/utils'
 
 export async function GET(req: NextRequest) {
@@ -105,6 +105,7 @@ export async function POST(req: NextRequest) {
 
   if (post) {
     const section = post.section === 'coffee' ? 'coffee' : 'insights'
+    revalidateTag('posts', 'max')
     revalidatePath('/')
     revalidatePath(`/${section}`)
     if (post.slug) revalidatePath(`/${section}/${post.slug}`)

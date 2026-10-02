@@ -1,4 +1,4 @@
-import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { createPublicClient } from "./supabase/public";
 import { slugify, type FaqItem } from "./types";
 
@@ -98,7 +98,7 @@ function rowToDownload(row: any): DownloadItem {
   };
 }
 
-export const getAllDownloads = cache(async (): Promise<DownloadItem[]> => {
+export const getAllDownloads = unstable_cache(async (): Promise<DownloadItem[]> => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("downloads")
@@ -107,12 +107,12 @@ export const getAllDownloads = cache(async (): Promise<DownloadItem[]> => {
     .order("created_at", { ascending: false });
   if (error || !data) return [];
   return data.map(rowToDownload);
-});
+}, ["public-downloads"], { revalidate: 1800, tags: ["downloads"] });
 
-export const getDownloadBySlug = cache(async (slug: string): Promise<DownloadItem | null> => {
+export const getDownloadBySlug = unstable_cache(async (slug: string): Promise<DownloadItem | null> => {
   const all = await getAllDownloads();
   return all.find((d) => d.slug === slug) || null;
-});
+}, ["public-download-by-slug"], { revalidate: 1800, tags: ["downloads"] });
 
 /** Manually linked products first (in the order the editor set them),
     then same-category downloads, then padded out with the most recent
