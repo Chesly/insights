@@ -9,10 +9,10 @@ import { breadcrumbSchema, faqSchema, webApplicationSchema } from "@/lib/schema"
 const PAGE_URL = `${siteConfig.url}/calculators/funding-readiness-assessment`;
 
 export const metadata: Metadata = {
- title: "Free South African Business Funding Readiness Assessment",
+ title: "Free South African Business Funding Readiness Calculator",
  description: "Check how prepared your South African business is to approach a funder. Get a readiness score, identify document, compliance, financial and commercial gaps, and see what to fix first.",
  alternates:{canonical:PAGE_URL},
- openGraph:{title:"South African Funding Readiness Assessment",description:"Check your business funding preparation and get a practical action plan before you apply.",url:PAGE_URL,type:"website"},
+ openGraph:{title:"South African Business Funding Readiness Calculator",description:"Check your business funding preparation and get a practical action plan before you apply.",url:PAGE_URL,type:"website"},
  twitter:{card:"summary_large_image"}
 };
 
@@ -25,9 +25,9 @@ const FAQS=[
 ];
 
 export default function FundingReadinessPage(){
- const crumbs=breadcrumbSchema([{name:"Home",url:siteConfig.url},{name:"Calculators",url:`${siteConfig.url}/calculators`},{name:"Funding Readiness Assessment",url:PAGE_URL}]);
+ const crumbs=breadcrumbSchema([{name:"Home",url:siteConfig.url},{name:"Calculators",url:`${siteConfig.url}/calculators`},{name:"Funding Readiness Calculator",url:PAGE_URL}]);
  return <div>
-  <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(webApplicationSchema({name:"South African Funding Readiness Assessment",url:PAGE_URL,description:"A free preparation assessment for South African small businesses considering funding.",applicationCategory:"BusinessApplication",featureList:["Weighted funding readiness score","Compliance and document gap check","Financial readiness check","Prioritised action plan","No signup required"]}))}} />
+  <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(webApplicationSchema({name:"South African Business Funding Readiness Calculator",url:PAGE_URL,description:"A free preparation assessment for South African small businesses considering funding.",applicationCategory:"BusinessApplication",featureList:["Weighted funding readiness score","Compliance and document gap check","Financial readiness check","Prioritised action plan","No signup required"]}))}} />
   <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(crumbs)}} />
   <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(faqSchema(FAQS))}} />
   <PageHero title="Are you actually ready to apply for business funding?" subtitle="Answer a practical set of questions about your business, finances, documents and funding case. Get a readiness score and a prioritised list of what to fix before you approach a funder." breadcrumbs={[{label:"Home",href:"/"},{label:"Calculators",href:"/calculators"},{label:"Funding Readiness"}]} />
