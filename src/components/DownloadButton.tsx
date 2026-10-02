@@ -18,6 +18,7 @@ export default function DownloadButton({
   label,
   tier = "free",
   storeUrl,
+  hasDeliverable = true,
 }: {
   id: string;
   slug?: string;
@@ -31,6 +32,7 @@ export default function DownloadButton({
       the built-in cart entirely (e.g. a Gumroad link, or a bundle sold
       elsewhere). Leave blank to use the native cart + Paystack checkout. */
   storeUrl?: string;
+  hasDeliverable?: boolean;
 }) {
   const { addItem, isInCart } = useCart();
   const [showForm, setShowForm] = useState(false);
@@ -122,6 +124,14 @@ export default function DownloadButton({
   };
 
   if (tier === "paid") {
+    if (!hasDeliverable && !storeUrl) {
+      return (
+        <button disabled className="mt-6 inline-flex items-center justify-center gap-1.5 border border-gold/30 bg-gold/5 px-4 py-2 text-center text-xs font-semibold uppercase tracking-wide text-gold/60 cursor-not-allowed">
+          Coming Soon
+        </button>
+      );
+    }
+
     if (storeUrl) {
       return (
         <a
