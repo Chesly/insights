@@ -377,6 +377,23 @@ export default function TenderCalculator() {
     window.scrollTo(0, 0);
   }
 
+  async function handleShareTender() {
+    const text = buildWhatsAppText();
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: tName || "Tender bid/no-bid result",
+          text,
+          url: "https://insights.chesly.tech/calculators/tender-bid-no-bid",
+        });
+        return;
+      }
+    } catch (err) {
+      if ((err as Error).name === "AbortError") return;
+    }
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
+  }
+
   function buildWhatsAppText(): string {
     const lines: string[] = [`*${tName || "Tender bid/no-bid result"}*`];
     if (scoreResult.pct !== null && b) lines.push(`Score: ${scoreResult.pct}/100 — ${b.l}`);
@@ -679,14 +696,13 @@ export default function TenderCalculator() {
           <button type="button" onClick={handleReset} className="border border-navy px-4 py-2 text-xs font-semibold uppercase tracking-wide text-navy transition-colors hover:bg-navy/5 dark:border-white dark:text-white dark:hover:bg-white/10">
             Start a new tender
           </button>
-          <a
-            href={`https://wa.me/?text=${encodeURIComponent(buildWhatsAppText())}`}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={handleShareTender}
             className="border border-green-700 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-green-700 transition-colors hover:bg-green-700 hover:text-white"
           >
-            Share on WhatsApp
-          </a>
+            Share result
+          </button>
         </div>
 
         {/* Optional — get a copy by email. Also the scroll target for the
