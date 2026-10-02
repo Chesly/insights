@@ -50,12 +50,7 @@ export function websiteSchema() {
     url: siteConfig.url,
     description: siteConfig.description,
     inLanguage: siteConfig.language,
-    publisher: { "@id": `${siteConfig.url}/#organization` },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${siteConfig.url}/search?q={search_term_string}`,
-      "query-input": "required name=search_term_string"
-    }
+    publisher: { "@id": `${siteConfig.url}/#organization` }
   };
 }
 
