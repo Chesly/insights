@@ -10,12 +10,12 @@ import { breadcrumbSchema, faqSchema, howToSchema, webApplicationSchema } from "
 const PAGE_URL = `${siteConfig.url}/calculators/tender-bid-no-bid`;
 
 export const metadata: Metadata = {
-  title: "Bid or No-Bid? Free South African Tender Decision Calculator",
+  title: "Tender Bid/No-Bid Calculator — Free South African Tender Decision Tool",
   description:
     "Score any South African tender out of 100 before you bid. Free bid/no-bid calculator with CSD, B-BBEE and CIDB checks, a full profitability model in rand, and a printable decision record. No signup.",
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Bid or No-Bid? Free South African Tender Decision Calculator",
+    title: "Tender Bid/No-Bid Calculator — Free South African Tender Decision Tool",
     description:
       "Score any SA tender out of 100 before you commit two weeks to it. Twelve weighted criteria, a full rand costing model, and a printable decision record.",
     url: PAGE_URL,
