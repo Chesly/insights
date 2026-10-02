@@ -142,10 +142,10 @@ export default async function AboutPage() {
               {s.about_whoweare_heading || "Why we write this"}
             </h2>
             <p className="mt-4 leading-relaxed text-navy/75 dark:text-white/75">
-              {s.about_whoweare_text1 || `${siteConfig.name} is published by ${siteConfig.owner.name}, an AI Creative Strategist and Digital Brand Specialist based in ${siteConfig.contact.location}, and founder of Chesly.Tech Creative Studio and Digitalized Art (Pty) Ltd.`}
+              {s.about_whoweare_text1 || `${siteConfig.name} is a publication and business-tools product of Chesly.Tech, the client-facing brand operated under Digitalized Art (Pty) Ltd, a registered South African company. It is published by ${siteConfig.owner.name}, founder of Chesly.Tech and Digitalized Art (Pty) Ltd.`}
             </p>
             <p className="mt-4 leading-relaxed text-navy/75 dark:text-white/75">
-              {s.about_whoweare_text2 || "We assist because most AI and technology content assumes a starting point most readers don't have. Every article, guide and tool here comes from the same place: a real question asked by a real business, answered honestly, without the jargon. If it helps one founder make a clearer decision, it's done its job."}
+              {s.about_whoweare_text2 || "Insights is where we publish practical research, articles, calculators and downloadable business tools. Chesly.Tech remains the brand we take to clients, while Digitalized Art (Pty) Ltd is the registered entity behind the work. That structure lets Insights focus on useful knowledge and products without blurring the role of the studio or the legal business."}
             </p>
           </div>
         </div>
