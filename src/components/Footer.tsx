@@ -153,6 +153,17 @@ export default function Footer({ settings }: { settings?: Record<string, string>
           <div className="bg-footer-copyright">
             <div className="container-page flex flex-col items-center justify-between gap-2 py-5 text-xs text-white/50 sm:flex-row">
               <p>{siteConfig.copyright}</p>
+              <p className="text-center sm:text-right">
+                Chesly.Tech Insights is a Chesly.Tech product operated by{" "}
+                <a
+                  href="https://www.digitalizedart.tech/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gold hover:underline"
+                >
+                  Digitalized Art (Pty) Ltd
+                </a>
+              </p>
               <p>
                 Designed and Developed by {siteConfig.owner.name} under{" "}
                 <a href={siteConfig.owner.url} className="text-gold hover:underline">
