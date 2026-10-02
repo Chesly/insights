@@ -40,7 +40,7 @@ const nextConfig = {
       { source: "/downloads", destination: "/tools", permanent: true },
       { source: "/downloads/:slug", destination: "/tools/:slug", permanent: true },
       { source: "/blog", destination: "/insights", permanent: true },
-      { source: "/blog/:slug", destination: "/insights/:slug", permanent: true },
+      { source: "/blog/:slug", destination: "/insights/:slug", permanent: true },\n      { source: "/blog/fifa-world-cup-ai-technology", destination: "/insights/fifa-world-cup-ai-technology", permanent: true },
       // A batch of post slugs were originally saved with inconsistent
       // capitalization (e.g. "What-is-purchase-order-funding"), which
       // broke every other post's internal link to them since every link
