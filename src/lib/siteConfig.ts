@@ -277,7 +277,7 @@ export const siteConfig = {
     "Finance"
   ],
   /** Curated subset shown as the slim category row on the homepage hero */
-  topCategories: ["AI", "Technology", "SEO", "Startups", "Digital Marketing"],
+  topCategories: ["Business", "Finance", "Artificial Intelligence", "South Africa", "Technology"],
   featuredTags: [
     "AI",
     "SEO",
