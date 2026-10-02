@@ -35,7 +35,8 @@ export default function RetentionCalculator() {
   const [retentionCapPct, setRetentionCapPct] = useState<number>(5);
   const [retentionHeldToDate, setRetentionHeldToDate] = useState<number>(0);
   const [claimValue, setClaimValue] = useState<number>(0);
-  const [daysToPay, setDaysToPay] = useState<number>(30);\n  const [firstReleasePct, setFirstReleasePct] = useState<number>(50);
+  const [daysToPay, setDaysToPay] = useState<number>(30);
+  const [firstReleasePct, setFirstReleasePct] = useState<number>(50);
 
   const result = useMemo(() => {
     const cap = contractValue * (retentionCapPct / 100);
