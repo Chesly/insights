@@ -34,6 +34,7 @@ export async function GET() {
     `- Let's Have Coffee: ${siteConfig.url}/coffee`,
     `- Business Tools: ${siteConfig.url}/tools`,
     `- Calculators: ${siteConfig.url}/calculators`,
+    `- Funding Readiness Assessment: ${siteConfig.url}/calculators/funding-readiness-assessment`,
     "- Chesly.Tech: https://chesly.tech",
     "- Digitalized Art (Pty) Ltd: https://www.digitalizedart.tech",
     "",
