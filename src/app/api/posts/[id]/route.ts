@@ -9,6 +9,7 @@ function revalidatePost(post: { slug?: string | null; section?: string | null } 
   const section = post.section === 'coffee' ? 'coffee' : 'insights'
   revalidateTag('posts', 'max')
   revalidatePath('/')
+  revalidatePath('/how-to')
   revalidatePath(`/${section}`)
   if (post.slug) revalidatePath(`/${section}/${post.slug}`)
 }
