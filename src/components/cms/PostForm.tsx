@@ -598,7 +598,7 @@ export default function PostForm({ post, categories }: Props) {
               </div>
             ))}
             {post.status === 'published' && (
-              <a href={`https://insights.chesly.tech/${section === 'coffee' ? 'coffee' : 'insights'}/${post.slug}`} target="_blank" rel="noopener noreferrer"
+              <a href={`https://insights.chesly.tech/${section}/${post.slug}`} target="_blank" rel="noopener noreferrer"
                 className="btn btn-ghost btn-sm" style={{ width:'100%', justifyContent:'center', marginTop:10 }}>
                 <ExternalLink size={13}/>View Live Post
               </a>
