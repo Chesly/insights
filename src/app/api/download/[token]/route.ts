@@ -41,7 +41,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ toke
   if (new Date(record.expires_at) < new Date()) return expired(req, "expired");
   if (record.use_count >= record.max_uses) return expired(req, "used-up");
 
-  const download = record.download as { file_url: string | null; file_type?: string; bundle_files: BundleFile[] | null; name: string } | null;
+  const joinedDownload = Array.isArray(record.download) ? record.download[0] : record.download;
+  const download = joinedDownload as { file_url: string | null; file_type?: string; bundle_files: BundleFile[] | null; name: string } | null;
   if (!download) return expired(req, "invalid");
   const bundleFiles = download.bundle_files || [];
   const requestedFile = new URL(req.url).searchParams.get("file");
