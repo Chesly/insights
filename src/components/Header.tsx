@@ -74,7 +74,26 @@ export default function Header({ settings }: { settings?: Record<string, string>
                 );
               })}
             </nav>
-            <SearchBar variant="header" />
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => { setSearchOpen(!searchOpen); setMenuOpen(false); }}
+                aria-label={searchOpen ? "Close search" : "Open search"}
+                aria-expanded={searchOpen}
+                aria-controls="desktop-search-panel"
+                className="flex h-9 w-9 items-center justify-center rounded-full text-white/75 transition-colors hover:bg-white/10 hover:text-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </button>
+              {searchOpen && (
+                <div id="desktop-search-panel" className="absolute right-0 top-[calc(100%+0.75rem)] z-50 w-[min(82vw,320px)] border border-gold/20 bg-white p-3 shadow-xl">
+                  <SearchBar variant="page" />
+                </div>
+              )}
+            </div>
             <Link
               href="/cart"
               aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`}
@@ -152,7 +171,7 @@ export default function Header({ settings }: { settings?: Record<string, string>
       {/* ── MOBILE SEARCH DRAWER ────────────────────────────── */}
       {searchOpen && (
         <div className="border-t border-white/10 bg-navy px-4 py-3 md:hidden">
-          <SearchBar variant="header" />
+          <SearchBar variant="page" />
         </div>
       )}
 
