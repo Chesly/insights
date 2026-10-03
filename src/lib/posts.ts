@@ -114,12 +114,12 @@ export async function getPostsBySection(section: "insights" | "coffee" | "how-to
 }
 
 export async function getPostsByCategory(category: string): Promise<Post[]> {
-  const posts = await getAllPosts();
+  const posts = await getAllPosts(false, ["insights", "coffee", "how-to"]);
   return posts.filter((p) => getPostCategories(p).some((c) => slugify(c) === slugify(category)));
 }
 
 export async function getPostsByTag(tag: string): Promise<Post[]> {
-  const posts = await getAllPosts();
+  const posts = await getAllPosts(false, ["insights", "coffee", "how-to"]);
   return posts.filter((p) => p.tags.some((t) => slugify(t) === slugify(tag)));
 }
 
