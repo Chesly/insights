@@ -46,7 +46,7 @@ function rowToPost(row: any): Post {
     trending: !!row.trending,
     draft: row.status !== "published",
     allowComments: row.allow_comments !== false,
-    section: row.section === "coffee" ? "coffee" : "insights",
+    section: row.section === "coffee" ? "coffee" : row.section === "how-to" ? "how-to" : "insights",
 
     aiSummary: row.ai_summary || undefined,
     keyTakeaways: row.key_takeaways || undefined,
@@ -75,7 +75,7 @@ function rowToPost(row: any): Post {
 
 const fetchPostsRaw = unstable_cache(async (
   includeDrafts: boolean,
-  sections: ("insights" | "coffee")[]
+  sections: ("insights" | "coffee" | "how-to")[]
 ): Promise<Post[]> => {
   const supabase = createPublicClient();
   let query = supabase.from("posts_with_categories").select("*").order("published_at", { ascending: false });
@@ -88,7 +88,7 @@ const fetchPostsRaw = unstable_cache(async (
 
 export async function getAllPosts(
   includeDrafts = false,
-  sections: ("insights" | "coffee")[] = ["insights"]
+  sections: ("insights" | "coffee" | "how-to")[] = ["insights"]
 ): Promise<Post[]> {
   return fetchPostsRaw(includeDrafts, sections);
 }
@@ -109,7 +109,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
   return fetchPostBySlug(slug);
 }
 
-export async function getPostsBySection(section: "insights" | "coffee"): Promise<Post[]> {
+export async function getPostsBySection(section: "insights" | "coffee" | "how-to"): Promise<Post[]> {
   return getAllPosts(false, [section]);
 }
 
@@ -133,7 +133,7 @@ export function getPostCategories(post: Post): string[] {
 }
 
 export async function getRelatedPosts(post: Post, limit = 3): Promise<Post[]> {
-  const all = await getAllPosts();
+  const all = await getAllPosts(false, ["insights", "coffee", "how-to"]);
   const scored = all
     .filter((p) => p.slug !== post.slug)
     .map((p) => {
@@ -198,7 +198,7 @@ export async function getEditorsPicks(limit = 4): Promise<Post[]> {
 }
 
 export async function getPostsByAuthor(authorSlug: string): Promise<Post[]> {
-  const posts = await getAllPosts(false, ["insights", "coffee"]);
+  const posts = await getAllPosts(false, ["insights", "coffee", "how-to"]);
   return posts.filter((p) => p.authorSlug === authorSlug);
 }
 
