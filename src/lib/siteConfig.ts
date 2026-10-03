@@ -113,6 +113,7 @@ export const siteConfig = {
     { label: "Home", href: "/" },
     { label: "About Us", href: "/about" },
     { label: "Insights", href: "/insights" },
+    { label: "How To", href: "/how-to" },
     { label: "Let's Have ☕", href: "/coffee" },
     { label: "Business Tools", href: "/tools" },
     { label: "Calculators", href: "/calculators" },
