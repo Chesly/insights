@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
   LayoutDashboard, FileText, FolderOpen, Image, Download,
@@ -13,6 +13,7 @@ const NAV = [
   { group: 'Content', items: [
     { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { label: 'Posts', href: '/admin/posts', icon: FileText },
+    { label: 'How To Guides', href: '/admin/posts?tag=how-to', icon: FileText },
     { label: 'Pages', href: '/admin/pages', icon: Globe },
     { label: 'Did You Know?', href: '/admin/facts', icon: Lightbulb },
     { label: 'Categories', href: '/admin/categories', icon: FolderOpen },
@@ -43,6 +44,7 @@ const NAV = [
 export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const supabase = createClient()
   const [open, setOpen] = useState(false)
 
@@ -64,8 +66,12 @@ export default function Sidebar() {
     router.push('/ct-login')
   }
 
-  const isActive = (href: string) =>
-    href === '/admin/dashboard' ? pathname === href : pathname.startsWith(href)
+  const isActive = (href: string) => {
+    if (href === '/admin/dashboard') return pathname === href
+    if (href === '/admin/posts') return pathname === href && searchParams.get('tag') !== 'how-to'
+    if (href === '/admin/posts?tag=how-to') return pathname === '/admin/posts' && searchParams.get('tag') === 'how-to'
+    return pathname.startsWith(href)
+  }
 
   return (
     <>
