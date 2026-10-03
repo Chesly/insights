@@ -59,7 +59,7 @@ export default async function TagPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
-            itemListSchema(posts.map((p) => ({ name: p.title, url: `${siteConfig.url}/insights/${p.slug}` })))
+            itemListSchema(posts.map((p) => ({ name: p.title, url: `${siteConfig.url}/${p.section || "insights"}/${p.slug}` })))
           )
         }}
       />
@@ -91,7 +91,7 @@ export default async function TagPage({
           {posts.map((post) => (
             <Link
               key={post.slug}
-              href={`/insights/${post.slug}`}
+              href={`/${post.section || "insights"}/${post.slug}`}
               className="group overflow-hidden border border-gold/10 shadow-sm hover:shadow-md"
             >
               <div className="relative aspect-video">
