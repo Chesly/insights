@@ -593,7 +593,7 @@ export default function DownloadsPage() {
                   className="btn btn-secondary btn-sm" style={{ marginTop:8 }}>
                   <Plus size={13}/>Add File to Bundle
                 </button>
-              </div</div>
+              </div></div>
 </section>
 <section className="cms-card" style={{ padding:16 }}>
   <h4 style={{ fontSize:13, fontWeight:700, color:'#374151', margin:'0 0 12px' }}>Product images</h4>
@@ -657,7 +657,7 @@ export default function DownloadsPage() {
                   Tags <span style={{ fontWeight:400, color:'#94a3b8' }}>(SEO — shown only on the single product page; 1–3 words each, 5–10 tags total)</span>
                 </label>
                 <TagInput tags={form.tags} onChange={v=>setForm(f=>({...f,tags:v}))} placeholder="Add a tag…"/>
-              </div</div>
+              </div></div>
 </section>
 <section className="cms-card" style={{ padding:16 }}>
   <h4 style={{ fontSize:13, fontWeight:700, color:'#374151', margin:'0 0 12px' }}>Publishing</h4>
