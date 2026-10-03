@@ -107,6 +107,7 @@ export async function POST(req: NextRequest) {
     const section = post.section === 'coffee' ? 'coffee' : 'insights'
     revalidateTag('posts', 'max')
     revalidatePath('/')
+    revalidatePath('/how-to')
     revalidatePath(`/${section}`)
     if (post.slug) revalidatePath(`/${section}/${post.slug}`)
   }
