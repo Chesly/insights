@@ -4,6 +4,7 @@ import {
   getFeaturedPosts,
 } from "@/lib/posts";
 import { siteConfig } from "@/lib/siteConfig";
+import { slugify } from "@/lib/types";
 import { collectionPageSchema, itemListSchema } from "@/lib/schema";
 import Carousel from "@/components/Carousel";
 import ArticleRow from "@/components/ArticleRow";
@@ -11,6 +12,7 @@ import Newsletter from "@/components/Newsletter";
 import ProductsTeaser from "@/components/ProductsTeaser";
 import CalculatorsTeaser from "@/components/CalculatorsTeaser";
 import DidYouKnowCard from "@/components/DidYouKnowCard";
+import HomeHowToFeature from "@/components/HomeHowToFeature";
 import { getTodaysFact } from "@/lib/facts";
 import { getAllSiteSettings } from "@/lib/settings";
 
@@ -29,7 +31,14 @@ export default async function HomePage() {
     getAllSiteSettings(),
   ]);
 
-  const carouselSource = featuredPosts.length > 0 ? featuredPosts : posts;
+  const howToPosts = posts.filter((post) =>
+    post.tags.some((tag) => slugify(tag) === "how-to")
+  );
+  const howToSlugs = new Set(howToPosts.map((post) => post.slug));
+  const editorialPosts = posts.filter((post) => !howToSlugs.has(post.slug));
+  const featuredEditorialPosts = featuredPosts.filter((post) => !howToSlugs.has(post.slug));
+  const carouselSource =
+    featuredEditorialPosts.length > 0 ? featuredEditorialPosts : editorialPosts;
   const carouselSlides = carouselSource.slice(0, 5).map((p) => ({
     slug: p.slug,
     title: p.title,
@@ -40,7 +49,7 @@ export default async function HomePage() {
   }));
 
   const featuredSlugs = new Set(carouselSlides.map((s) => s.slug));
-  const remaining = posts.filter((p) => !featuredSlugs.has(p.slug));
+  const remaining = editorialPosts.filter((p) => !featuredSlugs.has(p.slug));
 
   // "Most Read" — for now, a placeholder ranking (marked trending, or just
   // the newest) rather than real analytics. This is intentional: once
@@ -130,6 +139,7 @@ export default async function HomePage() {
           {todaysFact && <DidYouKnowCard fact={todaysFact} backgroundImage={settings.facts_widget_bg_image} />}
 
           <ArticleRow heading="Popular" posts={popular} />
+          <HomeHowToFeature posts={howToPosts} />
         </div>
       </div>
 
