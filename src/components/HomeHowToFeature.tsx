@@ -41,7 +41,7 @@ export default function HomeHowToFeature({ posts }: { posts: Post[] }) {
           {guides.map((post, index) => (
             <Link
               key={post.slug}
-              href={`/insights/${post.slug}`}
+              href={`/how-to/${post.slug}`}
               className="group flex gap-3 border-b border-navy/10 p-4 transition-colors hover:bg-gold/5 dark:border-white/10 sm:p-5 [&:nth-child(2n)]:sm:border-l"
             >
               <span className="pt-0.5 text-sm font-bold text-gold/70">
