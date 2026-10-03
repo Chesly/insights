@@ -9,6 +9,7 @@ export interface SearchResult {
   tags: string[];
   image: string;
   score: number;
+  section: "insights" | "coffee" | "how-to";
 }
 
 /**
@@ -22,7 +23,7 @@ export async function searchPosts(query: string, limit = 20): Promise<SearchResu
   if (!q) return [];
 
   const terms = q.split(/\s+/).filter(Boolean);
-  const posts = await getAllPosts();
+  const posts = await getAllPosts(false, ["insights", "coffee", "how-to"]);
 
   const scored = posts
     .map((post) => ({ post, score: scorePost(post, terms) }))
@@ -37,6 +38,7 @@ export async function searchPosts(query: string, limit = 20): Promise<SearchResu
     category: post.category,
     tags: post.tags,
     image: post.image,
+    section: post.section || "insights",
     score
   }));
 }
