@@ -34,7 +34,7 @@ export default async function HowToIndexPage() {
         title="How To"
         subtitle="Straightforward, step-by-step help for South African suppliers, small businesses and everyday business administration."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "How To" }]}
-        backgroundImage="https://ik.imagekit.io/mkvu8hdr5/insights.jpg"
+        backgroundImage="/how-to-breadcrumb.jpg"
       />
 
       {posts.length === 0 && (
