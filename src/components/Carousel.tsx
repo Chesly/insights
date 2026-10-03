@@ -10,7 +10,7 @@ export interface CarouselSlide {
   description: string;
   category: string;
   image: string;
-  section?: "insights" | "coffee";
+  section?: "insights" | "coffee" | "how-to";
 }
 
 const AUTOPLAY_MS = 6000;
