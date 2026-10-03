@@ -339,7 +339,7 @@ export default function DownloadsPage() {
                 </label>
                 <input className="cms-input" value={form.name} onChange={set('name')} placeholder="50 AI Prompts for SA Entrepreneurs"/>
                 <CharHint value={form.name} min={30} max={60}/>
-              </div
+              </div>
 <div>
                 <label style={{ display:'flex', alignItems:'center', justifyContent:'space-between', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   <span>Slug (its page URL: /tools/…)</span>
@@ -349,49 +349,49 @@ export default function DownloadsPage() {
                   </button>
                 </label>
                 <input className="cms-input" value={form.slug} onChange={set('slug')} placeholder="50-ai-prompts-for-sa-entrepreneurs"/>
-              </div
+              </div>
 <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Subtitle</label>
                 <input className="cms-input" value={form.subtitle} onChange={set('subtitle')} placeholder="A short tagline under the title"/>
                 <CharHint value={form.subtitle} min={40} max={100}/>
-              </div
+              </div>
 <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Description <span style={{ fontWeight:400, color:'#94a3b8' }}>(shown at the top of the product page, right under the name — fill in Meta Description separately below for search snippets, it's longer than Google likes)</span>
                 </label>
                 <textarea className="cms-input cms-textarea" value={form.description} onChange={set('description')} placeholder="What this product is, who it's for, and what it does for them…" rows={4}/>
                 <CharHint value={form.description} min={300} max={550}/>
-              </div
+              </div>
 <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Target Audience <span style={{ fontWeight:400, color:'#94a3b8' }}>(short phrases, ~15–40 chars each — press Enter, or paste a comma-separated list)</span>
                 </label>
                 <TagInput tags={form.target_audience} onChange={v=>setForm(f=>({...f,target_audience:v}))} placeholder="Add audience…" suggestions={AUDIENCE_OPTIONS}/>
-              </div
+              </div>
 <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Problems It Solves <span style={{ fontWeight:400, color:'#94a3b8' }}>(one problem per item, ~25–60 chars — press Enter, or paste a comma-separated list)</span>
                 </label>
                 <TagInput tags={form.solves} onChange={v=>setForm(f=>({...f,solves:v}))} placeholder="e.g. Cuts costs, Saves time…"/>
-              </div
+              </div>
 <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Key Features <span style={{ fontWeight:400, color:'#94a3b8' }}>(what's actually in it — distinct from the problems it solves; ~25–60 chars each)</span>
                 </label>
                 <TagInput tags={form.key_features} onChange={v=>setForm(f=>({...f,key_features:v}))} placeholder="e.g. 12 pre-built formulas, Editable in Excel…"/>
-              </div
+              </div>
 <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   How It Helps You <span style={{ fontWeight:400, color:'#94a3b8' }}>(~25–60 chars each)</span>
                 </label>
                 <TagInput tags={form.how_it_helps} onChange={v=>setForm(f=>({...f,how_it_helps:v}))} placeholder="e.g. See your real numbers in minutes…"/>
-              </div
+              </div>
 <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Why You Need It <span style={{ fontWeight:400, color:'#94a3b8' }}>(~25–60 chars each)</span>
                 </label>
                 <TagInput tags={form.why_you_need_it} onChange={v=>setForm(f=>({...f,why_you_need_it:v}))} placeholder="e.g. Avoid costly funding mistakes…"/>
-              </div
+              </div>
 <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Related Products <span style={{ fontWeight:400, color:'#94a3b8' }}>(shown ahead of the automatic same-category matches — use this to deliberately link a natural next purchase)</span>
@@ -402,7 +402,7 @@ export default function DownloadsPage() {
                   options={downloads.filter(d=>d.id!==form.id).map(d=>({ id:d.id, label:d.name }))}
                   placeholder="Search products…"
                 />
-              </div
+              </div>
 <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Related Blog Posts <span style={{ fontWeight:400, color:'#94a3b8' }}>(build an internal-linking cluster — link this product to the articles that sell it, and link back from those articles below)</span>
@@ -413,7 +413,7 @@ export default function DownloadsPage() {
                   options={posts.map(p=>({ id:p.id, label:p.title }))}
                   placeholder="Search posts…"
                 />
-              </div
+              </div>
 <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   FAQs <span style={{ fontWeight:400, color:'#94a3b8' }}>(shown as an accordion on the product page, plus FAQ rich-result eligibility in Google and AI answer engines — no fixed number, 4–8 is a good range for most products. Links work in answers: paste a URL directly, or use [link text](https://url) for custom wording — handy for pointing to the download itself.)</span>
@@ -462,27 +462,27 @@ export default function DownloadsPage() {
                 <button type="button" onClick={addFaq} className="btn btn-secondary btn-sm" style={{ marginTop:8 }}>
                   <Plus size={13}/>Add FAQ
                 </button>
-              </div
+              </div>
 <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   SEO Title <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional — appears in Google & the browser tab)</span>
                 </label>
                 <input className="cms-input" value={form.seo_title} onChange={set('seo_title')} placeholder="Defaults to Name if left blank"/>
                 <CharHint value={form.seo_title} min={50} max={60}/>
-              </div
+              </div>
 <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Meta Description <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional — shown below the title in Google results)</span>
                 </label>
                 <input className="cms-input" value={form.meta_description} onChange={set('meta_description')} placeholder="Defaults to Description if left blank"/>
                 <CharHint value={form.meta_description} min={145} max={160}/>
-              </div
+              </div>
 <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Store / Checkout Link <span style={{ fontWeight:400, color:'#94a3b8' }}>(only used when Tier is Paid — leave blank until you have a payment link)</span>
                 </label>
                 <input className="cms-input" value={form.store_url} onChange={set('store_url')} placeholder="https://…"/>
-              </div
+              </div>
 <div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Access Tier</label>
                 <div style={{ display:'flex', gap:8 }}>
@@ -520,7 +520,7 @@ export default function DownloadsPage() {
                 <p style={{ fontSize:11.5, color:'#94a3b8', marginTop:6 }}>
                   Free — instant download, no form. Premium — the paid version; set a price above and a Store/Checkout Link when you have one, or it shows &quot;Coming Soon&quot; until you do.
                 </p>
-              </div
+              </div>
 </div>
 <aside style={{ display:'flex', flexDirection:'column', gap:14, minWidth:0 }}>
 <section className="cms-card" style={{ padding:16 }}>
@@ -530,7 +530,7 @@ export default function DownloadsPage() {
                 <select className="cms-input cms-select" value={form.file_type} onChange={set('file_type')}>
                   {['pdf','zip','doc','other'].map(t=><option key={t} value={t}>{FILE_TYPE_ICONS[t]} {t.toUpperCase()}</option>)}
                 </select>
-              </div
+              </div>
 <div className="download-editor-field">
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   File URL <span style={{ fontWeight:400, color:'#94a3b8' }}>(single-file products only)</span>
@@ -549,7 +549,7 @@ export default function DownloadsPage() {
                     }}
                   />
                 </div>
-              </div
+              </div>
 <div className="download-editor-field" style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Bundle Files <span style={{ fontWeight:400, color:'#94a3b8' }}>(most products are this — e.g. Spreadsheet + How-to-Use PDF + Audio + Word Doc, each downloaded separately)</span>
@@ -651,7 +651,7 @@ export default function DownloadsPage() {
                   <option value="">— None —</option>
                   {categories.map(c=><option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
                 </select>
-              </div
+              </div>
 <div className="download-editor-field" style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Tags <span style={{ fontWeight:400, color:'#94a3b8' }}>(SEO — shown only on the single product page; 1–3 words each, 5–10 tags total)</span>
