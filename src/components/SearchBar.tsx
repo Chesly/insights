@@ -9,7 +9,7 @@ interface Result {
   title: string;
   category: string;
   description: string;
-  section?: "insights" | "coffee" | "how-to";
+  section: "insights" | "coffee" | "how-to";
 }
 
 export default function SearchBar({ variant = "header" }: { variant?: "header" | "page" }) {
