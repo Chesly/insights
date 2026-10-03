@@ -395,7 +395,7 @@ export default async function CoffeePostPage({
             </h2>
             <div className="mt-3 divide-y divide-gold/10 border border-gold/10">
               {related.map((r) => (
-                <Link key={r.slug} href={`/coffee/${r.slug}`} className="group block p-3">
+                <Link key={r.slug} href={`/${r.section || "insights"}/${r.slug}`} className="group block p-3">
                   <div className="relative w-full overflow-hidden aspect-[16/9]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img

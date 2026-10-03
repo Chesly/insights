@@ -9,6 +9,7 @@ interface Result {
   title: string;
   category: string;
   description: string;
+  section: "insights" | "coffee" | "how-to";
 }
 
 export default function SearchBar({ variant = "header" }: { variant?: "header" | "page" }) {
@@ -117,7 +118,7 @@ export default function SearchBar({ variant = "header" }: { variant?: "header" |
             results.map((r) => (
               <li key={r.slug} role="option" aria-selected="false">
                 <Link
-                  href={`/insights/${r.slug}`}
+                  href={`/${r.section || "insights"}/${r.slug}`}
                   onClick={() => setOpen(false)}
                   className="block border-b border-gold/10 px-4 py-3 last:border-none hover:bg-gold/5"
                 >

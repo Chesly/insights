@@ -4,7 +4,6 @@ import {
   getFeaturedPosts,
 } from "@/lib/posts";
 import { siteConfig } from "@/lib/siteConfig";
-import { slugify } from "@/lib/types";
 import { collectionPageSchema, itemListSchema } from "@/lib/schema";
 import Carousel from "@/components/Carousel";
 import ArticleRow from "@/components/ArticleRow";
@@ -25,14 +24,14 @@ export default async function HomePage() {
   // derived from this one array instead of separate DB calls, keeping the
   // whole homepage consistent and fast.
   const [posts, featuredPosts, todaysFact, settings] = await Promise.all([
-    getAllPosts(false, ["insights", "coffee"]),
+    getAllPosts(false, ["insights", "coffee", "how-to"]),
     getFeaturedPosts(),
     getTodaysFact(),
     getAllSiteSettings(),
   ]);
 
   const howToPosts = posts.filter((post) =>
-    post.tags.some((tag) => slugify(tag) === "how-to")
+    post.section === "how-to"
   );
   const howToSlugs = new Set(howToPosts.map((post) => post.slug));
   const editorialPosts = posts.filter((post) => !howToSlugs.has(post.slug));
@@ -65,7 +64,7 @@ export default async function HomePage() {
   const listSchema = itemListSchema(
     latest.map((p) => ({
       name: p.title,
-      url: `${siteConfig.url}/${p.section === "coffee" ? "coffee" : "insights"}/${p.slug}`,
+      url: `${siteConfig.url}/${p.section || "insights"}/${p.slug}`,
     }))
   );
 
@@ -110,7 +109,7 @@ export default async function HomePage() {
                   {mostRead.map((post, i) => (
                     <li key={post.slug}>
                       <Link
-                        href={`/${post.section === "coffee" ? "coffee" : "insights"}/${post.slug}`}
+                        href={`/${post.section || "insights"}/${post.slug}`}
                         className="group flex items-start gap-3 px-5 py-3.5 transition-colors hover:bg-gold/5"
                       >
                         <span className="pt-0.5 text-lg font-bold text-gold/60">{i + 1}</span>

@@ -28,7 +28,7 @@ export async function generateMetadata({
 
   const title = post.seoTitle || post.title;
   const description = post.seoDescription || post.description;
-  const url = `${siteConfig.url}/insights/${post.slug}`;
+  const url = `${siteConfig.url}/how-to/${post.slug}`;
 
   return {
     title,
@@ -65,7 +65,7 @@ export default async function BlogPostPage({
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) notFound();
-  if ((post.section || "insights") !== "insights") notFound();
+  if ((post.section || "insights") !== "how-to") notFound();
 
   const related = await getRelatedPosts(post);
   const relatedProducts = (post.relatedDownloadIds?.length ?? 0) > 0
@@ -76,9 +76,9 @@ export default async function BlogPostPage({
 
   const crumbs = breadcrumbSchema([
     { name: "Home", url: siteConfig.url },
-    { name: "Articles", url: `${siteConfig.url}/insights` },
+    { name: "How To", url: `${siteConfig.url}/how-to` },
     { name: post.category, url: `${siteConfig.url}/category/${slugify(post.category)}` },
-    { name: post.title, url: `${siteConfig.url}/insights/${post.slug}` }
+    { name: post.title, url: `${siteConfig.url}/how-to/${post.slug}` }
   ]);
 
   return (
@@ -315,7 +315,7 @@ export default async function BlogPostPage({
       {/* Social Share */}
       <SocialShare
         title={post.title}
-        url={`${siteConfig.url}/insights/${post.slug}`}
+        url={`${siteConfig.url}/how-to/${post.slug}`}
         excerpt={post.description}
       />
 

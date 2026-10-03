@@ -9,7 +9,7 @@ import { CALCULATORS } from "@/lib/calculators";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, categories, tags, authors, downloads, facts] = await Promise.all([
-    getAllPosts(false, ["insights", "coffee"]),
+    getAllPosts(false, ["insights", "coffee", "how-to"]),
     getAllCategories(),
     getPopularTags(1000),
     getAllAuthors(),
@@ -54,7 +54,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const postRoutes: MetadataRoute.Sitemap = posts.map((p) => ({
-    url: `${siteConfig.url}/${p.section === "coffee" ? "coffee" : "insights"}/${p.slug}`,
+    url: `${siteConfig.url}/${p.section || "insights"}/${p.slug}`,
     lastModified: p.modifiedDate || p.publishedDate,
     changeFrequency: "monthly",
     priority: 0.8
