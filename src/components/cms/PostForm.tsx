@@ -23,6 +23,7 @@ const RichEditor = dynamic(() => import('@/components/editor/RichEditor'), { ssr
 interface Props {
   post?: Post
   categories: Category[]
+  initialTags?: string[]
 }
 
 type Section = 'main' | 'seo' | 'settings'
@@ -57,7 +58,7 @@ function Field({ children }: { children: React.ReactNode }) {
   return <div style={{ marginBottom:18 }}>{children}</div>
 }
 
-export default function PostForm({ post, categories }: Props) {
+export default function PostForm({ post, categories, initialTags = [] }: Props) {
   const router = useRouter()
   const isNew = !post?.id
   const [saving, setSaving] = useState(false)
@@ -84,7 +85,7 @@ export default function PostForm({ post, categories }: Props) {
   const [seriesId, setSeriesId] = useState((post as unknown as {series_id?:string})?.series_id || '')
   const [seriesOrder, setSeriesOrder] = useState((post as unknown as {series_order?:number})?.series_order || '')
   const [newSeriesName, setNewSeriesName] = useState('')
-  const [tags, setTags] = useState<string[]>(post?.tags?.map(t => t.name) || [])
+  const [tags, setTags] = useState<string[]>(post?.tags?.length ? post.tags.map(t => t.name) : initialTags)
   const [status, setStatus] = useState<Post['status']>(post?.status || 'draft')
   const [featured, setFeatured] = useState(post?.featured || false)
   const [trending, setTrending] = useState(post?.trending || false)
@@ -224,6 +225,12 @@ export default function PostForm({ post, categories }: Props) {
           <SectionBtn id="seo" label="SEO" icon={Search} active={activeSection==='seo'} onSelect={setActiveSection}/>
           <SectionBtn id="settings" label="Settings" icon={Settings} active={activeSection==='settings'} onSelect={setActiveSection}/>
         </div>
+
+        {tags.some(tag => tag.toLowerCase() === 'how to') && (
+          <div style={{ marginBottom:16, padding:'12px 14px', border:'1px solid #ead9a6', borderRadius:9, background:'#fffaf0', color:'#765b16', fontSize:13, lineHeight:1.5 }}>
+            <strong>How To guide:</strong> This post is already tagged “How To” and saved under Insights. Publishing it adds it to the How To page and homepage feature.
+          </div>
+        )}
 
         {/* ── MAIN SECTION ── */}
         {activeSection === 'main' && (
