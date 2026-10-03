@@ -113,10 +113,10 @@ export const siteConfig = {
     { label: "Home", href: "/" },
     { label: "About Us", href: "/about" },
     { label: "Insights", href: "/insights" },
-    { label: "How To", href: "/how-to" },
     { label: "Let's Have ☕", href: "/coffee" },
     { label: "Business Tools", href: "/tools" },
     { label: "Calculators", href: "/calculators" },
+    { label: "How To", href: "/how-to" },
     { label: "Did You Know?", href: "/facts" },
     { label: "Contact", href: "/contact" }
   ] as NavLink[],
@@ -191,17 +191,11 @@ export const siteConfig = {
   // ── Breadcrumb / Page Hero ───────────────────────────────────────────────
   pageHero: {
     backgroundImage: "https://ik.imagekit.io/mkvu8hdr5/insights/typing.jpg",
-    overlayOpacity: 0.68, // ~32-40% background image visibility = darker overlay for contrast
-    // TEMPLATE STANDARD — every PageHero (breadcrumb image banner) on the
-    // site reads this height unless a page explicitly overrides it, which
-    // none currently do on purpose. When adding a new page later, just
-    // pass `backgroundImage` (and title/subtitle/breadcrumbs) to PageHero
-    // and leave heightPx unset so it automatically matches every other
-    // page — change the value here, once, if the standard itself changes.
+    overlayOpacity: 0.68,
     heightPx: 168
   },
 
-  // ── Page intros (shown in the page hero subtitle) ───────────────────────
+  // ── Page intros (shown in the page hero subtitle) ────────────────────────
   pages: {
     blog: {
       title: "Insights",
@@ -286,6 +280,4 @@ export const siteConfig = {
     "Technology",
     "Startups"
   ]
-};
-
-export type SiteConfig = typeof siteConfig;
+} satisfies SiteConfig;
