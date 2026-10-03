@@ -73,7 +73,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ toke
     return NextResponse.json({ error: "This file is not stored in the approved download library." }, { status: 502, headers: { "Cache-Control": "no-store" } });
   }
 
-  const upstream = await fetch(fileUrl, { cache: "no-store", redirect: "error" }).catch(() => null);
+  const upstream = await fetch(fileUrl, { cache: "no-store" }).catch(() => null);
   if (!upstream?.ok || !upstream.body) {
     return NextResponse.json({ error: "The download is temporarily unavailable. Please try again." }, { status: 502, headers: { "Cache-Control": "no-store" } });
   }
