@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getPostsByTag } from "@/lib/posts";
+import { getPostsBySection } from "@/lib/posts";
 import type { Post } from "@/lib/types";
 import { siteConfig } from "@/lib/siteConfig";
 import PageHero from "@/components/PageHero";
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function HowToIndexPage() {
-  const posts = await getPostsByTag("How To");
+  const posts = await getPostsBySection("how-to");
   const featured = posts.find((post) => post.featured) || posts[0];
   const rest = featured ? posts.filter((post) => post.slug !== featured.slug) : posts;
 
@@ -62,7 +62,7 @@ export default async function HowToIndexPage() {
         initialCount={12}
         perLoad={12}
         hasFeatured={Boolean(featured)}
-        basePath="/insights"
+        basePath="/how-to"
       />
 
       <ProductsTeaser />
@@ -73,7 +73,7 @@ export default async function HowToIndexPage() {
 function FeaturedGuide({ post }: { post: Post }) {
   return (
     <Link
-      href={`/insights/${post.slug}`}
+      href={`/how-to/${post.slug}`}
       className="group grid grid-cols-1 overflow-hidden border border-navy/10 transition-shadow hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold dark:border-white/10 md:grid-cols-2"
       aria-label={post.title}
     >
