@@ -280,4 +280,4 @@ export const siteConfig = {
     "Technology",
     "Startups"
   ]
-} satisfies SiteConfig;
+};
