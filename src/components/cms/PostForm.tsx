@@ -79,7 +79,7 @@ export default function PostForm({ post, categories }: Props) {
   const [categoryIds, setCategoryIds] = useState<string[]>(
     post?.categories?.length ? post.categories.map(c => c.id) : (post?.category_id ? [post.category_id] : [])
   )
-  const [section, setSection] = useState<'insights' | 'coffee'>(post?.section || 'insights')
+  const [section, setSection] = useState<'insights' | 'coffee' | 'how-to'>(post?.section || 'insights')
   const [seriesList, setSeriesList] = useState<{id:string,name:string}[]>([])
   const [seriesId, setSeriesId] = useState((post as unknown as {series_id?:string})?.series_id || '')
   const [seriesOrder, setSeriesOrder] = useState((post as unknown as {series_order?:number})?.series_order || '')
@@ -241,6 +241,7 @@ export default function PostForm({ post, categories }: Props) {
                 {([
                   { value:'insights' as const, label:'Insights', emoji:'📰' },
                   { value:'coffee' as const, label:"Let's Have Coffee", emoji:'☕' },
+                  { value:'how-to' as const, label:'How To', emoji:'🧭' },
                 ]).map(opt=>(
                   <button key={opt.value} type="button" onClick={()=>setSection(opt.value)}
                     style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:8, padding:'10px 14px', borderRadius:8,
@@ -280,7 +281,7 @@ export default function PostForm({ post, categories }: Props) {
                 </button>
               </div>
               <div style={{ display:'flex', alignItems:'center', gap:0, border:'1px solid #e2e8f0', borderRadius:8, overflow:'hidden' }}>
-                <span style={{ padding:'9px 12px', background:'#f8fafc', fontSize:13, color:'#94a3b8', borderRight:'1px solid #e2e8f0', whiteSpace:'nowrap' }}>/insights/</span>
+                <span style={{ padding:'9px 12px', background:'#f8fafc', fontSize:13, color:'#94a3b8', borderRight:'1px solid #e2e8f0', whiteSpace:'nowrap' }}/{section}/</span>
                 <input className="cms-input" value={slug} onChange={e=>{ setSlug(e.target.value); setSlugLocked(true) }}
                   style={{ border:'none', borderRadius:0, fontFamily:'monospace', fontSize:13 }}/>
               </div>
@@ -388,7 +389,7 @@ export default function PostForm({ post, categories }: Props) {
             <div style={{ background:'#f8fafc', border:'1px solid #e2e8f0', borderRadius:10, padding:16 }}>
               <div style={{ fontSize:12, fontWeight:700, color:'#64748b', textTransform:'uppercase', letterSpacing:'0.05em', marginBottom:10 }}>Google Preview</div>
               <div style={{ fontSize:18, color:'#1a0dab', fontWeight:500, marginBottom:2, lineHeight:1.3 }}>{seoTitle || title || 'Post Title'}</div>
-              <div style={{ fontSize:13, color:'#006621', marginBottom:4 }}>insights.chesly.tech/{section === 'coffee' ? 'coffee' : 'insights'}/{slug || 'post-slug'}</div>
+              <div style={{ fontSize:13, color:'#006621', marginBottom:4 }}>insights.chesly.tech/{section}/{slug || 'post-slug'}</div>
               <div style={{ fontSize:13, color:'#4d5156', lineHeight:1.5 }}>{metaDesc || excerpt || 'Meta description will appear here…'}</div>
             </div>
           </div>
