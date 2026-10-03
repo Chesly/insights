@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { isOwnedImageKitUrl } from "@/lib/imagekit";
 
 export const dynamic = "force-dynamic";
 
@@ -7,15 +8,6 @@ interface BundleFile {
   name?: string;
   url?: string;
   fileType?: string;
-}
-
-function isOwnedImageKitUrl(value: string) {
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" && url.hostname === "ik.imagekit.io" && url.pathname.startsWith("/mkvu8hdr5/");
-  } catch {
-    return false;
-  }
 }
 
 function safeFilename(value: string, fallback: string) {
@@ -31,7 +23,9 @@ function addExtension(name: string, fileType?: string, sourceUrl?: string) {
 }
 
 function expired(req: NextRequest, reason: string) {
-  return NextResponse.redirect(new URL(`/download-expired?reason=${reason}`, req.url));
+  return NextResponse.redirect(new URL(`/download-expired?reason=${reason}`, req.url), {
+    headers: { "Cache-Control": "no-store" },
+  });
 }
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
@@ -53,7 +47,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ toke
   const requestedFile = new URL(req.url).searchParams.get("file");
 
   if (bundleFiles.length > 0 && requestedFile === null) {
-    return NextResponse.redirect(new URL(`/download/${token}`, req.url));
+    return NextResponse.redirect(new URL(`/download/${token}`, req.url), {
+      headers: { "Cache-Control": "no-store" },
+    });
   }
 
   let fileUrl: string | null = null;
@@ -82,7 +78,14 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ toke
     return NextResponse.json({ error: "The download is temporarily unavailable. Please try again." }, { status: 502, headers: { "Cache-Control": "no-store" } });
   }
 
-  await supabase.from("download_tokens").update({ use_count: record.use_count + 1 }).eq("id", record.id);
+  const { data: counted, error: countError } = await supabase
+    .from("download_tokens")
+    .update({ use_count: record.use_count + 1 })
+    .eq("id", record.id)
+    .eq("use_count", record.use_count)
+    .select("id")
+    .maybeSingle();
+  if (countError || !counted) return expired(req, "used-up");
 
   filename = addExtension(safeFilename(filename, "download"), fileType, fileUrl);
   const asciiFallback = filename.replace(/[^\x20-\x7e]/g, "_").replace(/["\\]/g, "_");
