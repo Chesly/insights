@@ -281,7 +281,7 @@ export default function PostForm({ post, categories }: Props) {
                 </button>
               </div>
               <div style={{ display:'flex', alignItems:'center', gap:0, border:'1px solid #e2e8f0', borderRadius:8, overflow:'hidden' }}>
-                <span style={{ padding:'9px 12px', background:'#f8fafc', fontSize:13, color:'#94a3b8', borderRight:'1px solid #e2e8f0', whiteSpace:'nowrap' }}/{section}/</span>
+                <span style={{ padding:'9px 12px', background:'#f8fafc', fontSize:13, color:'#94a3b8', borderRight:'1px solid #e2e8f0', whiteSpace:'nowrap' }}>/{section}/</span>
                 <input className="cms-input" value={slug} onChange={e=>{ setSlug(e.target.value); setSlugLocked(true) }}
                   style={{ border:'none', borderRadius:0, fontFamily:'monospace', fontSize:13 }}/>
               </div>
