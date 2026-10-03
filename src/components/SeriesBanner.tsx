@@ -18,7 +18,7 @@ export default async function SeriesBanner({ post }: { post: Post }) {
       <ol className="mt-3 space-y-2">
         {posts.map((p, i) => {
           const current = p.slug === post.slug;
-          const href = `/${p.section === "coffee" ? "coffee" : "insights"}/${p.slug}`;
+          const href = `/${p.section || "insights"}/${p.slug}`;
           return (
             <li
               key={p.slug}
