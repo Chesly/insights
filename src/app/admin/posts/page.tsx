@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Edit2, Trash2, ExternalLink, Clock, CheckCircle, Archive, Calendar } from 'lucide-react'
 import { formatDate, STATUS_COLORS, STATUS_LABELS } from '@/lib/utils'
 
-interface SearchParams { status?: string; page?: string; q?: string }
+interface SearchParams { status?: string; page?: string; q?: string; tag?: string }
 
 export default async function PostsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const sp = await searchParams
@@ -12,6 +12,7 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
   const status = sp.status || ''
   const page = parseInt(sp.page || '1')
   const q = sp.q || ''
+  const tag = sp.tag || ''
   const perPage = 15
   const from = (page-1)*perPage
   const to = from+perPage-1
@@ -24,6 +25,15 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
 
   if (status) query = query.eq('status', status)
   if (q) query = query.ilike('title', `%${q}%`)
+
+  if (tag === 'how-to') {
+    const { data: howToTag } = await supabase.from('tags').select('id').eq('slug', 'how-to').maybeSingle()
+    const { data: postTags } = howToTag
+      ? await supabase.from('post_tags').select('post_id').eq('tag_id', howToTag.id)
+      : { data: [] }
+    const postIds = (postTags || []).map((row: { post_id: string }) => row.post_id)
+    query = query.in('id', postIds.length ? postIds : ['00000000-0000-0000-0000-000000000000'])
+  }
 
   const { data: posts, count } = await query
   const totalPages = Math.ceil((count||0)/perPage)
@@ -38,13 +48,13 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
 
   return (
     <>
-      <Topbar title="Posts" action={{ label:'New Post', href:'/admin/posts/new' }}/>
+      <Topbar title={tag === 'how-to' ? 'How To Guides' : 'Posts'} action={{ label:tag === 'how-to' ? 'New How To Guide' : 'New Post', href:tag === 'how-to' ? '/admin/posts/new?type=how-to' : '/admin/posts/new' }}/>
       <div style={{ padding:24 }}>
 
         {/* Status tabs */}
         <div style={{ display:'flex', gap:4, marginBottom:20, background:'#f1f5f9', borderRadius:10, padding:4, width:'fit-content' }}>
           {tabs.map(tab=>(
-            <Link key={tab.value} href={`/admin/posts${tab.value?`?status=${tab.value}`:''}`}
+            <Link key={tab.value} href={`/admin/posts?${[tab.value ? `status=${tab.value}` : '', tag ? `tag=${tag}` : ''].filter(Boolean).join('&')}`}
               style={{ padding:'7px 16px', borderRadius:7, fontSize:13, fontWeight:600, textDecoration:'none', transition:'all 0.15s',
                 background:status===tab.value?'#fff':'transparent', color:status===tab.value?'#1e293b':'#64748b',
                 boxShadow:status===tab.value?'0 1px 4px rgba(0,0,0,0.08)':'none' }}>
@@ -54,10 +64,11 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
         </div>
 
         {/* Search bar */}
+        {!tag && <div style={{ display:'flex', justifyContent:'flex-end', marginBottom:12 }}><Link href="/admin/posts/new?type=how-to" className="btn btn-secondary btn-sm">+ New How To Guide</Link></div>}
         <div style={{ display:'flex', gap:10, marginBottom:16 }}>
           <form style={{ flex:1 }}>
             <input name="q" defaultValue={q} placeholder="Search posts by title…" className="cms-input" style={{ maxWidth:380 }}/>
-            {status && <input type="hidden" name="status" value={status}/>}
+            {status && <input type="hidden" name="status" value={status}/>}{tag && <input type="hidden" name="tag" value={tag}/>}
           </form>
           <span style={{ fontSize:13, color:'#94a3b8', alignSelf:'center' }}>{count || 0} post{(count||0)!==1?'s':''}</span>
         </div>
@@ -146,7 +157,7 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
         {totalPages > 1 && (
           <div style={{ display:'flex', justifyContent:'center', gap:6, marginTop:20 }}>
             {Array.from({length:totalPages},(_,i)=>i+1).map(p=>(
-              <Link key={p} href={`/admin/posts?${status?`status=${status}&`:''}page=${p}${q?`&q=${q}`:''}`}
+              <Link key={p} href={`/admin/posts?${[status ? `status=${status}` : '', tag ? `tag=${tag}` : '', `page=${p}`, q ? `q=${encodeURIComponent(q)}` : ''].filter(Boolean).join('&')}`}
                 style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', borderRadius:8, border:'1px solid #e2e8f0', fontSize:13, fontWeight:600, textDecoration:'none',
                   background:p===page?'#8B6914':'#fff', color:p===page?'#fff':'#374151' }}>
                 {p}
