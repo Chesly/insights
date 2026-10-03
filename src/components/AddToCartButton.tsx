@@ -15,7 +15,9 @@ export default function AddToCartButton({ item, className = "" }: { item: Downlo
   const baseClass =
     "block w-full border border-gold bg-gold px-3 py-2 text-center text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-gold-dark";
 
-  const hasDeliverable = Boolean(item.fileUrl || item.bundleFiles.length > 0);\n\n  if (item.tier === "paid" && !item.storeUrl && item.price != null && hasDeliverable) {
+  const hasDeliverable = item.hasDeliverable;
+
+  if (item.tier === "paid" && !item.storeUrl && item.price != null && hasDeliverable) {
     const inCart = isInCart(item.id);
     return (
       <Link
