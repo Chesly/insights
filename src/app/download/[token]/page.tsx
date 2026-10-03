@@ -57,7 +57,7 @@ export default async function BundleDownloadPage({
                   <span className="truncate">{f.name}</span>
                 </span>
                 <a
-                  href={f.url}
+                  href={`/api/download/${token}?file=${i}`}
                   className="shrink-0 bg-gold px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white hover:bg-gold-dark"
                 >
                   Download

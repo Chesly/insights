@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { X, Search, Upload, Check, Image as ImageIcon } from 'lucide-react'
 import type { MediaItem } from '@/types'
+import { isOwnedImageKitUrl } from '@/lib/imagekit'
 import FileUploadButton from './FileUploadButton'
 
 interface Props {
@@ -18,22 +19,31 @@ export default function ImagePicker({ open, onClose, onSelect, currentUrl }: Pro
   const [selected, setSelected] = useState<string>(currentUrl || '')
   const [loading, setLoading] = useState(false)
   const [ikUrl, setIkUrl] = useState('')
+  const [urlError, setUrlError] = useState('')
   const supabase = createClient()
 
   useEffect(() => {
-    if (open) loadMedia()
-  }, [open])
+    if (open) {
+      setSelected(currentUrl || '')
+      setSearch('')
+      setIkUrl('')
+      setUrlError('')
+      loadMedia()
+    }
+  }, [open, currentUrl])
 
   const loadMedia = async () => {
     setLoading(true)
-    const { data } = await supabase.from('media').select('*').order('created_at', { ascending: false }).limit(50)
+    const { data } = await supabase.from('media').select('*').order('created_at', { ascending: false }).limit(200)
     setMedia(data || [])
     setLoading(false)
   }
 
   const filtered = media.filter(m =>
-    m.original_name.toLowerCase().includes(search.toLowerCase()) ||
-    (m.alt_text || '').toLowerCase().includes(search.toLowerCase())
+    isOwnedImageKitUrl(m.url) &&
+    (m.mime_type || '').startsWith('image/') &&
+    (m.original_name.toLowerCase().includes(search.toLowerCase()) ||
+      (m.alt_text || '').toLowerCase().includes(search.toLowerCase()))
   )
 
   if (!open) return null
@@ -61,9 +71,18 @@ export default function ImagePicker({ open, onClose, onSelect, currentUrl }: Pro
           />
           <div style={{ display:'flex', gap:8, flex:1 }}>
             <input className="cms-input" value={ikUrl} onChange={e=>setIkUrl(e.target.value)} placeholder="Or paste ImageKit URL…" style={{ fontSize:13 }}/>
-            <button className="btn btn-secondary btn-sm" onClick={()=>{ if(ikUrl){ setSelected(ikUrl) } }} type="button">Use URL</button>
+            <button className="btn btn-secondary btn-sm" onClick={()=>{
+              if (!ikUrl) return
+              if (!isOwnedImageKitUrl(ikUrl)) {
+                setUrlError('Use an image URL from this site’s ImageKit account, or choose it from the media library.')
+                return
+              }
+              setUrlError('')
+              setSelected(ikUrl)
+            }} type="button">Use URL</button>
           </div>
         </div>
+        {urlError && <p role="alert" style={{ padding:'0 20px 10px', color:'#dc2626', fontSize:12 }}>{urlError}</p>}
 
         {/* Grid */}
         <div style={{ flex:1, overflowY:'auto', padding:16 }}>

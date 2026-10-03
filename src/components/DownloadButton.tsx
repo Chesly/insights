@@ -14,7 +14,6 @@ export default function DownloadButton({
   name,
   price,
   thumbnailUrl,
-  fileUrl,
   label,
   tier = "free",
   storeUrl,
@@ -25,7 +24,6 @@ export default function DownloadButton({
   name?: string;
   price?: number;
   thumbnailUrl?: string;
-  fileUrl: string;
   label: string;
   tier?: Tier;
   /** Manual external checkout link — set this on a download to bypass
@@ -109,7 +107,10 @@ export default function DownloadButton({
         body: JSON.stringify({ downloadId: id, name: `${firstName} ${lastName}`.trim(), email }),
       });
       const claimJson = await claimRes.json();
-      const target = claimRes.ok ? claimJson.downloadUrl : fileUrl; // graceful fallback, never block a paid-for lead
+      if (!claimRes.ok || typeof claimJson.downloadUrl !== "string" || !claimJson.downloadUrl.startsWith("/api/download/")) {
+        throw new Error("Could not prepare the download. Please contact us for help.");
+      }
+      const target = claimJson.downloadUrl;
 
       if (newTab) newTab.location.href = target;
       else window.open(target, "_blank", "noopener,noreferrer"); // popup fully blocked — best effort

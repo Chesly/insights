@@ -5,12 +5,15 @@ import Toggle from '@/components/ui/Toggle'
 import TagInput from '@/components/cms/TagInput'
 import RelatedItemPicker from '@/components/cms/RelatedItemPicker'
 import FileUploadButton from '@/components/cms/FileUploadButton'
+import ImagePicker from '@/components/cms/ImagePicker'
+import DownloadFilePicker, { type PickedDownloadFile } from '@/components/cms/DownloadFilePicker'
 import { Plus, Edit2, Trash2, Save, X, AlertCircle, Download as DownloadIcon, ExternalLink, GripVertical } from 'lucide-react'
 import type { Download, Category } from '@/types'
 import type { BundleFile } from '@/lib/downloads'
 import { slugify, type FaqItem } from '@/lib/types'
 import { toDatetimeLocalInput, fromDatetimeLocalInput } from '@/lib/utils'
 import { adminFetch } from '@/lib/adminFetch'
+import { isOwnedImageKitUrl, downloadAssetUrls } from '@/lib/imagekit'
 
 interface FormState {
   id?: string
@@ -92,6 +95,8 @@ export default function DownloadsPage() {
   const [showForm, setShowForm] = useState(false)
   const [deleteId, setDeleteId] = useState<string|null>(null)
   const [draggedGalleryIdx, setDraggedGalleryIdx] = useState<number|null>(null)
+  const [imagePickerTarget, setImagePickerTarget] = useState<'thumbnail'|'gallery'|null>(null)
+  const [filePickerTarget, setFilePickerTarget] = useState<'single'|number|null>(null)
   // Tracks whether the item being edited already had a schedule set when
   // loaded, so save() only sends scheduled_at:null when actually clearing
   // one — not on every edit to a product that was never scheduled. Without
@@ -189,6 +194,10 @@ export default function DownloadsPage() {
 
   const save = async () => {
     if (!form.name.trim()) { setError('Name is required'); return }
+    if (downloadAssetUrls(form as unknown as Record<string, unknown>).some(url => !isOwnedImageKitUrl(url))) {
+      setError('Use images and download files from this site’s ImageKit account. Choose an item from the media library or upload it here.')
+      return
+    }
     const hasBundle = form.bundle_files.length > 0
     if (!hasBundle && !form.file_url.trim()) { setError('Add a File URL, or add Bundle Files below, for the customer to actually download.'); return }
     if (hasBundle && form.bundle_files.some(f => !f.name.trim() || !f.url.trim())) {
@@ -254,6 +263,29 @@ export default function DownloadsPage() {
   return (
     <>
       <Topbar title="Downloads"/>
+      <ImagePicker
+        open={imagePickerTarget !== null}
+        onClose={()=>setImagePickerTarget(null)}
+        currentUrl={imagePickerTarget === 'thumbnail' ? form.thumbnail_url : undefined}
+        onSelect={url=>setForm(f=>imagePickerTarget === 'thumbnail'
+          ? { ...f, thumbnail_url:url }
+          : f.gallery_images.includes(url) ? f : { ...f, gallery_images:[...f.gallery_images,url] })}
+      />
+      <DownloadFilePicker
+        open={filePickerTarget !== null}
+        onClose={()=>setFilePickerTarget(null)}
+        onSelect={(asset: PickedDownloadFile)=>{
+          const target = filePickerTarget
+          const ext = (asset.original_name.split('.').pop() || '').toLowerCase()
+          const fileType: FormState['file_type'] = ext === 'docx' ? 'doc' : ['pdf','zip','doc'].includes(ext) ? ext : 'other'
+          setForm(f=>target === 'single'
+            ? { ...f, file_url:asset.url, file_type:fileType }
+            : typeof target === 'number'
+              ? { ...f, bundle_files:f.bundle_files.map((item,index)=>index===target ? { ...item, url:asset.url } : item) }
+              : f)
+          setFilePickerTarget(null)
+        }}
+      />
       <div style={{ padding:24, maxWidth:1100 }}>
 
         {/* Stats */}
@@ -337,8 +369,9 @@ export default function DownloadsPage() {
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   File URL <span style={{ fontWeight:400, color:'#94a3b8' }}>(single-file products only — leave blank if using Bundle Files below)</span>
                 </label>
-                <div style={{ display:'flex', gap:8 }}>
-                  <input className="cms-input" value={form.file_url} onChange={set('file_url')} placeholder="https://ik.imagekit.io/mkvu8hdr5/downloads/file.pdf" style={{ fontFamily:'monospace', fontSize:12, flex:1 }} disabled={form.bundle_files.length > 0}/>
+                <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+                  <input className="cms-input" value={form.file_url} onChange={set('file_url')} placeholder="https://ik.imagekit.io/mkvu8hdr5/downloads/file.pdf" style={{ fontFamily:'monospace', fontSize:12, flex:'1 1 280px' }} disabled={form.bundle_files.length > 0}/>
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={()=>setFilePickerTarget('single')} disabled={form.bundle_files.length > 0}>Choose Existing</button>
                   <FileUploadButton
                     accept=".pdf,.zip,.doc,.docx"
                     folder="/downloads"
@@ -373,16 +406,14 @@ export default function DownloadsPage() {
                         onChange={e => setForm(f => ({ ...f, bundle_files: f.bundle_files.map((x,idx) => idx===i ? {...x, name: e.target.value} : x) }))}
                         style={{ flex:1 }}
                       />
-                      {bf.url ? (
-                        <span style={{ fontSize:12, color:'#16a34a', fontWeight:600, whiteSpace:'nowrap' }}>✓ Uploaded</span>
-                      ) : (
-                        <FileUploadButton
-                          accept=".pdf,.zip,.doc,.docx,.xlsx,.xls,.mp3,.wav,.m4a"
-                          folder="/downloads"
-                          label="Upload"
-                          onUploaded={(row) => setForm(f => ({ ...f, bundle_files: f.bundle_files.map((x,idx) => idx===i ? {...x, url: row.url} : x) }))}
-                        />
-                      )}
+                      {bf.url && <span style={{ fontSize:12, color:'#16a34a', fontWeight:600, whiteSpace:'nowrap' }}>✓ Selected</span>}
+                      <button type="button" className="btn btn-secondary btn-sm" onClick={()=>setFilePickerTarget(i)}>Choose Existing</button>
+                      {!bf.url && <FileUploadButton
+                        accept=".pdf,.zip,.doc,.docx,.xlsx,.xls,.mp3,.wav,.m4a"
+                        folder="/downloads"
+                        label="Upload"
+                        onUploaded={(row) => setForm(f => ({ ...f, bundle_files: f.bundle_files.map((x,idx) => idx===i ? {...x, url: row.url} : x) }))}
+                      />}
                       <button type="button" onClick={() => setForm(f => ({ ...f, bundle_files: f.bundle_files.filter((_,idx) => idx!==i) }))}
                         className="btn btn-ghost btn-sm" style={{ padding:5, color:'#ef4444', flexShrink:0 }}>
                         <X size={13}/>
@@ -397,14 +428,9 @@ export default function DownloadsPage() {
               </div>
               <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Thumbnail URL <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional)</span></label>
-                <div style={{ display:'flex', gap:8 }}>
-                  <input className="cms-input" value={form.thumbnail_url} onChange={set('thumbnail_url')} placeholder="https://ik.imagekit.io/mkvu8hdr5/…" style={{ fontFamily:'monospace', fontSize:12, flex:1 }}/>
-                  <FileUploadButton
-                    accept="image/*"
-                    folder="/downloads"
-                    label="Upload"
-                    onUploaded={(row) => setForm(f => ({ ...f, thumbnail_url: row.url }))}
-                  />
+                <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+                  <input className="cms-input" value={form.thumbnail_url} onChange={set('thumbnail_url')} placeholder="Select an image from the library or paste its ImageKit URL" style={{ fontFamily:'monospace', fontSize:12, flex:'1 1 280px' }}/>
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={()=>setImagePickerTarget('thumbnail')}>Choose / Upload Image</button>
                 </div>
               </div>
               <div style={{ gridColumn:'1/-1' }}>
@@ -433,12 +459,7 @@ export default function DownloadsPage() {
                     </div>
                   ))}
                 </div>
-                <FileUploadButton
-                  accept="image/*"
-                  folder="/downloads"
-                  label="Add Photo"
-                  onUploaded={(row) => setForm(f => ({ ...f, gallery_images: [...f.gallery_images, row.url] }))}
-                />
+                <button type="button" className="btn btn-secondary btn-sm" onClick={()=>setImagePickerTarget('gallery')}>Choose / Upload Photo</button>
               </div>
               <div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Category</label>

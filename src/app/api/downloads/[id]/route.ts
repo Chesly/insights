@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { getSessionProfile, isAllowedElevatedAccess } from '@/lib/auth/session'
+import { isOwnedImageKitUrl, downloadAssetUrls } from '@/lib/imagekit'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -13,6 +14,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
   const body = await req.json()
+  if (downloadAssetUrls(body).some(url => !isOwnedImageKitUrl(url))) {
+    return NextResponse.json({ error: 'Use files and images from this site’s ImageKit account.' }, { status: 400 })
+  }
   const { data, error } = await supabase.from('downloads').update(body).eq('id', id).select().single()
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
   revalidateTag('downloads', 'max')

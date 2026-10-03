@@ -1,9 +1,8 @@
+import { randomBytes } from "node:crypto";
 import { createServiceClient } from "./supabase/service";
 
 function randomToken(): string {
-  // URL-safe, short enough to be a clean link, long enough not to be
-  // guessable by brute force within its lifetime.
-  return Array.from({ length: 16 }, () => Math.floor(Math.random() * 36).toString(36)).join("");
+  return randomBytes(32).toString("base64url");
 }
 
 export async function createDownloadToken({

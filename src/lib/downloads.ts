@@ -9,7 +9,7 @@ export interface DownloadItem {
   subtitle: string;
   description: string;
   thumbnailUrl: string;
-  fileUrl: string;
+  hasDeliverable: boolean;
   fileType: "pdf" | "zip" | "doc" | "other";
   category?: string;
   tier: "free" | "premium" | "paid";
@@ -74,7 +74,8 @@ function rowToDownload(row: any): DownloadItem {
     subtitle: row.subtitle || "",
     description: row.description || "",
     thumbnailUrl: row.thumbnail_url || "",
-    fileUrl: row.file_url,
+    // Keep private deliverable URLs out of public page props and RSC payloads.
+    hasDeliverable: Boolean(row.file_url || (row.bundle_files || []).length),
     fileType: row.file_type || "other",
     category: row.category?.name,
     tier: row.tier === "premium" || row.tier === "paid" ? row.tier : "free",
@@ -91,7 +92,11 @@ function rowToDownload(row: any): DownloadItem {
     howItHelps: row.how_it_helps || [],
     whyYouNeedIt: row.why_you_need_it || [],
     tags: row.tags || [],
-    bundleFiles: row.bundle_files || [],
+    bundleFiles: (row.bundle_files || []).map((file: BundleFile) => ({
+      name: file.name,
+      fileType: file.fileType,
+      url: "",
+    })),
     faq: row.faq || [],
     relatedDownloadIds: row.related_download_ids || [],
     relatedPostIds: row.related_post_ids || [],

@@ -141,11 +141,10 @@ export default async function DownloadDetailPage({
             name={item.name}
             price={p.price}
             thumbnailUrl={item.thumbnailUrl}
-            fileUrl={item.fileUrl}
             label={item.tier === "paid" ? "Buy Now" : "Download"}
             tier={item.tier}
             storeUrl={item.storeUrl}
-            hasDeliverable={Boolean(item.fileUrl || item.bundleFiles.length > 0)}
+            hasDeliverable={item.hasDeliverable}
           />
         </aside>
       </div>

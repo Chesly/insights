@@ -2,9 +2,16 @@ import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { getSessionProfile, isAllowedElevatedAccess } from '@/lib/auth/session'
+import { isOwnedImageKitUrl, downloadAssetUrls } from '@/lib/imagekit'
 
 export async function GET() {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const session = await getSessionProfile()
+  if (!session || !isAllowedElevatedAccess(session)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
   const { data, error } = await supabase
     .from('downloads')
     .select('*, category:categories(id,name,color,icon)')
@@ -22,6 +29,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
   const body = await req.json()
+  if (downloadAssetUrls(body).some(url => !isOwnedImageKitUrl(url))) {
+    return NextResponse.json({ error: 'Use files and images from this site’s ImageKit account.' }, { status: 400 })
+  }
   const { data, error } = await supabase.from('downloads').insert(body).select().single()
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
   revalidateTag('downloads', 'max')
