@@ -58,6 +58,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const categoryIds: string[] = body.category_ids || []
   const { tags: _tags, category_ids: _categoryIds, ...postData } = body
 
+  const { data: previousPost } = await supabase.from('posts').select('slug, section').eq('id', id).single()
+
   // Auto set published_at
   if (postData.status === 'published' && !postData.published_at) {
     postData.published_at = new Date().toISOString()
@@ -96,6 +98,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     await supabase.from('post_categories').upsert({ post_id: id, category_id: catId })
   }
 
+  revalidatePost(previousPost)
   revalidatePost(post)
 
   return NextResponse.json({ data: post })
