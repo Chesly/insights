@@ -3,7 +3,7 @@ import { siteConfig } from "@/lib/siteConfig";
 import { buildRssXml } from "@/lib/rss";
 
 export async function GET() {
-  const posts = await getAllPosts(false, ["insights", "coffee"]);
+  const posts = await getAllPosts(false, ["insights", "coffee", "how-to"]);
 
   const xml = buildRssXml(posts, {
     title: siteConfig.name,
