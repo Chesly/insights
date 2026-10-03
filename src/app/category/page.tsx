@@ -7,7 +7,7 @@ import PageHero from "@/components/PageHero";
 
 export const metadata: Metadata = {
   title: "Categories",
-  description: `Browse ${siteConfig.shortName} articles by category: AI, technology, SEO, business, and more.`
+  description: `Browse ${siteConfig.shortName} articles by topic, including business, money, technology and more.`
 };
 
 export default async function CategoryIndexPage() {
@@ -16,7 +16,7 @@ export default async function CategoryIndexPage() {
     <div>
       <PageHero
         title={siteConfig.pages.category.title}
-        subtitle="Browse every topic we cover, from AI to South African business."
+        subtitle="Browse the topics we cover, from business and money to technology and everyday life."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Categories" }]}
       />
       <div className="container-page py-12">

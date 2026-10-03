@@ -6,12 +6,12 @@ import BlogListing from "@/components/BlogListing";
 import ProductsTeaser from "@/components/ProductsTeaser";
 
 export const metadata: Metadata = {
-  title: "Articles — AI, Websites, Design & Growth",
-  description: `Practical insights on AI, websites, SEO, GEO, and South African business growth from ${siteConfig.shortName}.`,
+  title: "Articles, Guides & Practical Ideas",
+  description: `Practical articles and guides on business, money, technology and everyday decisions in South Africa from ${siteConfig.shortName}.`,
   alternates: { canonical: `${siteConfig.url}/insights` },
   openGraph: {
     title: `Articles | ${siteConfig.shortName}`,
-    description: `Practical insights on AI, websites, SEO, and South African business growth.`,
+    description: `Practical articles and guides on business, money, technology and everyday decisions in South Africa.`,
     url: `${siteConfig.url}/insights`,
     type: "website",
   },

@@ -5,9 +5,8 @@ import { getAllPosts } from "@/lib/posts";
 
 export const revalidate = 3600;
 
-// CMS-editable (Settings → SEO → llms.txt). Falls back to an auto-generated
-// summary of the site plus its most recent articles — useful context for
-// AI systems reading the site, per the emerging llms.txt convention.
+// CMS-editable (Settings → SEO → llms.txt). Falls back to a plain-text
+// site summary and links to recent articles for readers and automated tools.
 export async function GET() {
   const custom = await getSiteSetting("llms_txt_content");
   if (custom?.trim()) {

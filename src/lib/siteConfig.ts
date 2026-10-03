@@ -44,10 +44,10 @@ export const siteConfig = {
   name: "Chesly.Tech Insights",
   shortName: "Chesly.Tech",
   heroKicker: "Chesly.Tech Insights",
-  tagline: "Business, AI & Practical Tools",
-  topCategoryLine: "Business • AI • Money • Technology • Practical Tools",
+  tagline: "Practical Guides & Business Tools",
+  topCategoryLine: "Business • Money • Tenders • Technology • Practical Tools",
   description:
-    "Practical South African business insights, calculators and tools covering money, funding, tenders, AI, technology and everyday decisions.",
+    "Clear guides, calculators and downloadable tools for South African businesses and people, covering money, funding, tenders, technology and everyday decisions.",
   companyName: "Chesly.Tech",
   copyright: `© ${new Date().getFullYear()} Chesly.Tech. All Rights Reserved.`,
   url: "https://insights.chesly.tech",
@@ -123,7 +123,7 @@ export const siteConfig = {
   // ── Footer ───────────────────────────────────────────────────────────────
   footer: {
     about:
-      "Chesly.Tech Insights is the practical knowledge and business-tools platform of Chesly.Tech. We publish South Africa-first guides, calculators and downloadable tools covering business, money, funding, tenders, AI, technology and everyday decisions.",
+      "Chesly.Tech Insights is the practical knowledge and business-tools platform of Chesly.Tech. We publish South African guides, calculators and downloadable tools covering business, money, funding, tenders, technology and everyday decisions.",
     ctaButton: { label: "Visit Chesly.Tech", href: "https://chesly.tech/" },
     firstColumnWidthPx: 380,
     services: [
@@ -158,7 +158,7 @@ export const siteConfig = {
   // ── Newsletter ───────────────────────────────────────────────────────────
   newsletter: {
     title: "Stay Ahead of the Curve",
-    description: "Practical South African business, money, AI and technology insights — straight to your inbox.",
+    description: "Useful South African business, money and technology guides, ideas and tools — straight to your inbox.",
     fields: {
       name: { label: "Full Name", placeholder: "Jane Dlamini" },
       email: { label: "Email Address", placeholder: "you@email.com" },
@@ -171,17 +171,17 @@ export const siteConfig = {
 
   // ── SEO Defaults ─────────────────────────────────────────────────────────
   seo: {
-    defaultTitle: "Chesly.Tech Insights | Business, AI & Practical Tools from South Africa",
+    defaultTitle: "Chesly.Tech Insights | South African Business Guides & Tools",
     titleTemplate: "%s | Chesly.Tech Insights",
     defaultDescription:
-      "Practical South African business insights, calculators and tools covering money, funding, tenders, AI, technology and everyday decisions — from Chesly.Tech.",
+      "Clear guides, calculators and downloadable tools for South African businesses and people. Explore money, funding, tenders, technology and everyday decisions.",
     defaultKeywords: [
-      "AI South Africa",
-      "technology news South Africa",
-      "SEO South Africa",
-      "GEO generative engine optimization",
-      "startup news",
-      "digital marketing insights"
+      "South African business guides",
+      "small business tools South Africa",
+      "South African tender guides",
+      "business calculators South Africa",
+      "small business funding South Africa",
+      "South African entrepreneurship"
     ],
     twitterHandle: "@CheslyTech",
     defaultOgImage: "/opengraph-image"
@@ -225,7 +225,7 @@ export const siteConfig = {
     spazaSupport: {
       title: "Spaza Support",
       intro:
-        "AI, business and technology guidance built specifically for South African Spaza Shop owners — practical tools to run a smarter, more profitable shop."
+        "Practical business and technology guidance for South African spaza shop owners, with useful tools for managing money, stock and day-to-day operations."
     },
     category: {
       title: "Categories"
@@ -277,15 +277,13 @@ export const siteConfig = {
     "Finance"
   ],
   /** Curated subset shown as the slim category row on the homepage hero */
-  topCategories: ["Business", "Finance", "Artificial Intelligence", "South Africa", "Technology"],
+  topCategories: ["Business", "Finance", "South Africa", "Technology", "Startups"],
   featuredTags: [
-    "AI",
-    "SEO",
-    "GEO",
     "South Africa",
-    "Startups",
-    "Web Design",
-    "Digital Marketing"
+    "Business",
+    "Finance",
+    "Technology",
+    "Startups"
   ]
 };
 

@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getAllSiteSettings();
   return {
     title: settings.about_hero_title || siteConfig.pages.about.title,
-    description: `About ${siteConfig.name} — a South African business built on AI, technology and SEO insight, from Chesly.Tech Creative Studio.`
+    description: `Practical guides, calculators and downloadable tools for South African businesses and people, published by Chesly.Tech.`
   };
 }
 
@@ -54,7 +54,7 @@ export default async function AboutPage() {
             {s.about_background_heading || "Background"}
           </h2>
           <p className="mt-4 leading-relaxed text-navy/75 dark:text-white/75">
-            {s.about_background_text1 || `${siteConfig.name} grew out of Chesly.Tech Creative Studio's day-to-day work building AI-assisted websites, brands and digital tools for South African businesses. Every week we were fielding the same questions from clients and founders about AI, SEO and modern web technology — so we started writing the answers down, in plain language, for anyone trying to make sense of it.`}
+            {s.about_background_text1 || `${siteConfig.name} grew out of Chesly.Tech's day-to-day work helping South African businesses with websites, brands and digital tools. We kept hearing practical questions about running a business, managing money, finding opportunities and using technology, so we began writing clear answers and building useful tools for anyone facing those decisions.`}
           </p>
           <p className="mt-4 leading-relaxed text-navy/75 dark:text-white/75">
             {s.about_background_text2 || "What began as internal notes became a publication in its own right — still rooted in real client work, not theory."}
@@ -71,7 +71,7 @@ export default async function AboutPage() {
               {s.about_goal_heading || "Practical clarity, not hype"}
             </h2>
             <p className="mt-4 leading-relaxed text-navy/75 dark:text-white/75">
-              {s.about_goal_text || "AI and technology coverage is often written to impress, not to help. Our goal is the opposite: give South African founders, marketers and professionals insight they can actually use — grounded, tested, and written from experience building real websites and tools, not from press releases."}
+              {s.about_goal_text || "Our goal is to make useful information easier to act on. We create clear guides, calculators and downloadable tools that help South African businesses and people understand money, tenders, technology and everyday decisions."}
             </p>
           </div>
           <div className="order-1 lg:order-2">
@@ -98,14 +98,14 @@ export default async function AboutPage() {
             <span className="text-3xl" aria-hidden="true">🎯</span>
             <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">Our Mission</h3>
             <p className="mt-2 leading-relaxed text-navy/70 dark:text-white/70">
-              {s.about_mission_text || "To give South African founders, marketers and technologists practical, well-researched insight into how AI and modern web technology are reshaping business — written from a South Africa-first perspective, for a global audience."}
+              {s.about_mission_text || "To help South African business owners and people make informed decisions through clear guides, useful calculators and ready-to-use tools."}
             </p>
           </div>
           <div className="border border-navy/10 p-8 dark:border-white/10">
             <span className="text-3xl" aria-hidden="true">🌟</span>
             <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">Our Vision</h3>
             <p className="mt-2 leading-relaxed text-navy/70 dark:text-white/70">
-              {s.about_vision_text || "To be the clearest, most trusted source of AI, technology and SEO insight for South African business — the place people turn to before they turn to hype."}
+              {s.about_vision_text || "To be a trusted and useful source of practical knowledge for South African businesses and people making everyday decisions."}
             </p>
           </div>
           <div className="border border-navy/10 p-8 dark:border-white/10">
