@@ -315,7 +315,8 @@ export default function DownloadsPage() {
 
         {/* Form */}
         {showForm && (
-          <div className="cms-card" style={{ padding:24, marginBottom:24 }}>
+          <div style={{ marginBottom:24 }}>
+
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:18 }}>
               <h3 style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontWeight:700, fontSize:16, color:'#1e293b' }}>
                 {form.id ? 'Edit Download' : 'New Download'}
@@ -329,15 +330,17 @@ export default function DownloadsPage() {
               </div>
             )}
 
-            <div className="cms-form-grid-collapse" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
-              <div>
+            
+<div className="download-editor-grid" style={{ display:'grid', gridTemplateColumns:'minmax(0,1fr) 320px', gap:16, alignItems:'start' }}>
+<div className="cms-card" style={{ padding:24, minWidth:0, display:'flex', flexDirection:'column', gap:16 }}>
+<div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Name * <span style={{ fontWeight:400, color:'#94a3b8' }}>(used as the page title if SEO Title is left blank)</span>
                 </label>
                 <input className="cms-input" value={form.name} onChange={set('name')} placeholder="50 AI Prompts for SA Entrepreneurs"/>
                 <CharHint value={form.name} min={30} max={60}/>
-              </div>
-              <div>
+              </div
+<div>
                 <label style={{ display:'flex', alignItems:'center', justifyContent:'space-between', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   <span>Slug (its page URL: /tools/…)</span>
                   <button type="button" onClick={()=>setForm(f=>({...f, slug: slugify(f.name)}))}
@@ -346,165 +349,50 @@ export default function DownloadsPage() {
                   </button>
                 </label>
                 <input className="cms-input" value={form.slug} onChange={set('slug')} placeholder="50-ai-prompts-for-sa-entrepreneurs"/>
-              </div>
-              <div>
+              </div
+<div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Subtitle</label>
                 <input className="cms-input" value={form.subtitle} onChange={set('subtitle')} placeholder="A short tagline under the title"/>
                 <CharHint value={form.subtitle} min={40} max={100}/>
-              </div>
-              <div>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>File Type</label>
-                <select className="cms-input cms-select" value={form.file_type} onChange={set('file_type')}>
-                  {['pdf','zip','doc','other'].map(t=><option key={t} value={t}>{FILE_TYPE_ICONS[t]} {t.toUpperCase()}</option>)}
-                </select>
-              </div>
-              <div style={{ gridColumn:'1/-1' }}>
+              </div
+<div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Description <span style={{ fontWeight:400, color:'#94a3b8' }}>(shown at the top of the product page, right under the name — fill in Meta Description separately below for search snippets, it's longer than Google likes)</span>
                 </label>
                 <textarea className="cms-input cms-textarea" value={form.description} onChange={set('description')} placeholder="What this product is, who it's for, and what it does for them…" rows={4}/>
                 <CharHint value={form.description} min={300} max={550}/>
-              </div>
-              <div>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
-                  File URL <span style={{ fontWeight:400, color:'#94a3b8' }}>(single-file products only — leave blank if using Bundle Files below)</span>
-                </label>
-                <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
-                  <input className="cms-input" value={form.file_url} onChange={set('file_url')} placeholder="https://ik.imagekit.io/mkvu8hdr5/downloads/file.pdf" style={{ fontFamily:'monospace', fontSize:12, flex:'1 1 280px' }} disabled={form.bundle_files.length > 0}/>
-                  <button type="button" className="btn btn-secondary btn-sm" onClick={()=>setFilePickerTarget('single')} disabled={form.bundle_files.length > 0}>Choose Existing</button>
-                  <FileUploadButton
-                    accept=".pdf,.zip,.doc,.docx"
-                    folder="/downloads"
-                    label="Upload"
-                    onUploaded={(row) => {
-                      const ext = (row.original_name.split('.').pop() || '').toLowerCase()
-                      const fileType: FormState['file_type'] = ext === 'docx' ? 'doc' : ['pdf', 'zip', 'doc'].includes(ext) ? ext : 'other'
-                      setForm(f => ({ ...f, file_url: row.url, file_type: fileType }))
-                    }}
-                  />
-                </div>
-              </div>
-              <div style={{ gridColumn:'1/-1' }}>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
-                  Bundle Files <span style={{ fontWeight:400, color:'#94a3b8' }}>(most products are this — e.g. Spreadsheet + How-to-Use PDF + Audio + Word Doc, each downloaded separately)</span>
-                </label>
-                <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-                  {form.bundle_files.map((bf, i) => (
-                    <div key={i} style={{ display:'flex', gap:8, alignItems:'center', background:'#f8fafc', padding:8, borderRadius:8 }}>
-                      <select
-                        value={bf.fileType}
-                        onChange={e => setForm(f => ({ ...f, bundle_files: f.bundle_files.map((x,idx) => idx===i ? {...x, fileType: e.target.value as BundleFile['fileType']} : x) }))}
-                        className="cms-input cms-select"
-                        style={{ width:150, flexShrink:0 }}
-                      >
-                        {BUNDLE_FILE_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-                      </select>
-                      <input
-                        className="cms-input"
-                        placeholder="Label, e.g. How-to-Use Guide"
-                        value={bf.name}
-                        onChange={e => setForm(f => ({ ...f, bundle_files: f.bundle_files.map((x,idx) => idx===i ? {...x, name: e.target.value} : x) }))}
-                        style={{ flex:1 }}
-                      />
-                      {bf.url && <span style={{ fontSize:12, color:'#16a34a', fontWeight:600, whiteSpace:'nowrap' }}>✓ Selected</span>}
-                      <button type="button" className="btn btn-secondary btn-sm" onClick={()=>setFilePickerTarget(i)}>Choose Existing</button>
-                      {!bf.url && <FileUploadButton
-                        accept=".pdf,.zip,.doc,.docx,.xlsx,.xls,.mp3,.wav,.m4a"
-                        folder="/downloads"
-                        label="Upload"
-                        onUploaded={(row) => setForm(f => ({ ...f, bundle_files: f.bundle_files.map((x,idx) => idx===i ? {...x, url: row.url} : x) }))}
-                      />}
-                      <button type="button" onClick={() => setForm(f => ({ ...f, bundle_files: f.bundle_files.filter((_,idx) => idx!==i) }))}
-                        className="btn btn-ghost btn-sm" style={{ padding:5, color:'#ef4444', flexShrink:0 }}>
-                        <X size={13}/>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <button type="button" onClick={() => setForm(f => ({ ...f, bundle_files: [...f.bundle_files, { name:'', url:'', fileType:'other' }] }))}
-                  className="btn btn-secondary btn-sm" style={{ marginTop:8 }}>
-                  <Plus size={13}/>Add File to Bundle
-                </button>
-              </div>
-              <div>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Thumbnail URL <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional)</span></label>
-                <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
-                  <input className="cms-input" value={form.thumbnail_url} onChange={set('thumbnail_url')} placeholder="Select an image from the library or paste its ImageKit URL" style={{ fontFamily:'monospace', fontSize:12, flex:'1 1 280px' }}/>
-                  <button type="button" className="btn btn-secondary btn-sm" onClick={()=>setImagePickerTarget('thumbnail')}>Choose / Upload Image</button>
-                </div>
-              </div>
-              <div style={{ gridColumn:'1/-1' }}>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
-                  Gallery Photos <span style={{ fontWeight:400, color:'#94a3b8' }}>(extra images shown on the single product page, beyond the thumbnail above — drag to reorder)</span>
-                </label>
-                <div style={{ display:'flex', flexWrap:'wrap', gap:10, marginBottom:8 }}>
-                  {form.gallery_images.map((url, i) => (
-                    <div key={url+i}
-                      draggable
-                      onDragStart={()=>setDraggedGalleryIdx(i)}
-                      onDragEnd={()=>setDraggedGalleryIdx(null)}
-                      onDragOver={e=>e.preventDefault()}
-                      onDrop={e=>{ e.preventDefault(); if(draggedGalleryIdx!=null) moveGalleryImage(draggedGalleryIdx, i); setDraggedGalleryIdx(null) }}
-                      style={{ position:'relative', width:64, height:64, cursor:'grab', opacity: draggedGalleryIdx===i ? 0.4 : 1 }}>
-                      <img src={url+'?tr=w-64,h-64,fo-auto'} alt="" draggable={false}
-                        style={{ width:64, height:64, objectFit:'cover', borderRadius:8, border:'1px solid #e2e8f0', pointerEvents:'none' }}/>
-                      <div style={{ position:'absolute', top:2, left:2, width:16, height:16, borderRadius:4, background:'rgba(0,0,0,0.55)', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                        <GripVertical size={11}/>
-                      </div>
-                      <span style={{ position:'absolute', bottom:2, left:2, fontSize:10, fontWeight:700, color:'#fff', background:'rgba(0,0,0,0.55)', borderRadius:4, padding:'0 4px' }}>{i+1}</span>
-                      <button type="button" onClick={()=>setForm(f=>({...f, gallery_images: f.gallery_images.filter((_,idx)=>idx!==i)}))}
-                        style={{ position:'absolute', top:-6, right:-6, width:20, height:20, borderRadius:'50%', background:'#ef4444', color:'#fff', border:'2px solid #fff', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, lineHeight:1 }}>
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <button type="button" className="btn btn-secondary btn-sm" onClick={()=>setImagePickerTarget('gallery')}>Choose / Upload Photo</button>
-              </div>
-              <div>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Category</label>
-                <select className="cms-input cms-select" value={form.category_id} onChange={set('category_id')}>
-                  <option value="">— None —</option>
-                  {categories.map(c=><option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
-                </select>
-              </div>
-              <div style={{ gridColumn:'1/-1' }}>
+              </div
+<div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Target Audience <span style={{ fontWeight:400, color:'#94a3b8' }}>(short phrases, ~15–40 chars each — press Enter, or paste a comma-separated list)</span>
                 </label>
                 <TagInput tags={form.target_audience} onChange={v=>setForm(f=>({...f,target_audience:v}))} placeholder="Add audience…" suggestions={AUDIENCE_OPTIONS}/>
-              </div>
-              <div style={{ gridColumn:'1/-1' }}>
+              </div
+<div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Problems It Solves <span style={{ fontWeight:400, color:'#94a3b8' }}>(one problem per item, ~25–60 chars — press Enter, or paste a comma-separated list)</span>
                 </label>
                 <TagInput tags={form.solves} onChange={v=>setForm(f=>({...f,solves:v}))} placeholder="e.g. Cuts costs, Saves time…"/>
-              </div>
-              <div style={{ gridColumn:'1/-1' }}>
+              </div
+<div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Key Features <span style={{ fontWeight:400, color:'#94a3b8' }}>(what's actually in it — distinct from the problems it solves; ~25–60 chars each)</span>
                 </label>
                 <TagInput tags={form.key_features} onChange={v=>setForm(f=>({...f,key_features:v}))} placeholder="e.g. 12 pre-built formulas, Editable in Excel…"/>
-              </div>
-              <div style={{ gridColumn:'1/-1' }}>
+              </div
+<div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   How It Helps You <span style={{ fontWeight:400, color:'#94a3b8' }}>(~25–60 chars each)</span>
                 </label>
                 <TagInput tags={form.how_it_helps} onChange={v=>setForm(f=>({...f,how_it_helps:v}))} placeholder="e.g. See your real numbers in minutes…"/>
-              </div>
-              <div style={{ gridColumn:'1/-1' }}>
+              </div
+<div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Why You Need It <span style={{ fontWeight:400, color:'#94a3b8' }}>(~25–60 chars each)</span>
                 </label>
                 <TagInput tags={form.why_you_need_it} onChange={v=>setForm(f=>({...f,why_you_need_it:v}))} placeholder="e.g. Avoid costly funding mistakes…"/>
-              </div>
-              <div style={{ gridColumn:'1/-1' }}>
-                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
-                  Tags <span style={{ fontWeight:400, color:'#94a3b8' }}>(SEO — shown only on the single product page; 1–3 words each, 5–10 tags total)</span>
-                </label>
-                <TagInput tags={form.tags} onChange={v=>setForm(f=>({...f,tags:v}))} placeholder="Add a tag…"/>
-              </div>
-              <div style={{ gridColumn:'1/-1' }}>
+              </div
+<div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Related Products <span style={{ fontWeight:400, color:'#94a3b8' }}>(shown ahead of the automatic same-category matches — use this to deliberately link a natural next purchase)</span>
                 </label>
@@ -514,8 +402,8 @@ export default function DownloadsPage() {
                   options={downloads.filter(d=>d.id!==form.id).map(d=>({ id:d.id, label:d.name }))}
                   placeholder="Search products…"
                 />
-              </div>
-              <div style={{ gridColumn:'1/-1' }}>
+              </div
+<div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Related Blog Posts <span style={{ fontWeight:400, color:'#94a3b8' }}>(build an internal-linking cluster — link this product to the articles that sell it, and link back from those articles below)</span>
                 </label>
@@ -525,8 +413,8 @@ export default function DownloadsPage() {
                   options={posts.map(p=>({ id:p.id, label:p.title }))}
                   placeholder="Search posts…"
                 />
-              </div>
-              <div style={{ gridColumn:'1/-1' }}>
+              </div
+<div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   FAQs <span style={{ fontWeight:400, color:'#94a3b8' }}>(shown as an accordion on the product page, plus FAQ rich-result eligibility in Google and AI answer engines — no fixed number, 4–8 is a good range for most products. Links work in answers: paste a URL directly, or use [link text](https://url) for custom wording — handy for pointing to the download itself.)</span>
                 </label>
@@ -574,28 +462,28 @@ export default function DownloadsPage() {
                 <button type="button" onClick={addFaq} className="btn btn-secondary btn-sm" style={{ marginTop:8 }}>
                   <Plus size={13}/>Add FAQ
                 </button>
-              </div>
-              <div>
+              </div
+<div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   SEO Title <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional — appears in Google & the browser tab)</span>
                 </label>
                 <input className="cms-input" value={form.seo_title} onChange={set('seo_title')} placeholder="Defaults to Name if left blank"/>
                 <CharHint value={form.seo_title} min={50} max={60}/>
-              </div>
-              <div>
+              </div
+<div>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Meta Description <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional — shown below the title in Google results)</span>
                 </label>
                 <input className="cms-input" value={form.meta_description} onChange={set('meta_description')} placeholder="Defaults to Description if left blank"/>
                 <CharHint value={form.meta_description} min={145} max={160}/>
-              </div>
-              <div style={{ gridColumn:'1/-1' }}>
+              </div
+<div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
                   Store / Checkout Link <span style={{ fontWeight:400, color:'#94a3b8' }}>(only used when Tier is Paid — leave blank until you have a payment link)</span>
                 </label>
                 <input className="cms-input" value={form.store_url} onChange={set('store_url')} placeholder="https://…"/>
-              </div>
-              <div style={{ gridColumn:'1/-1' }}>
+              </div
+<div style={{ gridColumn:'1/-1' }}>
                 <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Access Tier</label>
                 <div style={{ display:'flex', gap:8 }}>
                   {TIER_OPTIONS.map(opt=>(
@@ -632,30 +520,170 @@ export default function DownloadsPage() {
                 <p style={{ fontSize:11.5, color:'#94a3b8', marginTop:6 }}>
                   Free — instant download, no form. Premium — the paid version; set a price above and a Store/Checkout Link when you have one, or it shows &quot;Coming Soon&quot; until you do.
                 </p>
-              </div>
-              <div style={{ display:'flex', flexDirection:'column', gap:12, justifyContent:'center' }}>
-                <Toggle checked={form.is_published} onChange={v=>setForm(f=>({...f,is_published:v}))} label="Published (visible on site)"/>
-                <div>
-                  <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
-                    Schedule for later <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional — overrides Published above until this time)</span>
-                  </label>
-                  <div style={{ display:'flex', gap:8 }}>
-                    <input className="cms-input" type="datetime-local" value={form.scheduled_at} onChange={set('scheduled_at')} style={{ flex:1 }}/>
-                    {form.scheduled_at && (
-                      <button type="button" className="btn btn-secondary btn-sm" onClick={()=>setForm(f=>({...f,scheduled_at:''}))}>Clear</button>
-                    )}
-                  </div>
+              </div
+</div>
+<aside style={{ display:'flex', flexDirection:'column', gap:14, minWidth:0 }}>
+<section className="cms-card" style={{ padding:16 }}>
+  <h4 style={{ fontSize:13, fontWeight:700, color:'#374151', margin:'0 0 12px' }}>Product file</h4>
+  <div style={{ display:'flex', flexDirection:'column', gap:14 }}><div className="download-editor-field">
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>File Type</label>
+                <select className="cms-input cms-select" value={form.file_type} onChange={set('file_type')}>
+                  {['pdf','zip','doc','other'].map(t=><option key={t} value={t}>{FILE_TYPE_ICONS[t]} {t.toUpperCase()}</option>)}
+                </select>
+              </div
+<div className="download-editor-field">
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  File URL <span style={{ fontWeight:400, color:'#94a3b8' }}>(single-file products only)</span>
+                </label>
+                <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+                  <input className="cms-input" value={form.file_url} onChange={set('file_url')} placeholder="https://ik.imagekit.io/mkvu8hdr5/downloads/file.pdf" style={{ fontFamily:'monospace', fontSize:12, flex:'1 1 280px' }} disabled={form.bundle_files.length > 0}/>
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={()=>setFilePickerTarget('single')} disabled={form.bundle_files.length > 0}>Choose Existing</button>
+                  <FileUploadButton
+                    accept=".pdf,.zip,.doc,.docx"
+                    folder="/downloads"
+                    label="Upload"
+                    onUploaded={(row) => {
+                      const ext = (row.original_name.split('.').pop() || '').toLowerCase()
+                      const fileType: FormState['file_type'] = ext === 'docx' ? 'doc' : ['pdf', 'zip', 'doc'].includes(ext) ? ext : 'other'
+                      setForm(f => ({ ...f, file_url: row.url, file_type: fileType }))
+                    }}
+                  />
                 </div>
-              </div>
-            </div>
-
-            <div style={{ display:'flex', gap:10, marginTop:20 }}>
-              <button onClick={reset} className="btn btn-secondary" style={{ flex:1, justifyContent:'center' }}>Cancel</button>
-              <button onClick={save} disabled={saving} className="btn btn-primary" style={{ flex:2, justifyContent:'center' }}>
-                <Save size={14}/>{saving ? 'Saving…' : form.id ? 'Update' : 'Add Download'}
-              </button>
-            </div>
-          </div>
+              </div
+<div className="download-editor-field" style={{ gridColumn:'1/-1' }}>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  Bundle Files <span style={{ fontWeight:400, color:'#94a3b8' }}>(most products are this — e.g. Spreadsheet + How-to-Use PDF + Audio + Word Doc, each downloaded separately)</span>
+                </label>
+                <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                  {form.bundle_files.map((bf, i) => (
+                    <div key={i} style={{ display:'flex', flexDirection:'column', gap:8, background:'#f8fafc', padding:10, borderRadius:8, border:'1px solid #e2e8f0' }}>
+                      <select
+                        value={bf.fileType}
+                        onChange={e => setForm(f => ({ ...f, bundle_files: f.bundle_files.map((x,idx) => idx===i ? {...x, fileType: e.target.value as BundleFile['fileType']} : x) }))}
+                        className="cms-input cms-select"
+                        style={{ width:'100%' }}
+                      >
+                        {BUNDLE_FILE_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                      </select>
+                      <input
+                        className="cms-input"
+                        placeholder="Label, e.g. How-to-Use Guide"
+                        value={bf.name}
+                        onChange={e => setForm(f => ({ ...f, bundle_files: f.bundle_files.map((x,idx) => idx===i ? {...x, name: e.target.value} : x) }))}
+                        style={{ width:'100%' }}
+                      />
+                      <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:6 }}>
+                        {bf.url && <span style={{ fontSize:12, color:'#16a34a', fontWeight:600, marginRight:'auto' }}>✓ File selected</span>}
+                        <button type="button" className="btn btn-secondary btn-sm" onClick={()=>setFilePickerTarget(i)}>Choose Existing</button>
+                        {!bf.url && <FileUploadButton
+                          accept=".pdf,.zip,.doc,.docx,.xlsx,.xls,.mp3,.wav,.m4a"
+                          folder="/downloads"
+                          label="Upload"
+                          onUploaded={(row) => setForm(f => ({ ...f, bundle_files: f.bundle_files.map((x,idx) => idx===i ? {...x, url: row.url} : x) }))}
+                        />}
+                        <button type="button" onClick={() => setForm(f => ({ ...f, bundle_files: f.bundle_files.filter((_,idx) => idx!==i) }))}
+                          className="btn btn-ghost btn-sm" style={{ padding:5, color:'#ef4444', flexShrink:0 }} aria-label={`Remove ${bf.name || 'bundle file'}`}>
+                          <X size={13}/>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button type="button" onClick={() => setForm(f => ({ ...f, bundle_files: [...f.bundle_files, { name:'', url:'', fileType:'other' }] }))}
+                  className="btn btn-secondary btn-sm" style={{ marginTop:8 }}>
+                  <Plus size={13}/>Add File to Bundle
+                </button>
+              </div</div>
+</section>
+<section className="cms-card" style={{ padding:16 }}>
+  <h4 style={{ fontSize:13, fontWeight:700, color:'#374151', margin:'0 0 12px' }}>Product images</h4>
+  <div style={{ display:'flex', flexDirection:'column', gap:14 }}><div>
+  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
+    <div>
+      <div style={{ fontSize:13, fontWeight:700, color:'#374151' }}>Featured Image</div>
+      <div style={{ fontSize:11, color:'#94a3b8', marginTop:2 }}>Main image shown on the product card and page.</div>
+    </div>
+    {form.thumbnail_url && <button type="button" onClick={()=>setForm(f=>({...f,thumbnail_url:''}))} aria-label="Remove featured image" style={{ background:'none', border:0, color:'#ef4444', cursor:'pointer', fontSize:12 }}>Remove</button>}
+  </div>
+  {form.thumbnail_url ? (
+    <div>
+      <img src={form.thumbnail_url} alt="Product featured image" style={{ display:'block', width:'100%', aspectRatio:'16/9', objectFit:'cover', borderRadius:8, border:'1px solid #e2e8f0' }}/>
+      <button type="button" onClick={()=>setImagePickerTarget('thumbnail')} className="btn btn-secondary btn-sm" style={{ width:'100%', justifyContent:'center', marginTop:8 }}>Change Featured Image</button>
+    </div>
+  ) : (
+    <button type="button" onClick={()=>setImagePickerTarget('thumbnail')} style={{ width:'100%', aspectRatio:'16/9', border:'2px dashed #cbd5e1', borderRadius:8, background:'#f8fafc', cursor:'pointer', color:'#64748b', fontWeight:600 }}>Choose Featured Image</button>
+  )}
+</div>
+<div>
+  <div style={{ marginBottom:10 }}>
+    <div style={{ fontSize:13, fontWeight:700, color:'#374151' }}>Supporting Images</div>
+    <div style={{ fontSize:11, color:'#94a3b8', marginTop:2 }}>Drag images or use arrows to change their order.</div>
+  </div>
+  <div style={{ display:'grid', gridTemplateColumns:'repeat(2,minmax(0,1fr))', gap:8, marginBottom:10 }}>
+    {form.gallery_images.map((url, i) => (
+      <div key={url+i} draggable onDragStart={()=>setDraggedGalleryIdx(i)} onDragEnd={()=>setDraggedGalleryIdx(null)}
+        onDragOver={e=>e.preventDefault()} onDrop={e=>{ e.preventDefault(); if(draggedGalleryIdx!=null) moveGalleryImage(draggedGalleryIdx,i); setDraggedGalleryIdx(null) }}
+        style={{ minWidth:0, border:'1px solid #e2e8f0', borderRadius:8, padding:5, background:'#f8fafc', opacity:draggedGalleryIdx===i?0.45:1, cursor:'grab' }}>
+        <div style={{ position:'relative', marginBottom:5 }}>
+          <img src={url+'?tr=w-240,h-180,fo-auto'} alt={`Supporting product image ${i+1}`} draggable={false}
+            style={{ display:'block', width:'100%', aspectRatio:'4/3', objectFit:'cover', borderRadius:5, pointerEvents:'none' }}/>
+          <span style={{ position:'absolute', left:5, top:5, padding:'2px 5px', borderRadius:4, background:'rgba(15,23,42,.75)', color:'#fff', fontSize:10, fontWeight:700 }}>Image {i+1}</span>
+          <button type="button" onClick={()=>setForm(f=>({...f,gallery_images:f.gallery_images.filter((_,idx)=>idx!==i)}))} aria-label={`Remove image ${i+1}`}
+            style={{ position:'absolute', right:4, top:4, width:22, height:22, border:0, borderRadius:'50%', background:'#ef4444', color:'#fff', cursor:'pointer', lineHeight:1 }}>×</button>
+        </div>
+        <div style={{ display:'flex', gap:4 }}>
+          <button type="button" disabled={i===0} onClick={()=>moveGalleryImage(i,i-1)} aria-label={`Move image ${i+1} earlier`}
+            className="btn btn-secondary btn-sm" style={{ flex:1, justifyContent:'center', padding:'3px 2px', fontSize:11, opacity:i===0?0.45:1 }}>↑ Earlier</button>
+          <button type="button" disabled={i===form.gallery_images.length-1} onClick={()=>moveGalleryImage(i,i+1)} aria-label={`Move image ${i+1} later`}
+            className="btn btn-secondary btn-sm" style={{ flex:1, justifyContent:'center', padding:'3px 2px', fontSize:11, opacity:i===form.gallery_images.length-1?0.45:1 }}>↓ Later</button>
+        </div>
+      </div>
+    ))}
+  </div>
+  <button type="button" className="btn btn-secondary btn-sm" onClick={()=>setImagePickerTarget('gallery')}>Choose / Upload Photo</button>
+</div></div>
+</section>
+<section className="cms-card" style={{ padding:16 }}>
+  <h4 style={{ fontSize:13, fontWeight:700, color:'#374151', margin:'0 0 12px' }}>Product organization</h4>
+  <div style={{ display:'flex', flexDirection:'column', gap:14 }}><div className="download-editor-field">
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>Category</label>
+                <select className="cms-input cms-select" value={form.category_id} onChange={set('category_id')}>
+                  <option value="">— None —</option>
+                  {categories.map(c=><option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
+                </select>
+              </div
+<div className="download-editor-field" style={{ gridColumn:'1/-1' }}>
+                <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+                  Tags <span style={{ fontWeight:400, color:'#94a3b8' }}>(SEO — shown only on the single product page; 1–3 words each, 5–10 tags total)</span>
+                </label>
+                <TagInput tags={form.tags} onChange={v=>setForm(f=>({...f,tags:v}))} placeholder="Add a tag…"/>
+              </div</div>
+</section>
+<section className="cms-card" style={{ padding:16 }}>
+  <h4 style={{ fontSize:13, fontWeight:700, color:'#374151', margin:'0 0 12px' }}>Publishing</h4>
+  <div style={{ display:'flex', flexDirection:'column', gap:14 }}><div>
+  <Toggle checked={form.is_published} onChange={v=>setForm(f=>({...f,is_published:v}))} label="Published (visible on site)"/>
+  <div style={{ marginTop:12 }}>
+    <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#374151', marginBottom:4 }}>
+      Schedule for later <span style={{ fontWeight:400, color:'#94a3b8' }}>(optional — overrides Published above until this time)</span>
+    </label>
+    <div style={{ display:'flex', gap:8 }}>
+      <input className="cms-input" type="datetime-local" value={form.scheduled_at} onChange={set('scheduled_at')} style={{ flex:1 }}/>
+      {form.scheduled_at && <button type="button" className="btn btn-secondary btn-sm" onClick={()=>setForm(f=>({...f,scheduled_at:''}))}>Clear</button>}
+    </div>
+  </div>
+  <div style={{ display:'flex', gap:8, marginTop:14 }}>
+    <button onClick={reset} className="btn btn-secondary" style={{ flex:1, justifyContent:'center' }}>Cancel</button>
+    <button onClick={save} disabled={saving} className="btn btn-primary" style={{ flex:2, justifyContent:'center' }}>
+      <Save size={14}/>{saving ? 'Saving…' : form.id ? 'Update' : 'Add Download'}
+    </button>
+  </div>
+</div></div>
+</section>
+</aside>
+</div>
+<style>{`@media(max-width:900px){.download-editor-grid{grid-template-columns:1fr!important}}`}</style>
+</div>
         )}
 
         {/* Downloads table */}
