@@ -65,7 +65,7 @@ export default async function BlogPostPage({
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) notFound();
-  if ((post.section || "insights") === "coffee") notFound();
+  if ((post.section || "insights") !== "insights") notFound();
 
   const related = await getRelatedPosts(post);
   const relatedProducts = (post.relatedDownloadIds?.length ?? 0) > 0
@@ -398,7 +398,7 @@ export default async function BlogPostPage({
             </h2>
             <div className="mt-3 divide-y divide-gold/10 border border-gold/10">
               {related.map((r) => (
-                <Link key={r.slug} href={`/insights/${r.slug}`} className="group block p-3">
+                <Link key={r.slug} href={`/${r.section || "insights"}/${r.slug}`} className="group block p-3">
                   <div className="relative w-full overflow-hidden aspect-[16/9]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
