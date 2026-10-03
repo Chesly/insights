@@ -6,7 +6,7 @@ import { getSessionProfile, isAllowedElevatedAccess } from '@/lib/auth/session'
 
 function revalidatePost(post: { slug?: string | null; section?: string | null } | null) {
   if (!post) return
-  const section = post.section === 'coffee' ? 'coffee' : 'insights'
+  const section = post.section === 'coffee' ? 'coffee' : post.section === 'how-to' ? 'how-to' : 'insights'
   revalidateTag('posts', 'max')
   revalidatePath('/')
   revalidatePath('/how-to')
