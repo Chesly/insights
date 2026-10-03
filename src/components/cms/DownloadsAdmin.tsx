@@ -304,8 +304,8 @@ export default function DownloadsAdmin({ mode = 'list', downloadId }: Props) {
       />
       <div style={{ padding:24, maxWidth:1100 }}>
 
-        {mode === 'list' && (
         {/* Stats */}
+        {mode === 'list' && (
         <div className="cms-stat-grid" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:24 }}>
           {[
             { label:'Total Files', value:stats.total, icon:'📦' },
@@ -706,8 +706,8 @@ export default function DownloadsAdmin({ mode = 'list', downloadId }: Props) {
 </div>
         )}
 
-        {mode === 'list' && (
         {/* Downloads table */}
+        {mode === 'list' && (
         <div className="cms-card">
           <div style={{ padding:'14px 20px', borderBottom:'1px solid #f1f5f9' }}>
             <h3 style={{ fontFamily:"'Plus Jakarta Sans',sans-serif", fontWeight:700, fontSize:15, color:'#1e293b' }}>All Downloads</h3>
