@@ -70,7 +70,7 @@ function rowToPost(row: any): Post {
       id: item.id,
       name: item.name,
       slug: item.slug,
-      order: item.order,
+      order: item.order ?? undefined,
     })) : row.series_id ? [{
       id: row.series_id,
       name: row.series_name || "Series",
@@ -230,7 +230,7 @@ const fetchSeriesPosts = unstable_cache(
       .eq("status", "published");
     if (error || !data) return [];
 
-    const orderByPostId = new Map(assignments.map((assignment) => [assignment.post_id, assignment.series_order]));
+    const orderByPostId = new Map<string, number | null>(assignments.map((assignment): [string, number | null] => [assignment.post_id, assignment.series_order]));
     return data
       .map((row) => ({
         ...rowToPost(row),
