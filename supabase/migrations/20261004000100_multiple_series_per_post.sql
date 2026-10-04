@@ -10,6 +10,26 @@ create table if not exists public.series (
   created_at timestamptz not null default now()
 );
 
+alter table public.series enable row level security;
+drop policy if exists "Anyone can view series" on public.series;
+create policy "Anyone can view series"
+  on public.series for select using (true);
+drop policy if exists "Editors can manage series" on public.series;
+create policy "Editors can manage series"
+  on public.series for all
+  using (
+    exists (
+      select 1 from public.profiles
+      where id = auth.uid() and role in ('super_admin', 'admin', 'editor')
+    )
+  )
+  with check (
+    exists (
+      select 1 from public.profiles
+      where id = auth.uid() and role in ('super_admin', 'admin', 'editor')
+    )
+  );
+
 create table if not exists public.post_series (
   post_id uuid not null references public.posts(id) on delete cascade,
   series_id uuid not null references public.series(id) on delete cascade,
