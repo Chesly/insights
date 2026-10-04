@@ -293,7 +293,7 @@ export default function PostForm({ post, categories }: Props) {
                   const json = await res.json()
                   if (res.ok) {
                     setSeriesList(prev=>[...prev, json.data])
-                    setSeriesAssignments(prev=>[...prev, { seriesId:json.data.id, order:String(prev.length + 1) }])
+                    setSeriesAssignments(prev=>[...prev, { seriesId:json.data.id, order:String(prev.reduce((max, item) => Math.max(max, Number(item.order) || 0), 0) + 1) }])
                     setNewSeriesName('')
                   } else {
                     setError(json.error || 'Could not create series')
