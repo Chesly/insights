@@ -74,6 +74,8 @@ export interface PostFrontmatter {
   seriesName?: string;
   seriesSlug?: string;
   seriesOrder?: number;
+  /** Every series this post belongs to, with the part number for that series. */
+  series?: { id: string; name: string; slug: string; order?: number }[];
 }
 
 export interface Post extends PostFrontmatter {
