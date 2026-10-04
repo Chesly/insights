@@ -49,6 +49,12 @@ export async function POST(req: NextRequest) {
   // Handle tags separately
   const tagNames: string[] = body.tags || []
   const categoryIds: string[] = body.category_ids || []
+  const seriesAssignments: { series_id: string; series_order: number | null }[] = Array.isArray(body.series_assignments)
+    ? body.series_assignments.filter((item: { series_id?: string }) => item?.series_id).map((item: { series_id: string; series_order?: number | null }) => ({
+        series_id: item.series_id,
+        series_order: item.series_order == null ? null : Number(item.series_order),
+      }))
+    : body.series_id ? [{ series_id: body.series_id, series_order: body.series_order == null ? null : Number(body.series_order) }] : []
 
   const { data: post, error } = await supabase
     .from('posts')
@@ -63,6 +69,8 @@ export async function POST(req: NextRequest) {
       author_id: user.id,
       category_id: body.category_id || null,
       section: body.section || 'insights',
+      series_id: seriesAssignments[0]?.series_id || null,
+      series_order: seriesAssignments[0]?.series_order ?? null,
       status: body.status || 'draft',
       featured: body.featured || false,
       trending: body.trending || false,
@@ -80,6 +88,16 @@ export async function POST(req: NextRequest) {
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+
+  if (seriesAssignments.length > 0 && post) {
+    const { error: seriesError } = await supabase.from('post_series').insert(
+      seriesAssignments.map(assignment => ({ post_id: post.id, ...assignment }))
+    )
+    if (seriesError) {
+      await supabase.from('posts').delete().eq('id', post.id)
+      return NextResponse.json({ error: seriesError.message }, { status: 400 })
+    }
+  }
 
   // Handle tags
   if (tagNames.length > 0 && post) {
