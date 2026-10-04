@@ -11,7 +11,6 @@ import Newsletter from "@/components/Newsletter";
 import ProductsTeaser from "@/components/ProductsTeaser";
 import CalculatorsTeaser from "@/components/CalculatorsTeaser";
 import DidYouKnowCard from "@/components/DidYouKnowCard";
-import HomeHowToFeature from "@/components/HomeHowToFeature";
 import { getTodaysFact } from "@/lib/facts";
 import { getAllSiteSettings } from "@/lib/settings";
 
@@ -138,7 +137,7 @@ export default async function HomePage() {
           {todaysFact && <DidYouKnowCard fact={todaysFact} backgroundImage={settings.facts_widget_bg_image} />}
 
           <ArticleRow heading="Popular" posts={popular} />
-          <HomeHowToFeature posts={howToPosts} />
+          <ArticleRow heading="How To" posts={howToPosts} />
         </div>
       </div>
 
