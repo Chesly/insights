@@ -56,7 +56,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const body = await req.json()
   const tagNames: string[] = body.tags || []
   const categoryIds: string[] = body.category_ids || []
-  const { tags: _tags, category_ids: _categoryIds, ...postData } = body
+  const seriesAssignments: { series_id: string; series_order: number | null }[] = Array.isArray(body.series_assignments)
+    ? body.series_assignments.filter((item: { series_id?: string }) => item?.series_id).map((item: { series_id: string; series_order?: number | null }) => ({
+        series_id: item.series_id,
+        series_order: item.series_order == null ? null : Number(item.series_order),
+      }))
+    : body.series_id ? [{ series_id: body.series_id, series_order: body.series_order == null ? null : Number(body.series_order) }] : []
+  const { tags: _tags, category_ids: _categoryIds, series_assignments: _seriesAssignments, ...postData } = body
 
   const { data: previousPost } = await supabase.from('posts').select('slug, section').eq('id', id).single()
 
@@ -96,6 +102,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   await supabase.from('post_categories').delete().eq('post_id', id)
   for (const catId of categoryIds) {
     await supabase.from('post_categories').upsert({ post_id: id, category_id: catId })
+  }
+
+  // Keep the many-to-many series assignments in sync with the post.
+  await supabase.from('post_series').delete().eq('post_id', id)
+  if (seriesAssignments.length > 0) {
+    const { error: seriesError } = await supabase.from('post_series').insert(
+      seriesAssignments.map(assignment => ({ post_id: id, ...assignment }))
+    )
+    if (seriesError) return NextResponse.json({ error: seriesError.message }, { status: 400 })
   }
 
   revalidatePost(previousPost)

@@ -66,6 +66,17 @@ function rowToPost(row: any): Post {
     seriesName: row.series_name || undefined,
     seriesSlug: row.series_slug || undefined,
     seriesOrder: row.series_order ?? undefined,
+    series: Array.isArray(row.series_json) ? row.series_json.map((item: { id: string; name: string; slug: string; order: number | null }) => ({
+      id: item.id,
+      name: item.name,
+      slug: item.slug,
+      order: item.order ?? undefined,
+    })) : row.series_id ? [{
+      id: row.series_id,
+      name: row.series_name || "Series",
+      slug: row.series_slug || "",
+      order: row.series_order ?? undefined,
+    }] : [],
 
     slug: row.slug,
     content,
@@ -202,21 +213,34 @@ export async function getPostsByAuthor(authorSlug: string): Promise<Post[]> {
   return posts.filter((p) => p.authorSlug === authorSlug);
 }
 
-/** All published posts in a series, ordered by their part number (posts
-    sharing the same number — a data-entry gap — fall back to publish date
-    so the order is at least stable). */
+/** All published posts in a series, ordered by that series' own part number. */
 const fetchSeriesPosts = unstable_cache(
   async (seriesId: string): Promise<Post[]> => {
     const supabase = createPublicClient();
+    const { data: assignments, error: assignmentError } = await supabase
+      .from("post_series")
+      .select("post_id, series_order")
+      .eq("series_id", seriesId);
+    if (assignmentError || !assignments?.length) return [];
+
     const { data, error } = await supabase
       .from("posts_with_categories")
       .select("*")
-      .eq("series_id", seriesId)
-      .eq("status", "published")
-      .order("series_order", { ascending: true })
-      .order("published_at", { ascending: true });
+      .in("id", assignments.map((assignment) => assignment.post_id))
+      .eq("status", "published");
     if (error || !data) return [];
-    return data.map(rowToPost);
+
+    const orderByPostId = new Map<string, number | null>(assignments.map((assignment): [string, number | null] => [assignment.post_id, assignment.series_order]));
+    return data
+      .map((row) => ({
+        ...rowToPost(row),
+        seriesOrder: orderByPostId.get(row.id) ?? undefined,
+      }))
+      .sort((a, b) => {
+        const aOrder = a.seriesOrder ?? Number.MAX_SAFE_INTEGER;
+        const bOrder = b.seriesOrder ?? Number.MAX_SAFE_INTEGER;
+        return aOrder - bOrder || a.publishedDate.localeCompare(b.publishedDate);
+      });
   },
   ["public-series-posts"],
   { revalidate: 900, tags: ["posts"] }
