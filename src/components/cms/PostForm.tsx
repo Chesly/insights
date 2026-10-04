@@ -82,11 +82,11 @@ export default function PostForm({ post, categories }: Props) {
   const [section, setSection] = useState<'insights' | 'coffee' | 'how-to'>(post?.section || 'insights')
   const [seriesList, setSeriesList] = useState<{id:string,name:string}[]>([])
   const initialSeriesAssignments = (post as unknown as {series_assignments?:{series_id:string;series_order:number|null}[]})?.series_assignments
-  const legacySeries = post as unknown as {series_id?:string;series_order?:number}
+  const legacySeries = post as unknown as {series_id?:string;series_order?:number} | undefined
   const [seriesAssignments, setSeriesAssignments] = useState<{seriesId:string;order:string}[]>(
     initialSeriesAssignments?.length
       ? initialSeriesAssignments.map(item => ({ seriesId:item.series_id, order:item.series_order == null ? '' : String(item.series_order) }))
-      : legacySeries.series_id ? [{ seriesId:legacySeries.series_id, order:legacySeries.series_order == null ? '' : String(legacySeries.series_order) }] : []
+      : legacySeries?.series_id ? [{ seriesId:legacySeries.series_id, order:legacySeries.series_order == null ? '' : String(legacySeries.series_order) }] : []
   )
   const [newSeriesName, setNewSeriesName] = useState('')
   const [tags, setTags] = useState<string[]>(post?.tags?.map(t => t.name) || [])
@@ -271,7 +271,7 @@ export default function PostForm({ post, categories }: Props) {
                     <div key={series.id} style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 11px', border:'1px solid #e2e8f0', borderRadius:8, background:assignment ? '#8B691408' : '#fff' }}>
                       <input type="checkbox" checked={!!assignment} aria-label={`Add ${series.name} series`}
                         onChange={e=>setSeriesAssignments(prev=>e.target.checked
-                          ? [...prev, { seriesId:series.id, order:String(prev.length + 1) }]
+                          ? [...prev, { seriesId:series.id, order:String(prev.reduce((max, item) => Math.max(max, Number(item.order) || 0), 0) + 1) }]
                           : prev.filter(item=>item.seriesId!==series.id))}
                         style={{ accentColor:'#8B6914', width:16, height:16 }}/>
                       <span style={{ flex:1, fontSize:13, fontWeight:600, color:'#374151' }}>{series.name}</span>
