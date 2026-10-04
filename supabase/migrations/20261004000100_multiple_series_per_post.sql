@@ -76,6 +76,8 @@ select
   p.*,
   pc_primary.name as primary_category_name,
   pc_primary.slug as primary_category_slug,
+  s.name as series_name,
+  s.slug as series_slug,
   coalesce(
     (select jsonb_agg(jsonb_build_object('id', c.id, 'name', c.name, 'slug', c.slug, 'color', c.color))
      from public.post_categories pc
@@ -101,4 +103,5 @@ select
     '[]'::jsonb
   ) as series_json
 from public.posts p
-left join public.categories pc_primary on pc_primary.id = p.category_id;
+left join public.categories pc_primary on pc_primary.id = p.category_id
+left join public.series s on s.id = p.series_id;
