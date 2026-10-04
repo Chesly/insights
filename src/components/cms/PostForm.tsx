@@ -81,8 +81,13 @@ export default function PostForm({ post, categories }: Props) {
   )
   const [section, setSection] = useState<'insights' | 'coffee' | 'how-to'>(post?.section || 'insights')
   const [seriesList, setSeriesList] = useState<{id:string,name:string}[]>([])
-  const [seriesId, setSeriesId] = useState((post as unknown as {series_id?:string})?.series_id || '')
-  const [seriesOrder, setSeriesOrder] = useState((post as unknown as {series_order?:number})?.series_order || '')
+  const initialSeriesAssignments = (post as unknown as {series_assignments?:{series_id:string;series_order:number|null}[]})?.series_assignments
+  const legacySeries = post as unknown as {series_id?:string;series_order?:number}
+  const [seriesAssignments, setSeriesAssignments] = useState<{seriesId:string;order:string}[]>(
+    initialSeriesAssignments?.length
+      ? initialSeriesAssignments.map(item => ({ seriesId:item.series_id, order:item.series_order == null ? '' : String(item.series_order) }))
+      : legacySeries.series_id ? [{ seriesId:legacySeries.series_id, order:legacySeries.series_order == null ? '' : String(legacySeries.series_order) }] : []
+  )
   const [newSeriesName, setNewSeriesName] = useState('')
   const [tags, setTags] = useState<string[]>(post?.tags?.map(t => t.name) || [])
   const [status, setStatus] = useState<Post['status']>(post?.status || 'draft')
@@ -149,8 +154,12 @@ export default function PostForm({ post, categories }: Props) {
     category_id: categoryIds[0] || null,
     category_ids: categoryIds,
     section,
-    series_id: seriesId || null,
-    series_order: seriesOrder ? Number(seriesOrder) : null,
+    series_id: seriesAssignments[0]?.seriesId || null,
+    series_order: seriesAssignments[0]?.order ? Number(seriesAssignments[0].order) : null,
+    series_assignments: seriesAssignments.map(item => ({
+      series_id: item.seriesId,
+      series_order: item.order ? Number(item.order) : null,
+    })),
     tags,
     status: overrideStatus || status,
     featured, trending, popular,
@@ -166,7 +175,7 @@ export default function PostForm({ post, categories }: Props) {
     // the form, so saving a post before it exists in the database
     // shouldn't break every other field on the form.
     ...(relatedDownloadIds.length > 0 ? { related_download_ids: relatedDownloadIds } : {}),
-  }), [title,slug,excerpt,body,bodyJson,featuredImage,imageCaption,categoryIds,section,seriesId,seriesOrder,tags,status,featured,trending,popular,allowComments,seoTitle,metaDesc,ogImage,canonical,scheduledAt,readTime,faq,relatedDownloadIds])
+  }), [title,slug,excerpt,body,bodyJson,featuredImage,imageCaption,categoryIds,section,seriesAssignments,tags,status,featured,trending,popular,allowComments,seoTitle,metaDesc,ogImage,canonical,scheduledAt,readTime,faq,relatedDownloadIds])
 
   const save = async (overrideStatus?: Post['status']) => {
     if (!title.trim()) { setError('Title is required'); return }
@@ -254,20 +263,41 @@ export default function PostForm({ post, categories }: Props) {
             </Field>
 
             <Field>
-              <Label sub="Optional — group related posts into a numbered conversation, like a LinkedIn series">Series</Label>
-              <div style={{ display:'flex', gap:8, marginBottom:8 }}>
-                <select className="cms-input cms-select" value={seriesId} onChange={e=>setSeriesId(e.target.value)} style={{ flex:2 }}>
-                  <option value="">— No series —</option>
-                  {seriesList.map(s=>(<option key={s.id} value={s.id}>{s.name}</option>))}
-                </select>
-                <input className="cms-input" type="number" min={1} placeholder="Part #" value={seriesOrder} onChange={e=>setSeriesOrder(e.target.value)} style={{ flex:1 }}/>
+              <Label sub="Select every series this post belongs to. Set its part number separately in each series.">Series</Label>
+              <div style={{ display:'grid', gap:8, marginBottom:10 }}>
+                {seriesList.map(series => {
+                  const assignment = seriesAssignments.find(item => item.seriesId === series.id)
+                  return (
+                    <div key={series.id} style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 11px', border:'1px solid #e2e8f0', borderRadius:8, background:assignment ? '#8B691408' : '#fff' }}>
+                      <input type="checkbox" checked={!!assignment} aria-label={`Add ${series.name} series`}
+                        onChange={e=>setSeriesAssignments(prev=>e.target.checked
+                          ? [...prev, { seriesId:series.id, order:String(prev.length + 1) }]
+                          : prev.filter(item=>item.seriesId!==series.id))}
+                        style={{ accentColor:'#8B6914', width:16, height:16 }}/>
+                      <span style={{ flex:1, fontSize:13, fontWeight:600, color:'#374151' }}>{series.name}</span>
+                      {assignment && <>
+                        <label htmlFor={`series-order-${series.id}`} style={{ fontSize:12, color:'#64748b' }}>Part #</label>
+                        <input id={`series-order-${series.id}`} className="cms-input" type="number" min={1} value={assignment.order}
+                          onChange={e=>setSeriesAssignments(prev=>prev.map(item=>item.seriesId===series.id ? { ...item, order:e.target.value } : item))}
+                          style={{ width:82, padding:'6px 8px' }}/>
+                      </>}
+                    </div>
+                  )
+                })}
+                {!seriesList.length && <div style={{ fontSize:12, color:'#94a3b8' }}>No series created yet.</div>}
               </div>
               <div style={{ display:'flex', gap:8 }}>
-                <input className="cms-input" placeholder="Or create a new series…" value={newSeriesName} onChange={e=>setNewSeriesName(e.target.value)} style={{ flex:2 }}/>
+                <input className="cms-input" placeholder="Create a new series…" value={newSeriesName} onChange={e=>setNewSeriesName(e.target.value)} style={{ flex:2 }}/>
                 <button type="button" className="btn btn-secondary btn-sm" style={{ flex:1 }} disabled={!newSeriesName.trim()} onClick={async ()=>{
                   const res = await adminFetch('/api/series', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name:newSeriesName }) })
                   const json = await res.json()
-                  if (res.ok) { setSeriesList(prev=>[...prev, json.data]); setSeriesId(json.data.id); setNewSeriesName('') }
+                  if (res.ok) {
+                    setSeriesList(prev=>[...prev, json.data])
+                    setSeriesAssignments(prev=>[...prev, { seriesId:json.data.id, order:String(prev.length + 1) }])
+                    setNewSeriesName('')
+                  } else {
+                    setError(json.error || 'Could not create series')
+                  }
                 }}>+ Create</button>
               </div>
             </Field>
