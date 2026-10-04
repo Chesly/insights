@@ -7,13 +7,14 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
   const { id } = await params
   const supabase = await createClient()
 
-  const [{ data: post }, { data: categories }, { data: postCats }] = await Promise.all([
+  const [{ data: post }, { data: categories }, { data: postCats }, { data: seriesAssignments }] = await Promise.all([
     supabase.from('posts').select(`
       *, category:categories!category_id(*), author:profiles!author_id(id,full_name,avatar_url),
       tags:post_tags(tag:tags(id,name,slug))
     `).eq('id', id).single(),
     supabase.from('categories').select('*').order('name'),
     supabase.from('post_categories').select('category:categories(*)').eq('post_id', id),
+    supabase.from('post_series').select('series_id, series_order').eq('post_id', id),
   ])
 
   if (!post) notFound()
@@ -23,6 +24,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
     ...post,
     tags: post.tags?.map((t: { tag: { id: string; name: string; slug: string } }) => t.tag) || [],
     categories: postCats?.map((pc: { category: unknown }) => pc.category).filter(Boolean) || (post.category ? [post.category] : []),
+    series_assignments: seriesAssignments?.length ? seriesAssignments : post.series_id ? [{ series_id: post.series_id, series_order: post.series_order }] : [],
   }
 
   return (
