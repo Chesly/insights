@@ -10,8 +10,8 @@ import { CALCULATORS } from "@/lib/calculators";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, categories, tags, authors, downloads, facts] = await Promise.all([
     getAllPosts(false, ["insights", "coffee", "how-to"]),
-    getAllCategories(),
-    getPopularTags(1000),
+    getAllCategories(["insights", "coffee", "how-to"]),
+    getPopularTags(1000, ["insights", "coffee", "how-to"]),
     getAllAuthors(),
     getAllDownloads(),
     getAllFacts(),

@@ -160,8 +160,10 @@ export async function getRelatedPosts(post: Post, limit = 3): Promise<Post[]> {
   return scored.slice(0, limit).map((s) => s.post);
 }
 
-export async function getAllCategories(): Promise<string[]> {
-  const posts = await getAllPosts();
+export async function getAllCategories(
+  sections: ("insights" | "coffee" | "how-to")[] = ["insights"]
+): Promise<string[]> {
+  const posts = await getAllPosts(false, sections);
   const cats = new Set<string>();
   posts.forEach((p) => getPostCategories(p).forEach((c) => cats.add(c)));
   return Array.from(cats).sort();
@@ -174,8 +176,11 @@ export async function getAllTags(): Promise<string[]> {
   return Array.from(tags);
 }
 
-export async function getPopularTags(limit = 12): Promise<{ tag: string; count: number }[]> {
-  const posts = await getAllPosts();
+export async function getPopularTags(
+  limit = 12,
+  sections: ("insights" | "coffee" | "how-to")[] = ["insights"]
+): Promise<{ tag: string; count: number }[]> {
+  const posts = await getAllPosts(false, sections);
   const counts = new Map<string, number>();
   posts.forEach((p) => p.tags.forEach((t) => counts.set(t, (counts.get(t) || 0) + 1)));
   return Array.from(counts.entries())

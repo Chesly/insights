@@ -9,7 +9,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getAllSiteSettings();
   return {
     title: settings.contact_page_title || siteConfig.pages.contact.title,
-    description: `Get in touch with ${siteConfig.name}.`
+    description: `Get in touch with ${siteConfig.name}.`,
+    alternates: { canonical: `${siteConfig.url}/contact` }
   };
 }
 

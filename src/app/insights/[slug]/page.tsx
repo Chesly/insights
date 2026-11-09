@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
@@ -28,7 +28,8 @@ export async function generateMetadata({
 
   const title = post.seoTitle || post.title;
   const description = post.seoDescription || post.description;
-  const url = `${siteConfig.url}/insights/${post.slug}`;
+  const section = post.section || "insights";
+  const url = `${siteConfig.url}/${section}/${post.slug}`;
 
   return {
     title,
@@ -65,7 +66,9 @@ export default async function BlogPostPage({
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) notFound();
-  if ((post.section || "insights") !== "insights") notFound();
+  if ((post.section || "insights") !== "insights") {
+    permanentRedirect(`/${post.section}/${post.slug}`);
+  }
 
   const related = await getRelatedPosts(post);
   const relatedProducts = (post.relatedDownloadIds?.length ?? 0) > 0

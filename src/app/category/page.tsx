@@ -7,11 +7,12 @@ import PageHero from "@/components/PageHero";
 
 export const metadata: Metadata = {
   title: "Categories",
-  description: `Browse ${siteConfig.shortName} articles by topic, including business, money, technology and more.`
+  description: `Browse ${siteConfig.shortName} articles by topic, including business, money, technology and more.`,
+  alternates: { canonical: `${siteConfig.url}/category` }
 };
 
 export default async function CategoryIndexPage() {
-  const posts = await getAllPosts();
+  const posts = await getAllPosts(false, ["insights", "coffee", "how-to"]);
   return (
     <div>
       <PageHero

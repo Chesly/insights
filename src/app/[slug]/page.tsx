@@ -1,6 +1,8 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getPageBySlug } from "@/lib/pages";
+import { getPostBySlug } from "@/lib/posts";
+import { siteConfig } from "@/lib/siteConfig";
 
 // Catch-all for pages created in /admin/pages that don't have their own
 // dedicated route file (like /terms or /privacy do). Next.js only falls
@@ -13,7 +15,16 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const page = await getPageBySlug(slug);
-  if (!page) return {};
+  if (!page) {
+    const post = await getPostBySlug(slug);
+    if (!post) return {};
+    const canonical = `${siteConfig.url}/${post.section || "insights"}/${post.slug}`;
+    return {
+      title: post.seoTitle || post.title,
+      description: post.seoDescription || post.description,
+      alternates: { canonical },
+    };
+  }
   return {
     title: page.seo_title || page.title,
     description: page.meta_description,
@@ -27,12 +38,16 @@ export default async function DynamicPage({
 }) {
   const { slug } = await params;
   const page = await getPageBySlug(slug);
-  if (!page) notFound();
+  if (page) {
+    return (
+      <div className="container-page prose prose-lg mx-auto max-w-3xl py-16 dark:prose-invert">
+        <h1>{page.title}</h1>
+        <div dangerouslySetInnerHTML={{ __html: page.body || "" }} />
+      </div>
+    );
+  }
 
-  return (
-    <div className="container-page prose prose-lg mx-auto max-w-3xl py-16 dark:prose-invert">
-      <h1>{page.title}</h1>
-      <div dangerouslySetInnerHTML={{ __html: page.body || "" }} />
-    </div>
-  );
+  const post = await getPostBySlug(slug);
+  if (post) permanentRedirect(`/${post.section || "insights"}/${post.slug}`);
+  notFound();
 }

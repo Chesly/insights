@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
@@ -65,7 +65,9 @@ export default async function CoffeePostPage({
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) notFound();
-  if ((post.section || "insights") !== "coffee") notFound();
+  if ((post.section || "insights") !== "coffee") {
+    permanentRedirect(`/${post.section || "insights"}/${post.slug}`);
+  }
 
   const related = await getRelatedPosts(post);
   const relatedProducts = (post.relatedDownloadIds?.length ?? 0) > 0

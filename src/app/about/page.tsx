@@ -10,7 +10,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getAllSiteSettings();
   return {
     title: settings.about_hero_title || siteConfig.pages.about.title,
-    description: `Practical guides, calculators and downloadable tools for South African businesses and people, published by Chesly.Tech.`
+    description: `Practical guides, calculators and downloadable tools for South African businesses and people, published by Chesly.Tech.`,
+    alternates: { canonical: `${siteConfig.url}/about` }
   };
 }
 

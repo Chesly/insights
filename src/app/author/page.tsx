@@ -6,7 +6,8 @@ import { getAllAuthors } from "@/lib/authors";
 
 export const metadata: Metadata = {
   title: "Authors",
-  description: `Meet the writers and contributors behind ${siteConfig.name}.`
+  description: `Meet the writers and contributors behind ${siteConfig.name}.`,
+  alternates: { canonical: `${siteConfig.url}/author` }
 };
 
 export default async function AuthorsIndexPage() {

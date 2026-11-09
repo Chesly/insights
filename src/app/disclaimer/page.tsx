@@ -1,12 +1,14 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getPageBySlug } from "@/lib/pages";
+import { siteConfig } from "@/lib/siteConfig";
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug("disclaimer");
   return {
     title: page?.seo_title || page?.title || "Disclaimer",
     description: page?.meta_description,
+    alternates: { canonical: `${siteConfig.url}/disclaimer` },
   };
 }
 
