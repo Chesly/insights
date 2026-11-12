@@ -48,5 +48,12 @@ export const CALCULATORS: CalculatorMeta[] = [
     title: "Retention & Progress Payment Calculator",
     cardTitle: "Retention & Progress Payment Calculator",
     description: "Model retention withheld, net progress payments, VAT, payment exposure and expected retention releases using your contract terms."
+  },
+  {
+    slug: "tender-preference-points",
+    icon: "🏆",
+    title: "South African Tender Preference Points Calculator",
+    cardTitle: "Tender Preference Points Calculator",
+    description: "Compare tender price and specific-goal points under South Africa’s 80/20 and 90/10 systems."
   }
 ];
