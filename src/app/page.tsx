@@ -88,7 +88,7 @@ export default async function HomePage() {
               push real content below the fold. */}
           <section className="mb-5 pt-2 text-center sm:mb-6">
             <h1 className="mx-auto max-w-2xl text-xl font-bold leading-snug tracking-tight text-navy dark:text-white sm:text-2xl lg:max-w-none lg:whitespace-nowrap">
-              Practical ideas for building a better business and a better future.
+              South African business guides, calculators and practical tools.
             </h1>
           </section>
 
