@@ -42,10 +42,10 @@ export default function TenderPreferenceGuidePage() {
           <p>The Preferential Procurement Regulations, 2022 use 80/20 for a tender with a rand value at or below R50 million and 90/10 above R50 million. The tender documents must identify the applicable preference system. If the tender says either system may apply because the value is uncertain, the regulations use the lowest acceptable tender to choose the system for goods and services, or the highest acceptable tender for an income-generating contract.</p>
 
           <h2>How price points are calculated</h2>
-          <p>For goods and services, the lowest acceptable tender gets the full price component. Other tenders score fewer points based on how far their price is above that reference. For income-generating contracts such as a lease or disposal, the highest acceptable offer gets the full price component, and lower offers score fewer points.</p>
+          <p>For goods and services, the lowest acceptable tender gets the full price component. Other tenders score fewer points based on how far their price is above that reference. For income-generating contracts such as a lease or concession (excluding direct sales and public auctions), the highest acceptable offer gets the full price component, and lower offers score fewer points.</p>
           <p>For 80/20, one specific-goal point is equivalent to 1.25% of the price component. For 90/10, it is about 1.11%. This describes the formula’s trade-off; it does not mean you can change the goals or points stated in a tender.</p>
 
-          <h2>Specific goals come from the tender documents</h2>
+          <h2>The 2024 Public Procurement Act judgment</h2>\n          <p>On 17 September 2026, the Constitutional Court declared the Public Procurement Act 28 of 2024 invalid. The judgment noted that the Act had not yet been brought into operation and that existing legislation already governed public procurement. This guide explains the 2022 regulations under the PPPFA; confirm the rules and evaluation method stated for each current tender.</p>\n\n          <h2>Specific goals come from the tender documents</h2>
           <p>The organ of state must state the specific goals, points for each goal and the proof required. Read the applicable bidding form and tender conditions carefully. Do not assume that an old B-BBEE status-level table automatically applies under the 2022 regulations; goals and evidence are tender-specific.</p>
 
           <h2>No R30,000 minimum under the 2022 regulations</h2>
