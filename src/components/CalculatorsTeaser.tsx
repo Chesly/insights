@@ -6,7 +6,7 @@ import { CALCULATORS } from "@/lib/calculators";
 // Reads from the same static CALCULATORS registry as the hub page, so a
 // new calculator added there shows up here automatically.
 export default function CalculatorsTeaser() {
-  const items = CALCULATORS.slice(0, 4);
+  const items = CALCULATORS.slice(0, 5);
   if (items.length === 0) return null;
 
   return (
@@ -21,7 +21,7 @@ export default function CalculatorsTeaser() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((c) => (
             <Link
               key={c.slug}
