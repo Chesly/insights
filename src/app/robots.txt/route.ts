@@ -9,6 +9,7 @@ Allow: /
 Disallow: /api/
 Disallow: /search
 Disallow: /admin/
+Disallow: /private/
 Disallow: /ct-login
 Disallow: /register
 Disallow: /cart
@@ -22,6 +23,7 @@ Allow: /
 Disallow: /api/
 Disallow: /search
 Disallow: /admin/
+Disallow: /private/
 Disallow: /ct-login
 Disallow: /register
 Disallow: /cart
@@ -34,6 +36,7 @@ Allow: /
 Disallow: /api/
 Disallow: /search
 Disallow: /admin/
+Disallow: /private/
 Disallow: /ct-login
 Disallow: /register
 Disallow: /cart
@@ -46,6 +49,7 @@ Allow: /
 Disallow: /api/
 Disallow: /search
 Disallow: /admin/
+Disallow: /private/
 Disallow: /ct-login
 Disallow: /register
 Disallow: /cart
@@ -58,6 +62,7 @@ Allow: /
 Disallow: /api/
 Disallow: /search
 Disallow: /admin/
+Disallow: /private/
 Disallow: /ct-login
 Disallow: /register
 Disallow: /cart
@@ -70,6 +75,7 @@ Allow: /
 Disallow: /api/
 Disallow: /search
 Disallow: /admin/
+Disallow: /private/
 Disallow: /ct-login
 Disallow: /register
 Disallow: /cart
@@ -82,6 +88,7 @@ Allow: /
 Disallow: /api/
 Disallow: /search
 Disallow: /admin/
+Disallow: /private/
 Disallow: /ct-login
 Disallow: /register
 Disallow: /cart
