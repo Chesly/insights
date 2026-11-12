@@ -9,7 +9,7 @@
 - Site: https://insights.chesly.tech
 - Owner: Chesly Silaule (hello@chesly.tech)
 - Organization: Chesly.Tech
-- Location: Johannesburg, South Africa
+- Location: Gauteng, South Africa
 - Topics: AI, Technology, Programming, Business, Startups, Cloud, Cybersecurity, SEO,
   Marketing, Productivity, Reviews, Tutorials, South Africa, Finance
 
