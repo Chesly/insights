@@ -28,6 +28,7 @@ export async function generateMetadata({
   return {
     title: page.seo_title || page.title,
     description: page.meta_description,
+    alternates: { canonical: `${siteConfig.url}/${page.slug}` },
   };
 }
 
