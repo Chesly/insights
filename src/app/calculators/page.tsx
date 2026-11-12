@@ -11,12 +11,12 @@ const PAGE_URL = `${siteConfig.url}/calculators`;
 export const metadata: Metadata = {
   title: "Free Business Calculators for South African SMEs",
   description:
-    "Free South African business calculators for tender bid decisions, funding readiness, import costs and profit, VAT, and retention payments. No signup or file uploads.",
+    "Free South African calculators for tender bids and preference points, funding readiness, import costs and profit, VAT, and retention payments. No signup or file uploads.",
   alternates: { canonical: PAGE_URL },
   openGraph: {
     title: "Free Business Calculators for South African SMEs",
     description:
-      "Free calculators for South African tenders, funding, imports, VAT, and progress payments.",
+      "Free calculators for South African tender decisions and preference points, funding, imports, VAT, and progress payments.",
     url: PAGE_URL,
     type: "website"
   },
