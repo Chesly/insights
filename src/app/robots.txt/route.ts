@@ -8,25 +8,86 @@ const DEFAULT_ROBOTS = `User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /search
+Disallow: /admin/
+Disallow: /ct-login
+Disallow: /register
+Disallow: /cart
+Disallow: /checkout/
+Disallow: /invoice/
+Disallow: /download/
 
-# AI / LLM crawlers — explicitly welcomed
+# AI / LLM crawlers — public content is welcome; private routes stay excluded
 User-agent: GPTBot
 Allow: /
+Disallow: /api/
+Disallow: /search
+Disallow: /admin/
+Disallow: /ct-login
+Disallow: /register
+Disallow: /cart
+Disallow: /checkout/
+Disallow: /invoice/
+Disallow: /download/
 
 User-agent: ChatGPT-User
 Allow: /
+Disallow: /api/
+Disallow: /search
+Disallow: /admin/
+Disallow: /ct-login
+Disallow: /register
+Disallow: /cart
+Disallow: /checkout/
+Disallow: /invoice/
+Disallow: /download/
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /api/
+Disallow: /search
+Disallow: /admin/
+Disallow: /ct-login
+Disallow: /register
+Disallow: /cart
+Disallow: /checkout/
+Disallow: /invoice/
+Disallow: /download/
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /api/
+Disallow: /search
+Disallow: /admin/
+Disallow: /ct-login
+Disallow: /register
+Disallow: /cart
+Disallow: /checkout/
+Disallow: /invoice/
+Disallow: /download/
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /api/
+Disallow: /search
+Disallow: /admin/
+Disallow: /ct-login
+Disallow: /register
+Disallow: /cart
+Disallow: /checkout/
+Disallow: /invoice/
+Disallow: /download/
 
 User-agent: CCBot
 Allow: /
+Disallow: /api/
+Disallow: /search
+Disallow: /admin/
+Disallow: /ct-login
+Disallow: /register
+Disallow: /cart
+Disallow: /checkout/
+Disallow: /invoice/
+Disallow: /download/
 
 Sitemap: ${siteConfig.url}/sitemap.xml
 `;
