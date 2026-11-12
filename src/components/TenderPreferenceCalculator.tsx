@@ -17,7 +17,7 @@ const initialRows: Row[] = [{ id: "competitor-1", name: "", price: "", goals: ""
 const money = new Intl.NumberFormat("en-ZA", {
   style: "currency",
   currency: "ZAR",
-  maximumFractionDigits: 0
+  maximumFractionDigits: 2
 });
 const points = (value: number) => value.toFixed(2);
 const exchange = (value: number) => value.toFixed(2) + "%";
