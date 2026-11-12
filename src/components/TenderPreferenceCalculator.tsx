@@ -88,7 +88,7 @@ export default function TenderPreferenceCalculator() {
             Tender type
             <select value={type} onChange={(event) => setType(event.target.value as BidType)} className="mt-1 block min-h-11 w-full border border-navy/20 bg-white px-3 py-2 font-normal dark:border-white/20 dark:bg-navy">
               <option value="expense">Buying goods or services</option>
-              <option value="income">Income for the state (sale or lease)</option>
+              <option value="income">Income-generating contract (e.g. lease or concession)</option>
             </select>
           </label>
           <label className="block text-sm font-semibold text-navy dark:text-white">
