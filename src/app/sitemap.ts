@@ -23,6 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteConfig.url}/how-to`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${siteConfig.url}/tools`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${siteConfig.url}/calculators`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${siteConfig.url}/guides/south-africa-tender-preference-points`, changeFrequency: "yearly", priority: 0.7 },
     { url: `${siteConfig.url}/facts`, changeFrequency: "daily", priority: 0.6 },
     { url: `${siteConfig.url}/spaza-support`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${siteConfig.url}/category`, changeFrequency: "weekly", priority: 0.7 },
