@@ -6,7 +6,7 @@ import { CALCULATORS } from "@/lib/calculators";
 // Reads from the same static CALCULATORS registry as the hub page, so a
 // new calculator added there shows up here automatically.
 export default function CalculatorsTeaser() {
-  const items = CALCULATORS.slice(0, 5);
+  const items = CALCULATORS.slice(0, 6);
   if (items.length === 0) return null;
 
   return (
