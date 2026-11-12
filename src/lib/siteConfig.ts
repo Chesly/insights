@@ -84,7 +84,7 @@ export const siteConfig = {
     email: "hello@chesly.tech",
     phone: "+27 81 586 8101",
     whatsapp: "+27815868101",
-    location: "Johannesburg, South Africa",
+    location: "Gauteng, South Africa",
     hours: "Mon–Fri, 09:00–17:00 SAST"
   },
 
