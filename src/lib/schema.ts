@@ -30,12 +30,8 @@ export function organizationSchema() {
       "@type": "ContactPoint",
       email: siteConfig.contact.email,
       telephone: siteConfig.contact.phone,
-      areaServed: "ZA",
+      areaServed: ["Gauteng", "ZA"],
       contactType: "customer service"
-    },
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: siteConfig.contact.location
     },
     sameAs: siteConfig.social.map((s) => s.href)
   };
