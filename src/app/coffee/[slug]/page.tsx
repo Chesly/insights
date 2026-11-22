@@ -154,7 +154,7 @@ export default async function CoffeePostPage({
       />
 
       {/* Key Takeaways */}
-      {post.keyTakeaways && post.keyTakeaways.length > 0 && !/<h[1-6][^>]*>\\s*(?:<[^>]+>\\s*)*key takeaways\\b/i.test(post.content) && (
+      {post.keyTakeaways && post.keyTakeaways.length > 0 && !/<h[1-6][^>]*>\s*(?:<[^>]+>\s*)*key takeaways\b/i.test(post.content) && (
         <section className="mt-7 border border-gold/20 p-6">
           <h2 className="text-lg font-bold text-navy dark:text-white">Key Takeaways</h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-navy/80 dark:text-white/80">
