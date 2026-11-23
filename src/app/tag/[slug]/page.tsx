@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/siteConfig";
@@ -26,6 +27,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const label = await getTagLabel(slug);
   const posts = await getPostsByTag(slug);
+  if (["var", "sports-analytics"].includes(slug)) return { title: "Not Found", robots: { index: false, follow: false } };
   return {
     title: `#${label}`,
     description: `Articles tagged ${label} on ${siteConfig.shortName}.`,
@@ -43,6 +45,7 @@ export default async function TagPage({
   const { slug } = await params;
   const label = await getTagLabel(slug);
   const posts = await getPostsByTag(slug);
+  if (posts.length === 0 || ["var", "sports-analytics"].includes(slug)) notFound();
   const url = `${siteConfig.url}/tag/${slug}`;
 
   return (
