@@ -23,7 +23,11 @@ function rowToPost(row: any): Post {
   const categories: string[] = (row.categories_json || []).map((c: any) => c.name);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const tags: string[] = (row.tags_json || []).map((t: any) => t.name);
-  const primaryCategory = row.primary_category_name || categories[0] || (row.section === "how-to" ? "How To" : row.section === "coffee" ? "Let’s Have Coffee" : "Insights");
+  const sectionLabel = row.section === "how-to" ? "How To" : row.section === "coffee" ? "Let’s Have Coffee" : "Insights";
+  const validCategory = [row.primary_category_name, ...categories].find(
+    (name: string | null | undefined) => name && !/^uncategori[sz]ed$/i.test(name.trim())
+  );
+  const primaryCategory = validCategory || sectionLabel;
   const content = row.body || "";
 
   return {
