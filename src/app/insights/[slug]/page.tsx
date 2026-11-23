@@ -66,6 +66,7 @@ export default async function BlogPostPage({
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) notFound();
+  if (slug !== post.slug) permanentRedirect(`/${post.section || "insights"}/${post.slug}`);
   if ((post.section || "insights") !== "insights") {
     permanentRedirect(`/${post.section}/${post.slug}`);
   }
