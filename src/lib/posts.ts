@@ -124,9 +124,7 @@ const fetchPostBySlug = unstable_cache(async (slug: string): Promise<Post | null
   const { data: caseInsensitivePost, error: fallbackError } = await supabase
     .from("posts_with_categories")
     .select("*")
-    .ilike("slug", slug.replace(/[\\%_]/g, "\\  if (error || !data) return null;
-  return rowToPost(data);
-}, ["public-post-by-slug"]"))
+    .ilike("slug", slug)
     .limit(1)
     .maybeSingle();
   if (fallbackError || !caseInsensitivePost) return null;
