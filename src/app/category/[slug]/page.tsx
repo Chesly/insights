@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/siteConfig";
@@ -18,6 +19,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const name = siteConfig.categories.find((c) => slugify(c) === slug) || slug;
+  const posts = await getPostsByCategory(name);
+  if (posts.length === 0 || /^uncategori[sz]ed$/i.test(slug)) {
+    return { title: "Not Found", robots: { index: false, follow: false } };
+  }
   return {
     title: `${name} Articles`,
     description: `All ${name} articles from ${siteConfig.shortName}.`,
@@ -36,6 +41,7 @@ export default async function CategoryPage({
   const { slug } = await params;
   const name = siteConfig.categories.find((c) => slugify(c) === slug) || slug;
   const posts = await getPostsByCategory(name);
+  if (posts.length === 0 || /^uncategori[sz]ed$/i.test(slug)) notFound();
   const url = `${siteConfig.url}/category/${slug}`;
 
   return (
