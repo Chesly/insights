@@ -40,6 +40,7 @@ const nextConfig = {
       { source: "/downloads", destination: "/tools", permanent: true },
       { source: "/downloads/:slug", destination: "/tools/:slug", permanent: true },
       { source: "/blog", destination: "/insights", permanent: true },
+      { source: "/blog/how-to-register-on-etender-portal", destination: "/insights/national-etender-portal-registration", permanent: true },
       // Consolidated duplicate articles: preserve any existing links/search
       // equity while keeping one canonical page for each search intent.
       { source: "/insights/purchase-order-funding-cost-south-africa", destination: "/insights/how-much-does-purchase-order-funding-cost", permanent: true },
