@@ -26,7 +26,12 @@ export async function generateMetadata({
   const post = await getPostBySlug(slug);
   if (!post) return {};
 
-  const title = post.seoTitle || post.title;
+  // Guard against legacy SEO titles accidentally stored as raw slugs.
+  // Prefer the editorial headline instead of publishing a slug as the page title.
+  const seoTitle = post.seoTitle?.trim();
+  const title = seoTitle && !/^[a-z0-9]+(?:-[a-z0-9]+){3,}$/.test(seoTitle)
+    ? seoTitle
+    : post.title;
   const description = post.seoDescription || post.description;
   const section = post.section || "insights";
   const url = `${siteConfig.url}/${section}/${post.slug}`;
