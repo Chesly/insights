@@ -41,6 +41,11 @@ const nextConfig = {
       { source: "/downloads/:slug", destination: "/tools/:slug", permanent: true },
       { source: "/blog", destination: "/insights", permanent: true },
       { source: "/blog/how-to-register-on-etender-portal", destination: "/insights/national-etender-portal-registration", permanent: true },
+      // Verified historical URLs from Search Console: each destination exists and returns 200.
+      { source: "/tools/project-stargate-understanding-the-500-billion-ai-infrastructure-race", destination: "/tools/project-stargate-understanding-ai-billion-infrastructure", permanent: true },
+      { source: "/tools/ai-business-starter-kit-50-ai-prompts-for-south-african-entrepreneurs", destination: "/tools/50-ai-prompts-for-south-african-entrepreneurs", permanent: true },
+      { source: "/blog/Step-by-Step-Guide-How-Register-Import-Export", destination: "/how-to/how-get-import-export-code-south-africa", permanent: true },
+      { source: "/blog/how-much-does-purchase-order-funding-cost-south-africa", destination: "/insights/how-much-does-purchase-order-funding-cost", permanent: true },
       // Consolidated duplicate articles: preserve any existing links/search
       // equity while keeping one canonical page for each search intent.
       { source: "/insights/purchase-order-funding-cost-south-africa", destination: "/insights/how-much-does-purchase-order-funding-cost", permanent: true },
