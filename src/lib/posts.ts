@@ -116,8 +116,21 @@ const fetchPostBySlug = unstable_cache(async (slug: string): Promise<Post | null
     .eq("slug", slug)
     .limit(1)
     .maybeSingle();
-  if (error || !data) return null;
+  if (error) return null;
+  if (data) return rowToPost(data);
+  // Old indexed links sometimes use capital letters. Resolve the original
+  // published slug rather than returning 404; the page route will redirect
+  // to its lowercase canonical address where necessary.
+  const { data: caseInsensitivePost, error: fallbackError } = await supabase
+    .from("posts_with_categories")
+    .select("*")
+    .ilike("slug", slug.replace(/[\\%_]/g, "\\  if (error || !data) return null;
   return rowToPost(data);
+}, ["public-post-by-slug"]"))
+    .limit(1)
+    .maybeSingle();
+  if (fallbackError || !caseInsensitivePost) return null;
+  return rowToPost(caseInsensitivePost);
 }, ["public-post-by-slug"], { revalidate: 900, tags: ["posts"] });
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
