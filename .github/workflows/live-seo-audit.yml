@@ -1,0 +1,70 @@
+name: Live SEO URL audit
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/live-seo-audit.yml'
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Crawl live sitemap and check redirects and canonicals
+        shell: bash
+        run: |
+          cat > /tmp/audit.py <<'PY'
+          import csv, html.parser, json, urllib.request, urllib.error, xml.etree.ElementTree as ET, concurrent.futures, collections, time
+          BASE='https://insights.chesly.tech'
+          HEADERS={'User-Agent':'CheslyTech-SEOCrawler/1.0 (site-owner audit)','Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
+          class Parser(html.parser.HTMLParser):
+              def __init__(self): super().__init__();self.canonical=None;self.robots=None
+              def handle_starttag(self,tag,attrs):
+                  d=dict(attrs)
+                  if tag=='link' and 'canonical' in d.get('rel','').lower().split():self.canonical=d.get('href')
+                  if tag=='meta' and d.get('name','').lower()=='robots':self.robots=d.get('content')
+          class Redirects(urllib.request.HTTPRedirectHandler):
+              def __init__(self):self.hops=[]
+              def redirect_request(self,req,fp,code,msg,headers,newurl):
+                  self.hops.append({'status':code,'location':newurl})
+                  return super().redirect_request(req,fp,code,msg,headers,newurl)
+          def request(url):
+              tracker=Redirects();opener=urllib.request.build_opener(tracker)
+              try:
+                  with opener.open(urllib.request.Request(url,headers=HEADERS),timeout=18) as resp:
+                      status=resp.status; final=resp.url;ctype=resp.headers.get('Content-Type','');body=resp.read(800000) if 'html' in ctype else b''
+              except urllib.error.HTTPError as e:
+                  status=e.code;final=e.url;ctype=e.headers.get('Content-Type','');body=e.read(800000) if 'html' in ctype else b''
+              except Exception as e:return {'url':url,'status':'ERROR','error':str(e)[:200],'redirects':tracker.hops}
+              parser=Parser()
+              if body:
+                  try:parser.feed(body.decode('utf-8','replace'))
+                  except Exception:pass
+              return {'url':url,'status':status,'final_url':final,'redirects':tracker.hops,'canonical':parser.canonical,'robots':parser.robots,'canonical_matches':parser.canonical==url,'error':''}
+          sitemap=urllib.request.urlopen(urllib.request.Request(BASE+'/sitemap.xml',headers=HEADERS),timeout=30).read()
+          root=ET.fromstring(sitemap)
+          urls=[x.text.strip() for x in root.findall('.//{*}loc') if x.text]
+          # Include known historical URLs to verify exact redirect status separately from canonical sitemap URLs.
+          legacy=[BASE+'/coffee/when-the-headlines-leave-the-pitch',BASE+'/blog/Step-by-Step-Guide-How-Register-Import-Export',BASE+'/tools/project-stargate-understanding-the-500-billion-ai-infrastructure-race',BASE+'/tag/var',BASE+'/tag/sports-analytics']
+          with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+              results=list(pool.map(request,urls+legacy))
+          for i,r in enumerate(results):r['source']='sitemap' if i<len(urls) else 'legacy'
+          with open('seo-url-audit.csv','w',newline='',encoding='utf-8') as f:
+              keys=['source','url','status','final_url','canonical','canonical_matches','robots','redirects','error'];w=csv.DictWriter(f,fieldnames=keys);w.writeheader()
+              for r in results:w.writerow({k:json.dumps(r[k]) if k=='redirects' else r.get(k,'') for k in keys})
+          failures=[r for r in results[:len(urls)] if r.get('status')!=200 or r.get('final_url')!=r['url'] or r.get('canonical')!=r['url'] or (r.get('robots') and 'noindex' in r['robots'].lower())]
+          counts=collections.Counter(str(r.get('status')) for r in results[:len(urls)])
+          print('SITEMAP_TOTAL',len(urls),'UNIQUE',len(set(urls)),'HTTP_STATUSES',dict(counts),'SEO_ISSUES',len(failures))
+          for r in failures[:100]:print('ISSUE',json.dumps(r,ensure_ascii=False)[:900])
+          for r in results[len(urls):]:print('LEGACY',json.dumps(r,ensure_ascii=False)[:900])
+          with open('seo-audit-summary.json','w') as f:json.dump({'total':len(urls),'unique':len(set(urls)),'statuses':dict(counts),'issues':len(failures),'legacy':results[len(urls):]},f,indent=2)
+          PY
+          python /tmp/audit.py
+      - name: Upload detailed audit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-seo-audit
+          path: |
+            seo-url-audit.csv
+            seo-audit-summary.json
+          retention-days: 30
